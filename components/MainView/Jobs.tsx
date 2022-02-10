@@ -29,7 +29,7 @@ const Jobs = () => {
 	}, []);
 
 	return (
-		<div className='grid grid-flow-col auto-cols-max'>
+		<div className='flex'>
 			{jobs.map((job) => (
 				<JobCard
 					key={job.id}

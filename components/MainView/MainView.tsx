@@ -13,11 +13,13 @@ type MainViewProps = {
 
 const MainView = (props: MainViewProps) => {
 	const disconnectedView = (
-		<div className='m-auto'>Please connect your wallet.</div>
+		<div className='flex justify-center items-center h-full'>
+			Please connect your wallet.
+		</div>
 	);
 
 	return (
-		<div className='grow flex justify-center items-center bg-gray-800 text-cyan-50'>
+		<div className='grow bg-gray-800 text-cyan-50'>
 			{!props.isConnected ? (
 				disconnectedView
 			) : props.toggleState === 1 ? (

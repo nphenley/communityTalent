@@ -39,5 +39,4 @@ export default function Home() {
 
 // TODO:
 // SideBar moving in and out needs to be animated. ease-in-out duration-300
-// Add in content to MainView
 // Needs to be made responsive to mobile screens
