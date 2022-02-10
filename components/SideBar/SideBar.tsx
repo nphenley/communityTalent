@@ -3,7 +3,6 @@ import {
 	FaNetworkWired,
 	FaBriefcase,
 	FaUser,
-	FaBars,
 	FaArrowLeft,
 } from 'react-icons/fa';
 import SideBarIcon from 'components/SideBar/SideBarIcon';
@@ -12,40 +11,40 @@ import ProfileIcon from 'components/SideBar/ProfileIcon';
 type SideBarProps = {
 	isOpen: boolean;
 	setIsOpen: any;
-	toggleTab: any;
+	setToggleState: any;
 };
 
 const SideBar = (props: SideBarProps) => {
+	let containerClass =
+		'p-2 bg-gray-900 w-40 shadow-lg text-cyan-400 flex flex-col items-center h-full';
+	containerClass += props.isOpen ? ' block' : ' hidden';
+
 	return (
-		<div
-			className={`border-4 border-black lg:block hidden m-0 text-center z-10 bg-gray-900 shadow-lg w-1/10 text-cyan-400 ${
-				props.isOpen ? 'translate-x-0' : '-translate-x-full'
-			} ease-in-out duration-300`}
-		>
-			<div className='flex flex-col items-center h-full'>
-				<div className='flex flex-col gap-y-4 grow'>
-					<button className='' onClick={() => props.setIsOpen(!props.isOpen)}>
-						<SideBarIcon icon={<FaArrowLeft size='20' />} />
-					</button>
-					<button onClick={() => props.toggleTab(1)}>
-						<SideBarIcon icon={<FaBriefcase size='20' />} text={'JOBS'} />
-					</button>
+		<div className={containerClass}>
+			<button className='mb-14' onClick={() => props.setIsOpen(!props.isOpen)}>
+				<SideBarIcon icon={<FaArrowLeft size='20' />} />
+			</button>
 
-					<button onClick={() => props.toggleTab(2)}>
-						<SideBarIcon icon={<FaIdCard size='20' />} text={'TALENT'} />
-					</button>
+			<div className='grow flex flex-col gap-y-6'>
+				<button onClick={() => props.setToggleState(1)}>
+					<SideBarIcon icon={<FaBriefcase size='20' />} text={'Jobs'} />
+				</button>
 
-					<button onClick={() => props.toggleTab(3)}>
-						<SideBarIcon
-							icon={<FaNetworkWired size='20' />}
-							text={'CONNECTIONS'}
-						/>
-					</button>
-				</div>
-				<button className='' onClick={() => props.toggleTab(4)}>
-					<ProfileIcon icon={<FaUser size='40' />} />
+				<button onClick={() => props.setToggleState(2)}>
+					<SideBarIcon icon={<FaIdCard size='20' />} text={'Talent'} />
+				</button>
+
+				<button onClick={() => props.setToggleState(3)}>
+					<SideBarIcon
+						icon={<FaNetworkWired size='25' />}
+						text={'Connections'}
+					/>
 				</button>
 			</div>
+
+			<button onClick={() => props.setToggleState(4)}>
+				<ProfileIcon icon={<FaUser size='26' />} />
+			</button>
 		</div>
 	);
 };
