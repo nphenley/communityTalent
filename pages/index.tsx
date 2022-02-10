@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import SideBar from 'components/SideBar/SideBar';
-import MainView from 'components/MainView';
+import MainView from 'components/MainView/MainView';
 import TopBar from 'components/TopBar';
 
 export default function Home() {
