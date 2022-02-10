@@ -117,18 +117,18 @@ export default function Home() {
           </button>
         </div>
 
-        <div
-          className={`flex bg-gray-800 h-screen text-xl ${
-            isConnected ? "hidden" : "block"
-          }`}
-        >
-          <div className="m-auto">nada</div>
-        </div>
-
-        <div className={`${isConnected ? "block" : "hidden"}`}>
+        {!isConnected ? (
+          <div
+            className={`flex bg-gray-800 h-screen text-xl ${
+              isConnected ? "hidden" : "block"
+            }`}
+          >
+            <div className="m-auto">nada</div>
+          </div>
+        ) : (
           <div
             className={`bg-gray-800 text-cyan-50 ${
-              toggleState === 1 && isConnected ? "block" : "hidden"
+              toggleState === 1 ? "block" : "hidden"
             }`}
           >
             <div className="grid grid-flow-col auto-cols-max">
@@ -143,38 +143,38 @@ export default function Home() {
               ))}
             </div>
           </div>
+        )}
 
-          <div
-            className={` bg-gray-800 text-cyan-50 ${
-              toggleState === 2 && isConnected ? "block" : "hidden"
-            }`}
-          >
-            <div className="grid grid-flow-col auto-cols-max">
-              <InfoCard user="user1"></InfoCard>
-              <InfoCard user="user2"></InfoCard>
-              <InfoCard user="user3"></InfoCard>
-            </div>
+        <div
+          className={` bg-gray-800 text-cyan-50 ${
+            toggleState === 2 && isConnected ? "block" : "hidden"
+          }`}
+        >
+          <div className="grid grid-flow-col auto-cols-max">
+            <InfoCard user="user1"></InfoCard>
+            <InfoCard user="user2"></InfoCard>
+            <InfoCard user="user3"></InfoCard>
           </div>
+        </div>
 
-          <div
-            className={` bg-gray-800 text-cyan-50 ${
-              toggleState === 3 && isConnected ? "block" : "hidden"
-            }`}
-          >
-            <div className="grid grid-flow-col auto-cols-max">
-              <InfoCard user="user1"></InfoCard>
-              <InfoCard user="user2"></InfoCard>
-              <InfoCard user="user3"></InfoCard>
-            </div>
+        <div
+          className={` bg-gray-800 text-cyan-50 ${
+            toggleState === 3 && isConnected ? "block" : "hidden"
+          }`}
+        >
+          <div className="grid grid-flow-col auto-cols-max">
+            <InfoCard user="user1"></InfoCard>
+            <InfoCard user="user2"></InfoCard>
+            <InfoCard user="user3"></InfoCard>
           </div>
+        </div>
 
-          <div
-            className={` bg-gray-800 text-cyan-50 ${
-              toggleState === 4 && isConnected ? "block" : "hidden"
-            }`}
-          >
-            profile
-          </div>
+        <div
+          className={` bg-gray-800 text-cyan-50 ${
+            toggleState === 4 && isConnected ? "block" : "hidden"
+          }`}
+        >
+          profile
         </div>
       </div>
     </div>
