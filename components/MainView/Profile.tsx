@@ -1,13 +1,13 @@
-import InfoCard from 'components/SideBar/InfoCard';
+import InfoCard from "components/SideBar/InfoCard";
 
 const Profile = () => {
-	return (
-		<div className='grid grid-flow-col auto-cols-max'>
-			<InfoCard user='user1'></InfoCard>
-			<InfoCard user='user2'></InfoCard>
-			<InfoCard user='user3'></InfoCard>
-		</div>
-	);
+  return (
+    <div className="flex">
+      <InfoCard user="user1"></InfoCard>
+      <InfoCard user="user2"></InfoCard>
+      <InfoCard user="user3"></InfoCard>
+    </div>
+  );
 };
 
 export default Profile;
