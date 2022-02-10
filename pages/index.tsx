@@ -14,6 +14,7 @@ export default function Home() {
 			<SideBar
 				isOpen={isOpen}
 				setIsOpen={setIsOpen}
+				toggleState={toggleState}
 				setToggleState={setToggleState}
 			/>
 

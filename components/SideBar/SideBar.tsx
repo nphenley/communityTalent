@@ -11,6 +11,7 @@ import ProfileIcon from 'components/SideBar/ProfileIcon';
 type SideBarProps = {
 	isOpen: boolean;
 	setIsOpen: any;
+	toggleState: number;
 	setToggleState: any;
 };
 
@@ -27,17 +28,26 @@ const SideBar = (props: SideBarProps) => {
 
 			<div className='grow flex flex-col gap-y-6'>
 				<button onClick={() => props.setToggleState(1)}>
-					<SideBarIcon icon={<FaBriefcase size='20' />} text={'Jobs'} />
+					<SideBarIcon
+						icon={<FaBriefcase size='20' />}
+						text={'Jobs'}
+						active={props.toggleState === 1}
+					/>
 				</button>
 
 				<button onClick={() => props.setToggleState(2)}>
-					<SideBarIcon icon={<FaIdCard size='20' />} text={'Talent'} />
+					<SideBarIcon
+						icon={<FaIdCard size='20' />}
+						text={'Talent'}
+						active={props.toggleState === 2}
+					/>
 				</button>
 
 				<button onClick={() => props.setToggleState(3)}>
 					<SideBarIcon
 						icon={<FaNetworkWired size='25' />}
 						text={'Connections'}
+						active={props.toggleState === 3}
 					/>
 				</button>
 			</div>
