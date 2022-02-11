@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { db } from '_firebase/config';
 import JobCard from 'components/SideBar/JobCard';
 import PlusCard from 'components/MainView/PlusCard';
@@ -11,8 +11,15 @@ const Jobs = () => {
 
   useEffect(() => {
     const getJobs = async () => {
-      const data = await getDocs(jobsCollectionRef);
-      setJobs(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+      const data = await getDocs(
+        query(jobsCollectionRef, orderBy('dateCreated', 'desc'))
+      );
+      setJobs(
+        data.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        }))
+      );
     };
     getJobs();
   }, []);
