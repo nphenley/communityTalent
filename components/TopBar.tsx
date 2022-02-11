@@ -8,7 +8,7 @@ type TopBarProps = {
 };
 
 const TopBar = (props: TopBarProps) => {
-  const title = <h1 className='text-xl'>Neo Tokyo Directory</h1>;
+  const title = <h1 className='text-xl'>NTalent</h1>;
 
   const connectButton = (
     <button

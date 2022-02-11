@@ -18,7 +18,7 @@ export default function Home() {
         setToggleState={setToggleState}
       />
 
-      <div className='grow flex flex-col'>
+      <div className='flex flex-col grow'>
         <TopBar
           isOpen={isOpen}
           setIsOpen={setIsOpen}

@@ -2,6 +2,7 @@ import Jobs from 'components/MainView/Jobs';
 import Talent from 'components/MainView/Talent';
 import Connections from 'components/MainView/Connections';
 import Profile from 'components/MainView/Profile';
+import JobPosting from 'components/MainView/JobPosting';
 
 type MainViewProps = {
   toggleState: number;
@@ -13,13 +14,13 @@ type MainViewProps = {
 
 const MainView = (props: MainViewProps) => {
   const disconnectedView = (
-    <div className='flex justify-center items-center h-full'>
+    <div className='flex items-center justify-center h-full'>
       Please connect your wallet.
     </div>
   );
 
   return (
-    <div className='grow bg-gray-800 text-cyan-50 overflow-y-scroll'>
+    <div className='overflow-y-scroll bg-gray-800 grow text-cyan-50'>
       {!props.isConnected ? (
         disconnectedView
       ) : props.toggleState === 1 ? (

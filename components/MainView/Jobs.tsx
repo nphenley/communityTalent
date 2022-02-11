@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '_firebase/config';
 import JobCard from 'components/SideBar/JobCard';
+import PlusCard from 'components/MainView/PlusCard';
+import JobPosting from './JobPosting';
 
 const Jobs = () => {
   const [jobs, setJobs] = useState([]);
@@ -15,8 +17,16 @@ const Jobs = () => {
     getJobs();
   }, []);
 
+  const [addJob, setAddJob] = useState(false);
+
   return (
-    <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 p-2'>
+    <div className='relative grid grid-cols-1 gap-2 p-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'>
+      <button className='absolute' onClick={() => setAddJob(!addJob)}>
+        <PlusCard></PlusCard>
+      </button>
+
+      {addJob ? <JobPosting></JobPosting> : null}
+
       {jobs.map((job) => (
         <JobCard
           key={job.id}
