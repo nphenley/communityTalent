@@ -3,16 +3,17 @@ import Talent from 'components/MainView/Talent';
 import Connections from 'components/MainView/Connections';
 import Profile from 'components/MainView/Profile';
 import JobPosting from 'components/MainView/JobPosting';
+import { useMoralis } from 'react-moralis';
 
 type MainViewProps = {
   toggleState: number;
   isOpen: boolean;
   setIsOpen: any;
-  isConnected: boolean;
-  setIsConnected: any;
 };
 
 const MainView = (props: MainViewProps) => {
+  const { isAuthenticated } = useMoralis();
+
   const disconnectedView = (
     <div className='flex items-center justify-center h-full'>
       Please connect your wallet.
@@ -21,7 +22,7 @@ const MainView = (props: MainViewProps) => {
 
   return (
     <div className='overflow-y-scroll bg-gray-800 grow text-cyan-50'>
-      {!props.isConnected ? (
+      {!isAuthenticated ? (
         disconnectedView
       ) : props.toggleState === 1 ? (
         <Jobs />

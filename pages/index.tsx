@@ -1,40 +1,40 @@
 import { useState } from 'react';
-
+import { useMoralis, MoralisProvider } from 'react-moralis';
 import SideBar from 'components/SideBar/SideBar';
 import MainView from 'components/MainView/MainView';
 import TopBar from 'components/TopBar';
 
+const APP_ID = '68aoq19hTYnFgYjrxAMRlcaDR9VvJUWXVcJQf5vG';
+const SERVER_URL = 'https://4v42nqseei1x.usemoralis.com:2053/server';
+
 export default function Home() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isConnected, setIsConnected] = useState(false);
   const [toggleState, setToggleState] = useState(1);
 
   return (
-    <div className='flex h-screen'>
-      <SideBar
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        toggleState={toggleState}
-        setToggleState={setToggleState}
-      />
-
-      <div className='flex flex-col grow'>
-        <TopBar
+    <MoralisProvider
+      appId='68aoq19hTYnFgYjrxAMRlcaDR9VvJUWXVcJQf5vG'
+      serverUrl='https://4v42nqseei1x.usemoralis.com:2053/server'
+    >
+      <div className='flex h-screen'>
+        <SideBar
           isOpen={isOpen}
           setIsOpen={setIsOpen}
-          isConnected={isConnected}
-          setIsConnected={setIsConnected}
-        />
-
-        <MainView
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
-          isConnected={isConnected}
-          setIsConnected={setIsConnected}
           toggleState={toggleState}
+          setToggleState={setToggleState}
         />
+
+        <div className='flex flex-col grow'>
+          <TopBar isOpen={isOpen} setIsOpen={setIsOpen} />
+
+          <MainView
+            isOpen={isOpen}
+            setIsOpen={setIsOpen}
+            toggleState={toggleState}
+          />
+        </div>
       </div>
-    </div>
+    </MoralisProvider>
   );
 }
 
