@@ -4,15 +4,16 @@ import SideBar from 'components/SideBar/SideBar';
 import MainView from 'components/MainView/MainView';
 import TopBar from 'components/TopBar';
 import MobileSideBar from 'components/SideBar/MobileSideBar';
-const APP_ID = '68aoq19hTYnFgYjrxAMRlcaDR9VvJUWXVcJQf5vG';
-const SERVER_URL = 'https://4v42nqseei1x.usemoralis.com:2053/server';
 
 export default function Home() {
   const [isOpen, setIsOpen] = useState(false);
   const [toggleState, setToggleState] = useState(1);
 
   return (
-    <MoralisProvider appId={APP_ID} serverUrl={SERVER_URL}>
+    <MoralisProvider
+      appId={process.env.NEXT_PUBLIC_MORALIS_APPLICATION_ID}
+      serverUrl={process.env.NEXT_PUBLIC_MORALIS_SERVER_URL}
+    >
       <div className='flex h-screen'>
         <div className='hidden sm:block'>
           <SideBar
