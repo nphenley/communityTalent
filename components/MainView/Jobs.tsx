@@ -4,8 +4,11 @@ import { db } from '_firebase/config';
 import JobCard from 'components/SideBar/JobCard';
 import PlusCard from 'components/MainView/PlusCard';
 import JobPosting from './JobPosting';
+import { useMoralis } from 'react-moralis';
 
 const Jobs = () => {
+  const { user } = useMoralis();
+
   const [jobs, setJobs] = useState([]);
   const jobsCollectionRef = collection(db, 'jobs');
 
@@ -41,60 +44,7 @@ const Jobs = () => {
           user={job.user}
           description={job.description}
           tags={job.tags}
-        />
-      ))}
-      {jobs.map((job) => (
-        <JobCard
-          key={job.id}
-          title={job.title}
-          user={job.user}
-          description={job.description}
-          tags={job.tags}
-        />
-      ))}
-      {jobs.map((job) => (
-        <JobCard
-          key={job.id}
-          title={job.title}
-          user={job.user}
-          description={job.description}
-          tags={job.tags}
-        />
-      ))}
-      {jobs.map((job) => (
-        <JobCard
-          key={job.id}
-          title={job.title}
-          user={job.user}
-          description={job.description}
-          tags={job.tags}
-        />
-      ))}
-      {jobs.map((job) => (
-        <JobCard
-          key={job.id}
-          title={job.title}
-          user={job.user}
-          description={job.description}
-          tags={job.tags}
-        />
-      ))}
-      {jobs.map((job) => (
-        <JobCard
-          key={job.id}
-          title={job.title}
-          user={job.user}
-          description={job.description}
-          tags={job.tags}
-        />
-      ))}
-      {jobs.map((job) => (
-        <JobCard
-          key={job.id}
-          title={job.title}
-          user={job.user}
-          description={job.description}
-          tags={job.tags}
+          pins={job.numberOfPins}
         />
       ))}
     </div>
