@@ -22,10 +22,10 @@ const TopBar = (props: TopBarProps) => {
         authenticate({ type: 'sol' });
         setShowOptions(false);
       }
-    }
-    if (chain == 'eth') {
-      authenticate({ signingMessage: 'Please connect to 3Talent' });
-      setShowOptions(false);
+      if (chain == 'eth') {
+        authenticate({ signingMessage: 'Please connect to 3Talent' });
+        setShowOptions(false);
+      }
     }
   }
 
@@ -42,7 +42,13 @@ const TopBar = (props: TopBarProps) => {
 
   const connectButton = (
     <button
-      onClick={() => setShowOptions(!showOptions)}
+      onClick={() => {
+        if (!isAuthenticated) {
+          setShowOptions(!showOptions);
+        } else {
+          loginout(isAuthenticated, 'eth');
+        }
+      }}
       className={styles.connectButton}
     >
       {isAuthenticated ? 'Connected' : 'Connect'}
