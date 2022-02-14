@@ -1,5 +1,8 @@
 import { FaBars } from 'react-icons/fa';
 import { useMoralis } from 'react-moralis';
+import { useState } from 'react';
+import { set } from 'react-hook-form';
+
 type TopBarProps = {
   isOpen: boolean;
   setIsOpen: any;
@@ -7,20 +10,39 @@ type TopBarProps = {
 
 const TopBar = (props: TopBarProps) => {
   const title = <h1 className='text-xl'>3TALENT</h1>;
+  const [showOptions, setShowOptions] = useState(false);
 
   const { authenticate, isAuthenticated, logout } = useMoralis();
 
-  function loginout(auth) {
+  function loginout(auth: boolean, chain: string) {
     if (auth) {
       logout();
     } else {
+      if (chain == 'sol') {
+        authenticate({ type: 'sol' });
+        setShowOptions(false);
+      }
+    }
+    if (chain == 'eth') {
       authenticate({ signingMessage: 'Please connect to 3Talent' });
+      setShowOptions(false);
     }
   }
 
+  const connectOptions = (
+    <div className='fixed z-40 w-56 h-32 -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg left-1/2 top-1/2'>
+      <button onClick={() => loginout(isAuthenticated, 'eth')}>
+        Connect with Metamask
+      </button>
+      <button onClick={() => loginout(isAuthenticated, 'sol')}>
+        Connect with Phantom
+      </button>
+    </div>
+  );
+
   const connectButton = (
     <button
-      onClick={() => loginout(isAuthenticated)}
+      onClick={() => setShowOptions(!showOptions)}
       className={styles.connectButton}
     >
       {isAuthenticated ? 'Connected' : 'Connect'}
@@ -40,6 +62,7 @@ const TopBar = (props: TopBarProps) => {
     <div className={styles.container}>
       {props.isOpen ? null : hamburgerButton}
       {title}
+      {showOptions ? connectOptions : null}
       {connectButton}
     </div>
   );
