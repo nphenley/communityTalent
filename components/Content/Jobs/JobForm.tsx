@@ -1,11 +1,11 @@
-type JobPostingProps = {
-  createJob: any;
-};
+import { createJob } from '_firebase/APIRequests';
 
-const JobPosting = (props: JobPostingProps) => {
+// TODO:
+// Change to react-hook-form
+const JobPosting = () => {
   return (
     <div className='absolute left-0 right-0 z-40 w-3/4 mx-auto bg-gray-700 rounded shadow-lg h-3/5 top-14 opacity-95'>
-      <form onSubmit={props.createJob} className='px-6 py-8 '>
+      <form onSubmit={createJob} className='px-6 py-8 '>
         <div className='flex flex-col items-center mb-8'>
           <label className='block mb-1 text-lg font-medium text-gray-300'>
             Title
