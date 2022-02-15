@@ -2,7 +2,7 @@ import Jobs from 'components/Content/Jobs/Jobs';
 import Talent from 'components/Content/Talent/Talent';
 import Connections from 'components/Content/Connections/Connections';
 import Profile from 'components/Content/Profile/Profile';
-import { WalletContext } from 'contexts/WalletContext';
+import { ConnectionContext } from 'contexts/ConnectionContext';
 import { useContext } from 'react';
 
 type MainViewProps = {
@@ -12,7 +12,7 @@ type MainViewProps = {
 };
 
 const MainView = (props: MainViewProps) => {
-  const walletData = useContext(WalletContext);
+  const connectionData = useContext(ConnectionContext);
 
   const disconnectedView = (
     <div className='flex items-center justify-center h-full'>
@@ -33,7 +33,7 @@ const MainView = (props: MainViewProps) => {
 
   return (
     <div className='overflow-y-scroll bg-gray-800 grow text-cyan-50'>
-      {walletData?.isAuthenticated ? connectedView : disconnectedView}
+      {connectionData?.isAuthenticated ? connectedView : disconnectedView}
     </div>
   );
 };

@@ -3,8 +3,8 @@ import MainView from 'components/Content/Content';
 import TopBar from 'components/TopBar';
 import MobileSideBar from 'components/SideBar/MobileSideBar';
 import { useState, useEffect } from 'react';
-import { WalletData } from 'types/WalletData';
-import { WalletContext } from 'contexts/WalletContext';
+import { ConnectionData } from 'types/ConnectionData';
+import { ConnectionContext } from 'contexts/ConnectionContext';
 import { useMoralis } from 'react-moralis';
 
 const Main = () => {
@@ -12,23 +12,25 @@ const Main = () => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [toggleState, setToggleState] = useState(1);
-  const [walletData, setWalletData] = useState<WalletData>();
+  const [connectionData, setConnectionData] = useState<ConnectionData>();
 
   useEffect(() => {
     if (!isAuthenticated) return;
-    setWalletData({
+    setConnectionData({
       isAuthenticated: isAuthenticated,
-      isEth: user!.attributes.ethAddress ? true : false,
-      address: !isAuthenticated
-        ? ''
-        : user!.attributes.ethAddress
-        ? user!.attributes.ethAddress
-        : user!.attributes.solAddress,
+      wallet: {
+        isEth: user!.attributes.ethAddress ? true : false,
+        address: !isAuthenticated
+          ? ''
+          : user!.attributes.ethAddress
+          ? user!.attributes.ethAddress
+          : user!.attributes.solAddress,
+      },
     });
   }, [isAuthenticated]);
 
   return (
-    <WalletContext.Provider value={walletData}>
+    <ConnectionContext.Provider value={connectionData}>
       <div className='flex h-screen'>
         <div className='hidden sm:block'>
           <SideBar
@@ -57,7 +59,7 @@ const Main = () => {
           />
         </div>
       </div>
-    </WalletContext.Provider>
+    </ConnectionContext.Provider>
   );
 };
 export default Main;

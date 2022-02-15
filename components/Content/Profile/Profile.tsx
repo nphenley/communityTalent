@@ -1,30 +1,25 @@
 import { useForm } from 'react-hook-form';
-import { Timestamp, addDoc, collection } from 'firebase/firestore';
-import { db } from '_firebase/config';
-import 'firebase/firestore';
 import { useContext } from 'react';
-import { WalletContext } from 'contexts/WalletContext';
+import { ConnectionContext } from 'contexts/ConnectionContext';
+import { createProfile } from '_firebase/APIRequests';
+import { Profile } from 'types/Profile';
 
 const Profile = () => {
-  const walletData = useContext(WalletContext);
+  const connectionData = useContext(ConnectionContext);
 
   const { register, handleSubmit } = useForm();
 
-  const createProfile = (data: any) => {
-    addDoc(collection(db, 'profiles'), {
-      dateCreated: Timestamp.now(),
-      experience: data.experience,
-      languages: data.languages,
-      user: walletData?.address,
-      connections: data.connections,
-      lfWork: data.lfWork,
-    });
+  const onSubmit = (data: any) => {
+    createProfile({
+      ...data,
+      walletAddresses: [connectionData?.wallet.address],
+    } as Profile);
   };
 
   return (
     <div className='flex flex-col items-center m-3 border-4 border-gray-900 shadow-lg'>
       <div className='mt-4 '>
-        <form onSubmit={handleSubmit(createProfile)}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <label>Experience</label>
           <input className='block text-black' {...register('experience')} />
 

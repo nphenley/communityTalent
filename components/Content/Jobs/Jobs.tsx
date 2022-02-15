@@ -8,8 +8,6 @@ import {
   doc,
   updateDoc,
   increment,
-  setDoc,
-  Timestamp,
 } from 'firebase/firestore';
 import { db } from '_firebase/config';
 import JobCard from 'components/Content/Jobs/JobCard';
@@ -17,7 +15,7 @@ import PlusButton from 'components/Content/Jobs/PlusButton';
 import JobPosting from 'components/Content/Jobs/JobPosting';
 import { Job } from 'types/Job';
 import { useContext } from 'react';
-import { WalletContext } from 'contexts/WalletContext';
+import { ConnectionContext } from 'contexts/ConnectionContext';
 
 const Jobs = () => {
   const [addJob, setAddJob] = useState(false);
@@ -26,10 +24,10 @@ const Jobs = () => {
   const jobsCollectionRef = collection(db, 'jobs');
   const pinsCollectionRef = collection(db, 'pins');
 
-  const walletData = useContext(WalletContext);
+  const connectionData = useContext(ConnectionContext);
 
   useEffect(() => {
-    if (!walletData?.address) return;
+    if (!connectionData?.wallet.address) return;
 
     const getJobs = async () => {
       const data = await getDocs(
@@ -47,7 +45,10 @@ const Jobs = () => {
     };
     const getPins = async () => {
       const userPins = await getDocs(
-        query(pinsCollectionRef, where('user', '==', walletData!.address))
+        query(
+          pinsCollectionRef,
+          where('user', '==', connectionData!.wallet.address)
+        )
       );
       let pins: string[] = [];
       userPins.docs.map((doc) => pins.push(doc.data().job));
@@ -55,7 +56,7 @@ const Jobs = () => {
     };
     getPins();
     getJobs();
-  }, [walletData]);
+  }, [connectionData]);
 
   // TODO:
   // Atm only increments, otherwise toggle pinned
@@ -65,22 +66,8 @@ const Jobs = () => {
     });
   };
 
-  const createJob = (event: any) => {
-    event.preventDefault();
-    const elementsArray = [...event.target.elements];
-    const formData = elementsArray.reduce((accumulator, currentValue) => {
-      if (currentValue.id || currentValue.checked)
-        accumulator[currentValue.id] = currentValue.value;
-      return accumulator;
-    }, {});
-
-    setDoc(doc(db, 'jobs', 'othertest'), {
-      dateCreated: Timestamp.now(),
-      title: formData.title,
-      description: formData.description,
-      user: walletData?.address,
-      tags: [false, true, false],
-    });
+  const createJob = () => {
+    console.log('create job');
   };
 
   return (
