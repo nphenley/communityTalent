@@ -23,12 +23,7 @@ const Jobs = () => {
       {jobs.map((job) => (
         <JobCard
           key={job.id}
-          id={job.id}
-          title={job.title}
-          user={job.user}
-          description={job.description}
-          tags={job.tags}
-          numberOfPins={job.numberOfPins}
+          job={job}
           isUserPinned={pins.includes(job.id)}
           togglePinned={() => togglePinned(job.id)}
         />

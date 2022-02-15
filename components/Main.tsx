@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { ConnectionData } from 'types/ConnectionData';
 import { ConnectionContext } from 'contexts/ConnectionContext';
 import { useMoralis } from 'react-moralis';
+import { getProfileId } from '_firebase/APIRequests';
 
 const Main = () => {
   const { user, isAuthenticated } = useMoralis();
@@ -14,8 +15,9 @@ const Main = () => {
   const [toggleState, setToggleState] = useState(1);
   const [connectionData, setConnectionData] = useState<ConnectionData>();
 
-  useEffect(() => {
-    if (!isAuthenticated) return;
+  const initConnectionData = async () => {
+    const profileId = await getProfileId(user?.attributes.ethAddress);
+
     setConnectionData({
       isAuthenticated: isAuthenticated,
       wallet: {
@@ -26,7 +28,13 @@ const Main = () => {
           ? user!.attributes.ethAddress
           : user!.attributes.solAddress,
       },
+      profileId: profileId,
     });
+  };
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    initConnectionData();
   }, [isAuthenticated]);
 
   return (

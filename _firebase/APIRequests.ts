@@ -16,6 +16,7 @@ import { Profile } from 'types/Profile';
 
 const jobsCollectionRef = collection(firestore, 'jobs');
 const pinsCollectionRef = collection(firestore, 'pins');
+const profileCollectionRef = collection(firestore, 'profiles');
 
 // ============== PROFILE ==============
 
@@ -29,8 +30,12 @@ export const createProfile = (profile: Profile) => {
 
 // ============== JOBS ==============
 
-export const createJob = async () => {
-  console.log('create job');
+export const createJob = (job: Job) => {
+  addDoc(collection(firestore, 'jobs'), {
+    ...job,
+    dateCreated: Timestamp.now(),
+    dateLastUpdated: Timestamp.now(),
+  });
 };
 
 export const getJobs = async (setJobs: any) => {
@@ -55,6 +60,16 @@ export const getPins = async (walletAddress: string, setPins: any) => {
   let pins: string[] = [];
   userPins.docs.map((doc) => pins.push(doc.data().job));
   setPins(pins);
+};
+
+export const getProfileId = async (walletAddress: string) => {
+  const profileId = await getDocs(
+    query(
+      profileCollectionRef,
+      where('walletAddresses', 'array-contains', walletAddress)
+    )
+  );
+  return profileId.docs[0].id;
 };
 
 // TODO:

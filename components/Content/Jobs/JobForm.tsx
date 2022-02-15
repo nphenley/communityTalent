@@ -1,17 +1,33 @@
 import { createJob } from '_firebase/APIRequests';
+import { useForm } from 'react-hook-form';
+import { ConnectionContext } from 'contexts/ConnectionContext';
+import { Job } from 'types/Job';
+import { useContext } from 'react';
 
 // TODO:
 // Change to react-hook-form
 const JobPosting = () => {
+  const { register, handleSubmit } = useForm();
+
+  const connectionData = useContext(ConnectionContext);
+
+  const onSubmit = (data: any) => {
+    createJob({
+      ...data,
+      tags: ['dev', 'marketing'],
+      authors: [connectionData?.profileId],
+    } as Job);
+  };
+
   return (
     <div className='absolute left-0 right-0 z-40 w-3/4 mx-auto bg-gray-700 rounded shadow-lg h-3/5 top-14 opacity-95'>
-      <form onSubmit={createJob} className='px-6 py-8 '>
+      <form onSubmit={handleSubmit(onSubmit)} className='px-6 py-8 '>
         <div className='flex flex-col items-center mb-8'>
           <label className='block mb-1 text-lg font-medium text-gray-300'>
             Title
           </label>
           <input
-            id='title'
+            {...register('title')}
             className='block w-1/2 p-2 text-white placeholder-gray-400 bg-gray-700 border border-gray-600 rounded-lg sm:text-xs focus:ring-blue-500 focus:border-blue-500'
           ></input>
         </div>
@@ -20,33 +36,11 @@ const JobPosting = () => {
             Description
           </label>
           <textarea
-            id='description'
+            {...register('description')}
             className='block w-full h-64 p-2 text-lg text-white placeholder-gray-400 align-text-top bg-gray-700 border border-gray-600 rounded-lg focus:ring-blue-500 focus:border-blue-500'
           ></textarea>
         </div>
-        <div className='flex flex-col items-center'>
-          <label className='block mb-2 text-lg font-medium text-gray-300'>
-            Tags
-          </label>
-          <div className='flex items-center mb-14'>
-            <div>
-              <input type='checkbox'></input>
-              <label className='inline-block px-2 py-1 mr-1 text-sm font-semibold text-white uppercase bg-gray-900 rounded-full checked:bg-black last:mr-0'>
-                Art
-              </label>
 
-              <input type='checkbox'></input>
-              <label className='inline-block px-2 py-1 mr-1 text-sm font-semibold text-white uppercase bg-gray-900 rounded-full last:mr-0'>
-                Marketing
-              </label>
-              <input type='checkbox'></input>
-
-              <label className='inline-block px-2 py-1 text-sm font-semibold text-white uppercase bg-gray-900 rounded-full last:mr-0'>
-                Dev
-              </label>
-            </div>
-          </div>
-        </div>
         <div className='flex flex-col items-center '>
           <button className='px-4 py-2 font-bold bg-gray-900 border-b-4 border-gray-800 rounded text-md'>
             Add
