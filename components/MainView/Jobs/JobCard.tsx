@@ -14,9 +14,7 @@ type JobCardProps = {
 };
 
 function incrementCounter(jobId: string) {
-  console.log(jobId);
   const jobsCollectionRef = doc(db, 'jobs', jobId);
-  console.log(jobsCollectionRef);
   updateDoc(jobsCollectionRef, {
     numberOfPins: increment(1),
   });

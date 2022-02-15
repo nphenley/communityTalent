@@ -3,6 +3,9 @@ import Talent from 'components/MainView/Talent';
 import Connections from 'components/MainView/Connections';
 import Profile from 'components/MainView/Profile';
 import { useMoralis } from 'react-moralis';
+import { useState, useEffect } from 'react';
+import { WalletData } from 'types/WalletData';
+import { WalletContext } from 'contexts/WalletContext';
 
 type MainViewProps = {
   toggleState: number;
@@ -11,7 +14,19 @@ type MainViewProps = {
 };
 
 const MainView = (props: MainViewProps) => {
-  const { isAuthenticated } = useMoralis();
+  const { user, isAuthenticated } = useMoralis();
+
+  const [walletData, setWalletData] = useState<WalletData>();
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    setWalletData({
+      isEth: user!.attributes.ethAddress ? true : false,
+      address: user!.attributes.ethAddress
+        ? user!.attributes.ethAddress
+        : user!.attributes.solAddress,
+    });
+  }, [isAuthenticated]);
 
   const disconnectedView = (
     <div className='flex items-center justify-center h-full'>
@@ -19,11 +34,9 @@ const MainView = (props: MainViewProps) => {
     </div>
   );
 
-  return (
-    <div className='overflow-y-scroll bg-gray-800 grow text-cyan-50'>
-      {!isAuthenticated ? (
-        disconnectedView
-      ) : props.toggleState === 1 ? (
+  const connectedView = (
+    <WalletContext.Provider value={walletData}>
+      {props.toggleState === 1 ? (
         <Jobs />
       ) : props.toggleState === 2 ? (
         <Talent />
@@ -32,6 +45,12 @@ const MainView = (props: MainViewProps) => {
       ) : props.toggleState === 4 ? (
         <Profile />
       ) : null}
+    </WalletContext.Provider>
+  );
+
+  return (
+    <div className='overflow-y-scroll bg-gray-800 grow text-cyan-50'>
+      {isAuthenticated ? connectedView : disconnectedView}
     </div>
   );
 };
