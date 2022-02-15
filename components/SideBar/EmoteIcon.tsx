@@ -1,13 +1,20 @@
 type EmoteIconProps = {
   icon: any;
-  pins: number;
+  number: number;
+  active: boolean;
+  onClick?: any;
 };
 
 const EmoteIcon = (props: EmoteIconProps) => {
+  let className =
+    'flex flex-col items-center h-10 bg-gray-800 shadow-xl w-7 hover:invert';
+
+  className += props.active ? ' bg-cyan-900 rounded-md' : '';
+
   return (
-    <div className='flex flex-col items-center h-10 bg-gray-800 shadow-xl w-7 hover:invert'>
+    <div onClick={props.onClick} className={className}>
       <div className='mt-1 '>{props.icon}</div>
-      <div className='mt-1 text-xs border-t-2'>{props.pins}</div>
+      <div className='mt-1 text-xs border-t-2'>{props.number}</div>
     </div>
   );
 };

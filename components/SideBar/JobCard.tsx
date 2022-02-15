@@ -1,39 +1,65 @@
 import { faSkull } from '@fortawesome/free-solid-svg-icons';
 import { FaThumbtack, FaSkull } from 'react-icons/fa';
 import EmoteIcon from './EmoteIcon';
+import { doc, updateDoc, increment, collection } from 'firebase/firestore';
+import { db } from '_firebase/config';
 
-const JobCard = ({ title, description, tags, user, pins }) => (
+type JobCardProps = {
+  id: string;
+  title: string;
+  description: string;
+  tags: boolean[];
+  user: string;
+  numberOfPins: number;
+  isUserPinned: boolean;
+};
+
+function incrementCounter(jobId: string) {
+  console.log(jobId);
+  const jobsCollectionRef = doc(db, 'jobs', jobId);
+  console.log(jobsCollectionRef);
+  updateDoc(jobsCollectionRef, {
+    numberOfPins: increment(1),
+  });
+}
+
+const JobCard = (props: JobCardProps) => (
   <div className='relative overflow-hidden bg-gray-900 rounded shadow-lg h-72'>
     <div className='px-6 py-4'>
-      <div className='text-xl font-bold'>{title}</div>
+      <div className='text-xl font-bold'>{props.title}</div>
       <div className='absolute top-3 right-3'>
         <div className='flex'>
-          <EmoteIcon pins={pins} icon={<FaThumbtack size={12} />}></EmoteIcon>
-          <EmoteIcon pins={0} icon={<FaSkull size={12} />}></EmoteIcon>
+          <EmoteIcon
+            onClick={() => incrementCounter(props.id)}
+            active={props.isUserPinned}
+            number={props.numberOfPins}
+            icon={<FaThumbtack size={12} />}
+          />
+          <EmoteIcon number={0} active={false} icon={<FaSkull size={12} />} />
         </div>
       </div>
 
-      <p className='text-sm'>{user}</p>
-      <p className='text-base text-gray-500'>{description}</p>
+      <p className='text-sm'>{props.user}</p>
+      <p className='text-base text-gray-500'>{props.description}</p>
     </div>
     <div className='px-6 pt-4 pb-2'>
       <span
         className={`absolute bottom-3 px-3 py-1 mb-2 mr-2 text-sm font-semibold text-gray-700 bg-gray-200 rounded-full ${
-          tags[0] === true ? 'block' : 'hidden'
+          props.tags[0] === true ? 'block' : 'hidden'
         }`}
       >
         Dev
       </span>
       <span
         className={`absolute bottom-3 px-3 py-1 mb-2 mr-2 text-sm font-semibold text-gray-700 bg-gray-200 rounded-full ${
-          tags[1] === true ? 'block' : 'hidden'
+          props.tags[1] === true ? 'block' : 'hidden'
         }`}
       >
         Marketing
       </span>
       <span
         className={`absolute bottom-3 px-3 py-1 mb-2 mr-2 text-sm font-semibold text-gray-700 bg-gray-200 rounded-full ${
-          tags[2] === true ? 'block' : 'hidden'
+          props.tags[2] === true ? 'block' : 'hidden'
         }`}
       >
         Art
