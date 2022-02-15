@@ -8,10 +8,11 @@ type TopBarProps = {
 };
 
 const TopBar = (props: TopBarProps) => {
-  const title = <h1 className='text-xl'>3TALENT</h1>;
+  const { authenticate, isAuthenticated, logout } = useMoralis();
+
   const [showOptions, setShowOptions] = useState(false);
 
-  const { authenticate, isAuthenticated, logout } = useMoralis();
+  const title = <h1 className='text-xl'>3TALENT</h1>;
 
   function loginout(auth: boolean, chain: string) {
     if (auth) {

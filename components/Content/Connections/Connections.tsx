@@ -1,4 +1,4 @@
-import InfoCard from 'components/MainView/InfoCard';
+import InfoCard from 'components/Content/InfoCard';
 
 const Connections = () => {
   return (

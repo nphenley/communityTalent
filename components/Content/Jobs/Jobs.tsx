@@ -12,9 +12,9 @@ import {
   Timestamp,
 } from 'firebase/firestore';
 import { db } from '_firebase/config';
-import JobCard from 'components/MainView/Jobs/JobCard';
-import PlusButton from 'components/MainView/PlusButton';
-import JobPosting from 'components/MainView/Jobs/JobPosting';
+import JobCard from 'components/Content/Jobs/JobCard';
+import PlusButton from 'components/Content/Jobs/PlusButton';
+import JobPosting from 'components/Content/Jobs/JobPosting';
 import { Job } from 'types/Job';
 import { useContext } from 'react';
 import { WalletContext } from 'contexts/WalletContext';
@@ -85,9 +85,7 @@ const Jobs = () => {
 
   return (
     <div className='relative grid grid-cols-1 gap-2 p-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'>
-      <button className='absolute' onClick={() => setAddJob(!addJob)}>
-        <PlusButton />
-      </button>
+      <PlusButton onClick={() => setAddJob(!addJob)} />
 
       {addJob ? <JobPosting createJob={createJob} /> : null}
 
