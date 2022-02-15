@@ -1,8 +1,7 @@
-import Jobs from 'components/MainView/Jobs';
+import Jobs from 'components/MainView/Jobs/Jobs';
 import Talent from 'components/MainView/Talent';
 import Connections from 'components/MainView/Connections';
 import Profile from 'components/MainView/Profile';
-import JobPosting from 'components/MainView/JobPosting';
 import { useMoralis } from 'react-moralis';
 
 type MainViewProps = {

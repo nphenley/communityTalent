@@ -1,7 +1,6 @@
-import { faSkull } from '@fortawesome/free-solid-svg-icons';
 import { FaThumbtack, FaSkull } from 'react-icons/fa';
-import EmoteIcon from './EmoteIcon';
-import { doc, updateDoc, increment, collection } from 'firebase/firestore';
+import EmoteIcon from 'components/SideBar/EmoteIcon';
+import { doc, updateDoc, increment } from 'firebase/firestore';
 import { db } from '_firebase/config';
 
 type JobCardProps = {

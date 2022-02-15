@@ -1,6 +1,4 @@
-import { Timestamp } from 'firebase/firestore';
-
-export type Job = {
+export type Pin = {
   id: string;
   job: string;
   user: string;

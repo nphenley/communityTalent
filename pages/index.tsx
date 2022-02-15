@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useMoralis, MoralisProvider } from 'react-moralis';
+import { MoralisProvider } from 'react-moralis';
 import SideBar from 'components/SideBar/SideBar';
 import MainView from 'components/MainView/MainView';
 import TopBar from 'components/TopBar';
@@ -11,8 +11,8 @@ export default function Home() {
 
   return (
     <MoralisProvider
-      appId={process.env.NEXT_PUBLIC_MORALIS_APPLICATION_ID}
-      serverUrl={process.env.NEXT_PUBLIC_MORALIS_SERVER_URL}
+      appId={process.env.NEXT_PUBLIC_MORALIS_APPLICATION_ID!}
+      serverUrl={process.env.NEXT_PUBLIC_MORALIS_SERVER_URL!}
     >
       <div className='flex h-screen'>
         <div className='hidden sm:block'>
@@ -49,6 +49,7 @@ export default function Home() {
 // TODO:
 // SideBar moving in and out needs to be animated. ease-in-out duration-300
 // Needs to be made responsive to mobile screens, sidebar functionality.
+// Move wallet connecting up a level.
 
 // Notes:
 // Maybe a bug with tailwind using w- and h- lol

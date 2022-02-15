@@ -1,7 +1,6 @@
 import { FaBars } from 'react-icons/fa';
 import { useMoralis } from 'react-moralis';
 import { useState } from 'react';
-import { set } from 'react-hook-form';
 
 type TopBarProps = {
   isOpen: boolean;

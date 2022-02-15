@@ -2,9 +2,11 @@ import { Timestamp, doc, setDoc } from 'firebase/firestore';
 import { db } from '_firebase/config';
 import 'firebase/firestore';
 import { useMoralis } from 'react-moralis';
+
 const JobPosting = () => {
   const { user } = useMoralis();
-  const jobPost = (event) => {
+
+  const jobPost = (event: any) => {
     event.preventDefault();
     const elementsArray = [...event.target.elements];
     const formData = elementsArray.reduce((accumulator, currentValue) => {
@@ -18,7 +20,7 @@ const JobPosting = () => {
       dateCreated: Timestamp.now(),
       title: formData.title,
       description: formData.description,
-      user: user.attributes.ethAddress,
+      user: user!.attributes.ethAddress,
       tags: [false, true, false],
     });
   };

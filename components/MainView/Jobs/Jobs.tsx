@@ -1,18 +1,12 @@
 import { useEffect, useState } from 'react';
-import {
-  collection,
-  getDocs,
-  query,
-  orderBy,
-  where,
-  doc,
-} from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, where } from 'firebase/firestore';
 import { db } from '_firebase/config';
-import JobCard from 'components/SideBar/JobCard';
+import JobCard from 'components/MainView/Jobs/JobCard';
 import PlusCard from 'components/MainView/PlusCard';
-import JobPosting from './JobPosting';
+import JobPosting from 'components/MainView/Jobs/JobPosting';
 import { useMoralis } from 'react-moralis';
-import { Job } from 'types/job';
+import { Job } from 'types/Job';
+
 const Jobs = () => {
   const { user } = useMoralis();
   const [addJob, setAddJob] = useState(false);
@@ -40,7 +34,7 @@ const Jobs = () => {
       const userPins = await getDocs(
         query(
           pinsCollectionRef,
-          where('user', '==', user.attributes.ethAddress)
+          where('user', '==', user!.attributes.solAddress)
         )
       );
       let pins: string[] = [];
