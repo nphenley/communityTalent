@@ -1,7 +1,5 @@
 import { FaThumbtack, FaSkull } from 'react-icons/fa';
 import EmoteIcon from 'components/SideBar/EmoteIcon';
-import { doc, updateDoc, increment } from 'firebase/firestore';
-import { db } from '_firebase/config';
 
 type JobCardProps = {
   id: string;
@@ -11,14 +9,8 @@ type JobCardProps = {
   user: string;
   numberOfPins: number;
   isUserPinned: boolean;
+  togglePinned: any;
 };
-
-function incrementCounter(jobId: string) {
-  const jobsCollectionRef = doc(db, 'jobs', jobId);
-  updateDoc(jobsCollectionRef, {
-    numberOfPins: increment(1),
-  });
-}
 
 const JobCard = (props: JobCardProps) => (
   <div className='relative overflow-hidden bg-gray-900 rounded shadow-lg h-72'>
@@ -27,7 +19,7 @@ const JobCard = (props: JobCardProps) => (
       <div className='absolute top-3 right-3'>
         <div className='flex'>
           <EmoteIcon
-            onClick={() => incrementCounter(props.id)}
+            onClick={() => props.togglePinned(props.id)}
             active={props.isUserPinned}
             number={props.numberOfPins}
             icon={<FaThumbtack size={12} />}

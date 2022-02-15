@@ -1,20 +1,21 @@
 import { useForm } from 'react-hook-form';
-import { Timestamp, doc, setDoc } from 'firebase/firestore';
+import { Timestamp, addDoc, collection } from 'firebase/firestore';
 import { db } from '_firebase/config';
 import 'firebase/firestore';
-import { randomBytes } from 'crypto';
-import { useMoralis } from 'react-moralis';
+import { useContext } from 'react';
+import { WalletContext } from 'contexts/WalletContext';
 
 const Profile = () => {
-  const { user } = useMoralis();
+  const walletData = useContext(WalletContext);
+
   const { register, handleSubmit } = useForm();
 
-  const onSubmit = (data: any) => {
-    setDoc(doc(db, 'profiles', randomBytes(10).toString('hex')), {
+  const createProfile = (data: any) => {
+    addDoc(collection(db, 'profiles'), {
       dateCreated: Timestamp.now(),
       experience: data.experience,
       languages: data.languages,
-      user: user!.attributes.ethAddress,
+      user: walletData?.address,
       connections: data.connections,
       lfWork: data.lfWork,
     });
@@ -23,7 +24,7 @@ const Profile = () => {
   return (
     <div className='flex flex-col items-center m-3 border-4 border-gray-900 shadow-lg'>
       <div className='mt-4 '>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(createProfile)}>
           <label>Experience</label>
           <input className='block text-black' {...register('experience')} />
 

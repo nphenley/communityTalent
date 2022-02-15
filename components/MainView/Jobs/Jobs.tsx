@@ -1,8 +1,19 @@
 import { useEffect, useState } from 'react';
-import { collection, getDocs, query, orderBy, where } from 'firebase/firestore';
+import {
+  collection,
+  getDocs,
+  query,
+  orderBy,
+  where,
+  doc,
+  updateDoc,
+  increment,
+  setDoc,
+  Timestamp,
+} from 'firebase/firestore';
 import { db } from '_firebase/config';
 import JobCard from 'components/MainView/Jobs/JobCard';
-import PlusCard from 'components/MainView/PlusCard';
+import PlusButton from 'components/MainView/PlusButton';
 import JobPosting from 'components/MainView/Jobs/JobPosting';
 import { Job } from 'types/Job';
 import { useContext } from 'react';
@@ -46,13 +57,39 @@ const Jobs = () => {
     getJobs();
   }, [walletData]);
 
+  // TODO:
+  // Atm only increments, otherwise toggle pinned
+  const togglePinned = (jobId: string) => {
+    updateDoc(doc(jobsCollectionRef, jobId), {
+      numberOfPins: increment(1),
+    });
+  };
+
+  const createJob = (event: any) => {
+    event.preventDefault();
+    const elementsArray = [...event.target.elements];
+    const formData = elementsArray.reduce((accumulator, currentValue) => {
+      if (currentValue.id || currentValue.checked)
+        accumulator[currentValue.id] = currentValue.value;
+      return accumulator;
+    }, {});
+
+    setDoc(doc(db, 'jobs', 'othertest'), {
+      dateCreated: Timestamp.now(),
+      title: formData.title,
+      description: formData.description,
+      user: walletData?.address,
+      tags: [false, true, false],
+    });
+  };
+
   return (
     <div className='relative grid grid-cols-1 gap-2 p-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'>
       <button className='absolute' onClick={() => setAddJob(!addJob)}>
-        <PlusCard />
+        <PlusButton />
       </button>
 
-      {addJob ? <JobPosting /> : null}
+      {addJob ? <JobPosting createJob={createJob} /> : null}
 
       {jobs.map((job) => (
         <JobCard
@@ -64,6 +101,7 @@ const Jobs = () => {
           tags={job.tags}
           numberOfPins={job.numberOfPins}
           isUserPinned={pins.includes(job.id)}
+          togglePinned={togglePinned}
         />
       ))}
     </div>

@@ -1,33 +1,11 @@
-import { Timestamp, doc, setDoc } from 'firebase/firestore';
-import { db } from '_firebase/config';
-import 'firebase/firestore';
-import { useMoralis } from 'react-moralis';
+type JobPostingProps = {
+  createJob: any;
+};
 
-const JobPosting = () => {
-  const { user } = useMoralis();
-
-  const jobPost = (event: any) => {
-    event.preventDefault();
-    const elementsArray = [...event.target.elements];
-    const formData = elementsArray.reduce((accumulator, currentValue) => {
-      if (currentValue.id || currentValue.checked) {
-        accumulator[currentValue.id] = currentValue.value;
-      }
-
-      return accumulator;
-    }, {});
-    setDoc(doc(db, 'jobs', 'othertest'), {
-      dateCreated: Timestamp.now(),
-      title: formData.title,
-      description: formData.description,
-      user: user!.attributes.ethAddress,
-      tags: [false, true, false],
-    });
-  };
-
+const JobPosting = (props: JobPostingProps) => {
   return (
     <div className='absolute left-0 right-0 z-40 w-3/4 mx-auto bg-gray-700 rounded shadow-lg h-3/5 top-14 opacity-95'>
-      <form onSubmit={jobPost} className='px-6 py-8 '>
+      <form onSubmit={props.createJob} className='px-6 py-8 '>
         <div className='flex flex-col items-center mb-8'>
           <label className='block mb-1 text-lg font-medium text-gray-300'>
             Title
@@ -51,7 +29,7 @@ const JobPosting = () => {
             Tags
           </label>
           <div className='flex items-center mb-14'>
-            <div className=''>
+            <div>
               <input type='checkbox'></input>
               <label className='inline-block px-2 py-1 mr-1 text-sm font-semibold text-white uppercase bg-gray-900 rounded-full checked:bg-black last:mr-0'>
                 Art

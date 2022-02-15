@@ -1,6 +1,6 @@
 import { FaPlus } from 'react-icons/fa';
 
-const PlusCard = () => {
+const PlusButton = () => {
   return (
     <div className='fixed z-40 flex justify-center w-12 h-12 bg-gray-900 border-2 border-black rounded-full shadow-lg hover:border-white bottom-4 right-10'>
       <div className='my-auto '>
@@ -10,7 +10,7 @@ const PlusCard = () => {
   );
 };
 
-export default PlusCard;
+export default PlusButton;
 
 type IconProps = {
   icon: any;
