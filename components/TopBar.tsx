@@ -1,6 +1,5 @@
 import { FaBars } from 'react-icons/fa';
 import { useMoralis } from 'react-moralis';
-import { useState } from 'react';
 
 type TopBarProps = {
   isOpen: boolean;
@@ -8,52 +7,9 @@ type TopBarProps = {
 };
 
 const TopBar = (props: TopBarProps) => {
-  const { authenticate, isAuthenticated, logout } = useMoralis();
-
-  const [showOptions, setShowOptions] = useState(false);
+  const { logout } = useMoralis();
 
   const title = <h1 className='text-xl'>3TALENT</h1>;
-
-  function loginout(auth: boolean, chain: string) {
-    if (auth) {
-      logout();
-    } else {
-      if (chain == 'sol') {
-        authenticate({ type: 'sol' });
-        setShowOptions(false);
-      }
-      if (chain == 'eth') {
-        authenticate({ signingMessage: 'Please connect to 3Talent' });
-        setShowOptions(false);
-      }
-    }
-  }
-
-  const connectOptions = (
-    <div className='fixed z-40 w-56 h-32 -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg left-1/2 top-1/2'>
-      <button onClick={() => loginout(isAuthenticated, 'eth')}>
-        Connect with Metamask
-      </button>
-      <button onClick={() => loginout(isAuthenticated, 'sol')}>
-        Connect with Phantom
-      </button>
-    </div>
-  );
-
-  const connectButton = (
-    <button
-      onClick={() => {
-        if (!isAuthenticated) {
-          setShowOptions(!showOptions);
-        } else {
-          loginout(isAuthenticated, 'eth');
-        }
-      }}
-      className={styles.connectButton}
-    >
-      {isAuthenticated ? 'Connected' : 'Connect'}
-    </button>
-  );
 
   const hamburgerButton = (
     <button
@@ -64,12 +20,17 @@ const TopBar = (props: TopBarProps) => {
     </button>
   );
 
+  const disconnectButton = (
+    <button onClick={logout} className={styles.connectButton}>
+      Disconnect
+    </button>
+  );
+
   return (
     <div className={styles.container}>
       {props.isOpen ? null : hamburgerButton}
       {title}
-      {showOptions ? connectOptions : null}
-      {connectButton}
+      {disconnectButton}
     </div>
   );
 };

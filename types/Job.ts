@@ -1,5 +1,4 @@
 import { Timestamp } from 'firebase/firestore';
-import { Wallet } from 'types/ConnectionData';
 
 export type Job = {
   id: string;

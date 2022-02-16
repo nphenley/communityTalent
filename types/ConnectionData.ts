@@ -1,7 +1,6 @@
 export type ConnectionData = {
-  isAuthenticated: boolean;
   wallet: Wallet;
-  profileId: string;
+  profileId: string | undefined;
 };
 
 export type Wallet = {

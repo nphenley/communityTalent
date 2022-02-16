@@ -20,12 +20,13 @@ const profileCollectionRef = collection(firestore, 'profiles');
 
 // ============== PROFILE ==============
 
-export const createProfile = (profile: Profile) => {
-  addDoc(collection(firestore, 'profiles'), {
+export const createProfile = async (profile: Profile) => {
+  const docRef = await addDoc(collection(firestore, 'profiles'), {
     ...profile,
     dateCreated: Timestamp.now(),
     dateLastUpdated: Timestamp.now(),
   });
+  return docRef.id;
 };
 
 // ============== JOBS ==============
@@ -62,14 +63,20 @@ export const getPins = async (walletAddress: string, setPins: any) => {
   setPins(pins);
 };
 
-export const getProfileId = async (walletAddress: string) => {
+export const getProfileId = async (
+  communityId: string,
+  walletAddress: string
+) => {
+  console.log(communityId, walletAddress);
   const profileId = await getDocs(
     query(
       profileCollectionRef,
-      where('walletAddresses', 'array-contains', walletAddress)
+      where('walletAddresses', 'array-contains', walletAddress),
+      where('communityId', '==', communityId)
     )
   );
-  return profileId.docs[0].id;
+  console.log(profileId.docs.length);
+  return profileId.docs.length !== 0 ? profileId.docs[0].id : undefined;
 };
 
 // TODO:
