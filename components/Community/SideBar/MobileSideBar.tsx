@@ -5,8 +5,8 @@ import {
   FaUser,
   FaArrowLeft,
 } from 'react-icons/fa';
-import SideBarIcon from 'components/SideBar/SideBarIcon';
-import ProfileIcon from 'components/SideBar/ProfileIcon';
+import SideBarIcon from 'components/Community/SideBar/SideBarIcon';
+import ProfileIcon from 'components/Community/SideBar/ProfileIcon';
 
 type SideBarProps = {
   isOpen: boolean;
@@ -15,10 +15,10 @@ type SideBarProps = {
   setToggleState: any;
 };
 
-const SideBar = (props: SideBarProps) => {
+const MobileSideBar = (props: SideBarProps) => {
   let containerClass =
-    'px-4 py-2 bg-gray-900  shadow-lg text-cyan-400 flex flex-col items-center h-screen';
-  containerClass += props.isOpen ? ' hidden sm:flex' : ' hidden';
+    'px-4 py-2 bg-gray-700 shadow-lg text-cyan-400 flex-col items-center h-screen z-40 fixed left-0 bottom-20 h-4/6 w-64 opacity-90';
+  containerClass += props.isOpen ? ' flex sm:hidden' : ' hidden';
 
   return (
     <div className={containerClass}>
@@ -52,11 +52,11 @@ const SideBar = (props: SideBarProps) => {
         </button>
       </div>
 
-      <button onClick={() => props.setToggleState(4)}>
+      <button className='' onClick={() => props.setToggleState(4)}>
         <ProfileIcon icon={<FaUser size='26' />} />
       </button>
     </div>
   );
 };
 
-export default SideBar;
+export default MobileSideBar;

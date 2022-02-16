@@ -1,7 +1,11 @@
-const InfoCard = ({ user }) => (
+type InfoCardProps = {
+  user: string;
+};
+
+const InfoCard = (props: InfoCardProps) => (
   <div className='overflow-hidden bg-gray-900 rounded shadow-lg'>
     <div className='px-6 py-4'>
-      <div className='text-xl font-bold'>{user}</div>
+      <div className='text-xl font-bold'>{props.user}</div>
       <p className='text-base text-gray-500'>
         -Lorem ipsum dolor sit amet, consectetur adipisicing elit. -Voluptatibus
         quia, nulla! Maiores et perferendis eaque, exercitationem praesentium

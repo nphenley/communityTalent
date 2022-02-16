@@ -1,22 +1,19 @@
-import InfoCard from 'components/SideBar/InfoCard';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import { Timestamp, doc, setDoc } from 'firebase/firestore';
-import { db } from '_firebase/config';
-import 'firebase/firestore';
-import { randomBytes } from 'crypto';
-import { useMoralis } from 'react-moralis';
+import { useForm } from 'react-hook-form';
+import { useContext } from 'react';
+import { ConnectionContext } from 'contexts/ConnectionContext';
+import { createProfile } from '_firebase/APIRequests';
+import { Profile } from 'types/Profile';
+
 const Profile = () => {
-  const { user } = useMoralis();
+  const connectionData = useContext(ConnectionContext);
+
   const { register, handleSubmit } = useForm();
-  const onSubmit = (data) => {
-    setDoc(doc(db, 'profiles', randomBytes(10).toString('hex')), {
-      dateCreated: Timestamp.now(),
-      experience: data.experience,
-      languages: data.languages,
-      user: user.attributes.ethAddress,
-      connections: data.connections,
-      lfWork: data.lfWork,
-    });
+
+  const onSubmit = (data: any) => {
+    createProfile({
+      ...data,
+      walletAddresses: [connectionData?.wallet.address],
+    } as Profile);
   };
 
   return (
