@@ -1,7 +1,7 @@
 import { useMoralis } from 'react-moralis';
 
-import Communities from 'components/Communities';
-import ConnectView from 'components/ConnectView';
+import Communities from 'components/Index/Communities';
+import ConnectView from 'components/Index/ConnectView';
 
 export default function Home() {
   const { isAuthenticated } = useMoralis();

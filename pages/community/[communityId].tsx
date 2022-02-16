@@ -53,10 +53,17 @@ const Community = () => {
         {loading || isAuthUndefined ? (
           <LoadingSpinner />
         ) : !connectionData!.profileId ? (
-          <CreateProfileView
-            communityId={communityId}
-            setConnectionData={setConnectionData}
-          />
+          <div className='flex flex-col w-full'>
+            <TopBar
+              isOpen={false}
+              hideHamburgerMenu={true}
+              setIsOpen={undefined}
+            />
+            <CreateProfileView
+              communityId={communityId}
+              setConnectionData={setConnectionData}
+            />
+          </div>
         ) : (
           <>
             <div className='hidden sm:block'>

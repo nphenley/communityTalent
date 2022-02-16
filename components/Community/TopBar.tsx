@@ -4,6 +4,7 @@ import { useMoralis } from 'react-moralis';
 type TopBarProps = {
   isOpen: boolean;
   setIsOpen: any;
+  hideHamburgerMenu?: boolean;
 };
 
 const TopBar = (props: TopBarProps) => {
@@ -28,7 +29,7 @@ const TopBar = (props: TopBarProps) => {
 
   return (
     <div className={styles.container}>
-      {props.isOpen ? null : hamburgerButton}
+      {props.hideHamburgerMenu || props.isOpen ? null : hamburgerButton}
       {title}
       {disconnectButton}
     </div>
