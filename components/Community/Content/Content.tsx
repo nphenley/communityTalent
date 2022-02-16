@@ -1,7 +1,7 @@
-import Jobs from 'components/Content/Jobs/Jobs';
-import Talent from 'components/Content/Talent/Talent';
-import Connections from 'components/Content/Connections/Connections';
-import Profile from 'components/Content/Profile/Profile';
+import Jobs from 'components/Community/Content/Jobs/Jobs';
+import Talent from 'components/Community/Content/Talent/Talent';
+import Connections from 'components/Community/Content/Connections/Connections';
+import Profile from 'components/Community/Content/Profile/Profile';
 
 type ContentProps = {
   toggleState: number;

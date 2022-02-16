@@ -1,55 +1,18 @@
 import { useMoralis } from 'react-moralis';
-import { useRouter } from 'next/router';
-import { communityId } from 'hardcoded';
-import { useState } from 'react';
+
+import Communities from 'components/Communities';
+import ConnectView from 'components/ConnectView';
 
 export default function Home() {
-  const router = useRouter();
-  const { isAuthenticated, authenticate } = useMoralis();
+  const { isAuthenticated } = useMoralis();
 
-  const [showOptions, setShowOptions] = useState(false);
-
-  function connect(chain: string) {
-    if (chain == 'sol') {
-      authenticate({ type: 'sol' });
-      setShowOptions(false);
-    }
-    if (chain == 'eth') {
-      authenticate({ signingMessage: 'Please connect to 3Talent' });
-      setShowOptions(false);
-    }
-  }
-
-  const connectOptions = (
-    <div>
-      <button onClick={() => connect('eth')}>
-        Connect on ETH, via Metamask
-      </button>
-      <button onClick={() => connect('sol')}>
-        Connect on Solana, via Phantom
-      </button>
+  return (
+    <div className='flex flex-col h-screen bg-gray-800 text-cyan-500'>
+      <NavBar />
+      <div className='grow'>
+        {isAuthenticated ? <Communities /> : <ConnectView />}
+      </div>
     </div>
-  );
-
-  const connectButton = (
-    <button onClick={() => setShowOptions(true)}>Connect Wallet</button>
-  );
-
-  const connectWalletView = (
-    <div>
-      {connectButton}
-      {showOptions ? connectOptions : null}
-    </div>
-  );
-
-  if (!isAuthenticated) return connectWalletView;
-
-  return isAuthenticated ? (
-    <button onClick={() => router.push(`/community/${communityId}`)}>
-      go to community
-    </button>
-  ) : (
-    connectWalletView
   );
 }
 
@@ -58,8 +21,15 @@ export default function Home() {
 // Needs to be made responsive to mobile screens, sidebar functionality.
 // For now 1 wallet per profile - need to think properly how to do multiple wallets afterwards.
 // Actually read NFTs from wallet to see which to do
-// Double-check that saving moralis session in local storage is safe lol
 
 // Notes:
 // Maybe a bug with tailwind using w- and h- lol
 // Use padding instead
+
+const NavBar = () => {
+  return (
+    <div className='w-full text-center uppercase text-xl p-8 bg-gray-900 font-bold'>
+      3 Talent
+    </div>
+  );
+};

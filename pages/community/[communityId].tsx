@@ -1,17 +1,16 @@
-import SideBar from 'components/SideBar/SideBar';
-import Content from 'components/Content/Content';
-import TopBar from 'components/TopBar';
-import MobileSideBar from 'components/SideBar/MobileSideBar';
+import SideBar from 'components/Community/SideBar/SideBar';
+import Content from 'components/Community/Content/Content';
+import TopBar from 'components/Community/TopBar';
+import MobileSideBar from 'components/Community/SideBar/MobileSideBar';
 import { useState, useEffect } from 'react';
 import { ConnectionData } from 'types/ConnectionData';
 import { ConnectionContext } from 'contexts/ConnectionContext';
 import { getProfileId } from '_firebase/APIRequests';
 import { useMoralis } from 'react-moralis';
 import { useRouter } from 'next/router';
-import CreateProfileView from 'components/CreateProfileView';
+import CreateProfileView from 'components/Community/CreateProfileView';
 import LoadingSpinner from 'styled/LoadingSpinner';
 
-// get communityId from url param
 const Community = () => {
   const router = useRouter();
   const communityId = router.query.communityId as string;

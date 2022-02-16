@@ -1,6 +1,6 @@
-import InfoCard from 'components/Content/InfoCard';
+import InfoCard from 'components/Community/Content/InfoCard';
 
-const Connections = () => {
+const Talent = () => {
   return (
     <div className='grid grid-cols-3 gap-2 p-2'>
       <InfoCard user='user1'></InfoCard>
@@ -10,4 +10,4 @@ const Connections = () => {
   );
 };
 
-export default Connections;
+export default Talent;

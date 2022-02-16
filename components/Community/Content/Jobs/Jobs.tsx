@@ -2,9 +2,9 @@ import { useEffect, useState, useContext } from 'react';
 import { Job } from 'types/Job';
 import { ConnectionContext } from 'contexts/ConnectionContext';
 import { getJobs, getPins, togglePinned } from '_firebase/APIRequests';
-import JobCard from 'components/Content/Jobs/JobCard';
-import PlusButton from 'components/Content/Jobs/PlusButton';
-import JobForm from 'components/Content/Jobs/JobForm';
+import JobCard from 'components/Community/Content/Jobs/JobCard';
+import PlusButton from 'components/Community/Content/Jobs/PlusButton';
+import JobForm from 'components/Community/Content/Jobs/JobForm';
 
 const Jobs = () => {
   const [addJob, setAddJob] = useState(false);
