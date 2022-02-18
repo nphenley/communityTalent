@@ -5,12 +5,24 @@ import { editProfile, getUserProfile } from '_firebase/APIRequests';
 import { Profile } from 'types/Profile';
 import { communityId } from 'hardcoded';
 import ProfileView from 'components/Community/Content/Profile/ProfileView';
+
+interface FormInputs {
+  experience: string;
+  languages: string;
+  connections: string;
+  lookingForWork: boolean;
+}
+
 const Profile = () => {
   const connectionData = useContext(ConnectionContext);
   const [profile, setProfile] = useState<Profile>();
   const [edit, setEdit] = useState(false);
   const [loadingProfile, setLoadingProfile] = useState(true);
-  const { register, handleSubmit } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormInputs>();
 
   useEffect(() => {
     getUserProfile(communityId, connectionData?.wallet.address!, setProfile);
@@ -47,7 +59,7 @@ const Profile = () => {
   };
 
   return (
-    <div className='flex flex-col items-center m-3 border-4 border-gray-900 shadow-lg'>
+    <div className='flex flex-col items-center p-3'>
       <div className='mt-4 '>
         {loadingProfile ? (
           <div>Loading</div>
@@ -67,15 +79,17 @@ const Profile = () => {
             <label>Experience</label>
             <input
               defaultValue={profile!.experience}
-              className='p-2 mt-2 mb-4 bg-gray-600 text-cyan-50 '
-              {...register('experience')}
+              className='p-2 mt-2 mb-4 bg-gray-600 text-cyan-50'
+              {...register('experience', {
+                required: 'Field is required',
+              })}
             />
 
             <label>Languages</label>
             <input
               defaultValue={profile!.languages}
               className='p-2 mt-2 mb-4 bg-gray-600 text-cyan-50'
-              {...register('languages')}
+              {...register('languages', { required: 'required' })}
             />
 
             <label>Connections</label>
