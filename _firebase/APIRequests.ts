@@ -10,6 +10,7 @@ import {
   doc,
   updateDoc,
   increment,
+  setDoc,
 } from 'firebase/firestore';
 import { Job } from 'types/Job';
 import { Profile } from 'types/Profile';
@@ -27,6 +28,34 @@ export const createProfile = async (profile: Profile) => {
     dateLastUpdated: Timestamp.now(),
   });
   return docRef.id;
+};
+
+export const editProfile = async (profileId: string, profile: Profile) => {
+  const docRef = await setDoc(doc(firestore, 'profiles', profileId), {
+    ...profile,
+
+    dateLastUpdated: Timestamp.now(),
+  });
+  return docRef;
+};
+
+export const getUserProfile = async (
+  communityId: string,
+  walletAddress: string,
+  setProfile: any
+) => {
+  console.log(communityId, walletAddress);
+  const profileQuery = await getDocs(
+    query(
+      profileCollectionRef,
+      where('walletAddresses', 'array-contains', walletAddress),
+      where('communityId', '==', communityId)
+    )
+  );
+  const profile =
+    profileQuery.docs.length !== 0 ? profileQuery.docs[0].data() : undefined;
+
+  setProfile(profile);
 };
 
 // ============== JOBS ==============

@@ -90,6 +90,7 @@ const Community = () => {
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}
                 toggleState={toggleState}
+                communityId={communityId}
               />
             </div>
           </>
