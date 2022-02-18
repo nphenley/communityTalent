@@ -54,7 +54,6 @@ export const getUserProfile = async (
   );
   const profile =
     profileQuery.docs.length !== 0 ? profileQuery.docs[0].data() : undefined;
-
   setProfile(profile);
 };
 
@@ -96,7 +95,6 @@ export const getProfileId = async (
   communityId: string,
   walletAddress: string
 ) => {
-  console.log(communityId, walletAddress);
   const profileId = await getDocs(
     query(
       profileCollectionRef,
@@ -104,7 +102,6 @@ export const getProfileId = async (
       where('communityId', '==', communityId)
     )
   );
-  console.log(profileId.docs.length);
   return profileId.docs.length !== 0 ? profileId.docs[0].id : undefined;
 };
 
