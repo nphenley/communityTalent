@@ -17,7 +17,7 @@ const ToggleField = (props: ToggleFieldProps) => {
         defaultChecked={props.value}
         {...props.register(props.name)}
       />
-      <span className='w-12 h-7 flex items-center flex-shrink-0 p-1.5 bg-gray-300 rounded-full duration-300 ease-in-out peer-checked:bg-primary after:w-5 after:h-5 after:bg-white after:rounded-full after:shadow-md after:duration-300 peer-checked:after:translate-x-4'></span>
+      <span className='w-14 h-8 flex items-center flex-shrink-0 p-1.5 bg-backgroundDark rounded-full duration-300 ease-in-out peer-checked:bg-primary after:w-6 after:h-6 after:bg-white after:rounded-full after:shadow-md after:duration-300 peer-checked:after:translate-x-5'></span>
     </label>
   );
 };

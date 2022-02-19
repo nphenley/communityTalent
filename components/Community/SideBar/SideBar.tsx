@@ -22,7 +22,7 @@ const SideBar = (props: SideBarProps) => {
         <SideBarIcon
           icon={
             <div className='rounded-full overflow-hidden flex justify-center mb-4'>
-              <Image src={profileNFTImages[3]} height={180} width={180} />
+              <Image src={profileNFTImages[3]} height={150} width={150} />
             </div>
           }
           text={connectionData?.profileId}
@@ -63,5 +63,5 @@ export default SideBar;
 
 const styles = {
   container:
-    'py-12 bg-backgroundDark shadow-lg text-primary flex flex-col gap-14 items-center h-screen',
+    'py-16 bg-backgroundDark shadow-lg text-primary flex flex-col gap-8 items-center h-screen',
 };

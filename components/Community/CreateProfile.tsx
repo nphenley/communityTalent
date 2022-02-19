@@ -30,7 +30,7 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
   };
 
   return (
-    <div className='flex justify-center bg-background grow'>
+    <div className='flex justify-center grow'>
       <form
         className='flex flex-col w-full max-w-screen-sm p-6 mt-16 text-white'
         onSubmit={handleSubmit(onSubmit)}

@@ -51,7 +51,7 @@ const Community = () => {
 
   return (
     <ConnectionContext.Provider value={connectionData}>
-      <div className='flex h-screen'>
+      <div className='flex h-screen bg-background text-white'>
         {loading || isAuthUndefined ? (
           <LoadingSpinner />
         ) : !connectionData!.profileId ? (

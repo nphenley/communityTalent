@@ -19,7 +19,7 @@ type SideBarProps = {
 
 const MobileSideBar = (props: SideBarProps) => {
   let containerClass =
-    'absolute w-full z-50 bg-backgroundDark shadow-lg text-primary flex flex-col gap-8 items-center min-h-screen ease-in-out duration-300';
+    'absolute w-full z-50 bg-backgroundDark shadow-lg text-primary flex flex-col items-center min-h-screen ease-in-out duration-300';
   containerClass += props.isOpen ? ' translate-x-0' : ' -translate-x-full';
 
   const toggleState = (toggleState: number) => {
@@ -33,11 +33,11 @@ const MobileSideBar = (props: SideBarProps) => {
         <SideBarIcon icon={<FaArrowLeft size='20' />} />
       </button>
 
-      <button className='w-full' onClick={() => toggleState(4)}>
+      <button className='w-full mb-8 mt-4' onClick={() => toggleState(4)}>
         <SideBarIcon
           icon={
-            <div className='flex justify-center mb-4 overflow-hidden rounded-full'>
-              <Image src={profileNFTImages[3]} height={180} width={180} />
+            <div className='flex justify-center mb-1 overflow-hidden rounded-full'>
+              <Image src={profileNFTImages[3]} height={150} width={150} />
             </div>
           }
           text={'Richpepsi'}

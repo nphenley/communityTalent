@@ -43,8 +43,7 @@ const TopBar = (props: TopBarProps) => {
 export default TopBar;
 
 const styles = {
-  container:
-    'relative py-5 bg-background text-primary flex justify-center items-center',
+  container: 'relative py-5 text-primary flex justify-center items-center',
   disconnectButtonContainer: 'absolute right-3 h-full flex items-center',
   disconnectButton: 'p-2 rounded-full',
   hamburgerButtonContainer:
