@@ -7,7 +7,7 @@ export default function Home() {
   const { isAuthenticated } = useMoralis();
 
   return (
-    <div className='flex flex-col h-screen bg-gray-800 text-cyan-500'>
+    <div className='flex flex-col h-screen bg-background text-primary'>
       <NavBar />
       <div className='grow'>
         {isAuthenticated ? <Communities /> : <ConnectView />}
@@ -24,7 +24,7 @@ export default function Home() {
 
 const NavBar = () => {
   return (
-    <div className='w-full text-center uppercase text-xl p-8 bg-gray-900 font-bold'>
+    <div className='w-full text-center uppercase text-xl p-8 font-bold'>
       3 Talent
     </div>
   );

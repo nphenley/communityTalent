@@ -10,7 +10,7 @@ type JobCardProps = {
 
 const JobCard = (props: JobCardProps) => {
   return (
-    <div className='relative overflow-hidden bg-gray-900 rounded shadow-lg h-72'>
+    <div className='relative overflow-hidden bg-backgroundDark rounded shadow-lg h-72'>
       <div className='px-6 py-4'>
         <div className='text-xl font-bold'>{props.job.title}</div>
         <div className='absolute top-3 right-3'>

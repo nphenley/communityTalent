@@ -11,12 +11,12 @@ const ProfileCard = (props: ProfileCardProps) => {
   return (
     <div className='flex flex-col w-full max-w-screen-sm p-4 mt-16 text-cyan-50'>
       <div>Display Name</div>
-      <div className='p-2 mt-2 mb-4 bg-gray-900 text-cyan-50'>
+      <div className='p-4 mt-2 mb-4 bg-backgroundDark text-cyan-50'>
         {props.profile.displayName}
       </div>
 
       <div>Bio</div>
-      <div className='p-2 mt-2 mb-6 bg-gray-900 text-cyan-50'>
+      <div className='p-4 mt-2 mb-6 bg-backgroundDark text-cyan-50'>
         {props.profile.bio}
       </div>
 
@@ -31,7 +31,7 @@ const ProfileCard = (props: ProfileCardProps) => {
       </div>
       <button
         onClick={() => props.setEdit(true)}
-        className='p-4 mt-4 bg-cyan-900 hover:bg-cyan-500 hover:cursor-pointer'
+        className='p-4 mt-4 bg-primary hover:bg-primaryLight hover:cursor-pointer'
       >
         Edit
       </button>

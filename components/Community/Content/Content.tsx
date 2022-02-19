@@ -11,7 +11,7 @@ type ContentProps = {
 
 const Content = (props: ContentProps) => {
   return (
-    <div className='overflow-y-scroll bg-background grow text-cyan-50 p-14'>
+    <div className='overflow-y-scroll bg-background grow text-white p-14'>
       {props.toggleState === 1 ? (
         <Jobs />
       ) : props.toggleState === 2 ? (

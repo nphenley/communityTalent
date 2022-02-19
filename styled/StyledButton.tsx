@@ -15,5 +15,5 @@ export default StyledButton;
 
 const styles = {
   container:
-    'bg-cyan-800 p-5 text-white rounded-lg font-bold uppercase text-xl hover:bg-cyan-600',
+    'bg-primary p-5 text-white rounded-lg font-bold uppercase text-xl hover:bg-primaryLight',
 };

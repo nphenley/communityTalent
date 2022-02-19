@@ -1,6 +1,7 @@
 import { ConnectionContext } from 'contexts/ConnectionContext';
 import { useContext } from 'react';
 import { useForm } from 'react-hook-form';
+import ToggleField from 'styled/ToggleField';
 import { Profile } from 'types/Profile';
 import { editProfile } from '_firebase/APIRequests';
 
@@ -29,29 +30,26 @@ const EditProfileCard = (props: EditProfileCardProps) => {
       <label>Display Name</label>
       <input
         defaultValue={props.profile.displayName}
-        className='p-2 mt-2 mb-4 bg-gray-600 text-cyan-50'
+        className='p-2 mt-2 mb-4 bg-backgroundDark text-cyan-50'
         {...register('displayName', { required: 'required' })}
       />
 
       <label>Bio</label>
       <input
         defaultValue={props.profile.bio}
-        className='p-2 mt-2 mb-6 bg-gray-600 text-cyan-50'
+        className='p-2 mt-2 mb-6 bg-backgroundDark text-cyan-50'
         {...register('bio')}
       />
 
-      <div className='flex items-center gap-2'>
-        <label>Looking for work?</label>
-        <input
-          defaultChecked={props.profile.lookingForWork}
-          className='text-black'
-          type='checkbox'
-          {...register('lookingForWork')}
-        />
-      </div>
+      <ToggleField
+        register={register}
+        label='Looking for Work'
+        name='lookingForWork'
+        value={props.profile.lookingForWork}
+      />
 
       <input
-        className='p-4 mt-4 bg-cyan-900 hover:bg-cyan-500 hover:cursor-pointer'
+        className='p-4 mt-4 bg-primary hover:bg-primaryLight hover:cursor-pointer'
         type='submit'
       />
     </form>

@@ -3,7 +3,7 @@ type InfoCardProps = {
 };
 
 const InfoCard = (props: InfoCardProps) => (
-  <div className='overflow-hidden bg-gray-900 rounded shadow-lg'>
+  <div className='overflow-hidden bg-backgroundDark rounded shadow-lg'>
     <div className='px-6 py-4'>
       <div className='text-xl font-bold'>{props.user}</div>
       <p className='text-base text-gray-500'>
