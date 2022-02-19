@@ -19,8 +19,8 @@ type SideBarProps = {
 
 const MobileSideBar = (props: SideBarProps) => {
   let containerClass =
-    'absolute w-full z-50 py-2 bg-backgroundDark shadow-lg text-primary flex flex-col gap-14 items-center min-h-screen';
-  containerClass += props.isOpen ? ' block' : ' hidden';
+    'absolute w-full z-50 bg-backgroundDark shadow-lg text-primary flex flex-col gap-8 items-center min-h-screen ease-in-out duration-300';
+  containerClass += props.isOpen ? ' translate-x-0' : ' -translate-x-full';
 
   const toggleState = (toggleState: number) => {
     props.setToggleState(toggleState);
@@ -36,7 +36,7 @@ const MobileSideBar = (props: SideBarProps) => {
       <button className='w-full' onClick={() => toggleState(4)}>
         <SideBarIcon
           icon={
-            <div className='rounded-full overflow-hidden flex justify-center mb-4'>
+            <div className='flex justify-center mb-4 overflow-hidden rounded-full'>
               <Image src={profileNFTImages[3]} height={180} width={180} />
             </div>
           }
@@ -45,7 +45,7 @@ const MobileSideBar = (props: SideBarProps) => {
         />
       </button>
 
-      <div className='flex flex-col grow gap-y-6 w-full'>
+      <div className='flex flex-col w-full grow gap-y-6'>
         <button onClick={() => toggleState(1)}>
           <SideBarIcon
             icon={<FaBriefcase size='20' />}
