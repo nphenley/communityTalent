@@ -4,9 +4,7 @@ import { ConnectionContext } from 'contexts/ConnectionContext';
 import { Job } from 'types/Job';
 import { useContext } from 'react';
 
-// TODO:
-// Change to react-hook-form
-const JobPosting = () => {
+const JobForm = () => {
   const { register, handleSubmit } = useForm();
 
   const connectionData = useContext(ConnectionContext);
@@ -50,4 +48,4 @@ const JobPosting = () => {
     </div>
   );
 };
-export default JobPosting;
+export default JobForm;

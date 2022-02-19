@@ -1,36 +1,40 @@
-import {
-  FaIdCard,
-  FaNetworkWired,
-  FaBriefcase,
-  FaUser,
-  FaArrowLeft,
-} from 'react-icons/fa';
+import { FaIdCard, FaNetworkWired, FaBriefcase, FaUser } from 'react-icons/fa';
 import SideBarIcon from 'components/Community/SideBar/SideBarIcon';
-import ProfileIcon from 'components/Community/SideBar/ProfileIcon';
+import Image from 'next/image';
+import { profileNFTImages } from 'constants/hardcoded';
+import { useContext } from 'react';
+import { ConnectionContext } from 'contexts/ConnectionContext';
 
 type SideBarProps = {
-  isOpen: boolean;
-  setIsOpen: any;
   toggleState: number;
   setToggleState: any;
 };
 
+// TODO: Don't use profileId
+// Use displayName
+// So don't just pass profileId in Context, but the entire user's profile.
 const SideBar = (props: SideBarProps) => {
-  let containerClass =
-    'px-4 py-2 bg-gray-900  shadow-lg text-cyan-400 flex flex-col items-center h-screen';
-  containerClass += props.isOpen ? ' hidden sm:flex' : ' hidden';
+  const connectionData = useContext(ConnectionContext);
 
   return (
-    <div className={containerClass}>
-      <button className='mb-14' onClick={() => props.setIsOpen(!props.isOpen)}>
-        <SideBarIcon icon={<FaArrowLeft size='20' />} />
+    <div className={styles.container}>
+      <button className='w-full' onClick={() => props.setToggleState(4)}>
+        <SideBarIcon
+          icon={
+            <div className='rounded-full overflow-hidden flex justify-center mb-4'>
+              <Image src={profileNFTImages[3]} height={180} width={180} />
+            </div>
+          }
+          text={connectionData?.profileId}
+          active={props.toggleState === 4}
+        />
       </button>
 
       <div className='flex flex-col grow gap-y-6'>
         <button onClick={() => props.setToggleState(1)}>
           <SideBarIcon
             icon={<FaBriefcase size='20' />}
-            text={'Jobs'}
+            text={'JOBS'}
             active={props.toggleState === 1}
           />
         </button>
@@ -38,7 +42,7 @@ const SideBar = (props: SideBarProps) => {
         <button onClick={() => props.setToggleState(2)}>
           <SideBarIcon
             icon={<FaIdCard size='20' />}
-            text={'Talent'}
+            text={'TALENT'}
             active={props.toggleState === 2}
           />
         </button>
@@ -46,17 +50,18 @@ const SideBar = (props: SideBarProps) => {
         <button onClick={() => props.setToggleState(3)}>
           <SideBarIcon
             icon={<FaNetworkWired size='25' />}
-            text={'Connections'}
+            text={'CONNECTIONS'}
             active={props.toggleState === 3}
           />
         </button>
       </div>
-
-      <button onClick={() => props.setToggleState(4)}>
-        <ProfileIcon icon={<FaUser size='26' />} />
-      </button>
     </div>
   );
 };
 
 export default SideBar;
+
+const styles = {
+  container:
+    'py-12 bg-backgroundDark shadow-lg text-primary flex flex-col gap-14 items-center h-screen',
+};

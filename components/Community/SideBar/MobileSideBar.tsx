@@ -7,6 +7,8 @@ import {
 } from 'react-icons/fa';
 import SideBarIcon from 'components/Community/SideBar/SideBarIcon';
 import ProfileIcon from 'components/Community/SideBar/ProfileIcon';
+import { profileNFTImages } from 'constants/hardcoded';
+import Image from 'next/image';
 
 type SideBarProps = {
   isOpen: boolean;
@@ -17,17 +19,34 @@ type SideBarProps = {
 
 const MobileSideBar = (props: SideBarProps) => {
   let containerClass =
-    'px-4 py-2 bg-gray-700 shadow-lg text-cyan-400 flex-col items-center h-screen z-40 fixed left-0 bottom-20 h-4/6 w-64 opacity-90';
-  containerClass += props.isOpen ? ' flex sm:hidden' : ' hidden';
+    'absolute w-full z-50 py-2 bg-backgroundDark shadow-lg text-primary flex flex-col gap-14 items-center min-h-screen';
+  containerClass += props.isOpen ? ' block' : ' hidden';
+
+  const toggleState = (toggleState: number) => {
+    props.setToggleState(toggleState);
+    props.setIsOpen(false);
+  };
 
   return (
     <div className={containerClass}>
-      <button className='mb-14' onClick={() => props.setIsOpen(!props.isOpen)}>
+      <button onClick={() => props.setIsOpen(false)}>
         <SideBarIcon icon={<FaArrowLeft size='20' />} />
       </button>
 
-      <div className='flex flex-col grow gap-y-6'>
-        <button onClick={() => props.setToggleState(1)}>
+      <button className='w-full' onClick={() => toggleState(4)}>
+        <SideBarIcon
+          icon={
+            <div className='rounded-full overflow-hidden flex justify-center mb-4'>
+              <Image src={profileNFTImages[3]} height={180} width={180} />
+            </div>
+          }
+          text={'Richpepsi'}
+          active={props.toggleState === 4}
+        />
+      </button>
+
+      <div className='flex flex-col grow gap-y-6 w-full'>
+        <button onClick={() => toggleState(1)}>
           <SideBarIcon
             icon={<FaBriefcase size='20' />}
             text={'Jobs'}
@@ -35,7 +54,7 @@ const MobileSideBar = (props: SideBarProps) => {
           />
         </button>
 
-        <button onClick={() => props.setToggleState(2)}>
+        <button onClick={() => toggleState(2)}>
           <SideBarIcon
             icon={<FaIdCard size='20' />}
             text={'Talent'}
@@ -43,7 +62,7 @@ const MobileSideBar = (props: SideBarProps) => {
           />
         </button>
 
-        <button onClick={() => props.setToggleState(3)}>
+        <button onClick={() => toggleState(3)}>
           <SideBarIcon
             icon={<FaNetworkWired size='25' />}
             text={'Connections'}
@@ -51,10 +70,6 @@ const MobileSideBar = (props: SideBarProps) => {
           />
         </button>
       </div>
-
-      <button className='' onClick={() => props.setToggleState(4)}>
-        <ProfileIcon icon={<FaUser size='26' />} />
-      </button>
     </div>
   );
 };

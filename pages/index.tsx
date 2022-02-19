@@ -17,15 +17,10 @@ export default function Home() {
 }
 
 // TODO:
-// SideBar moving in and out needs to be animated. ease-in-out duration-300
-// Needs to be made responsive to mobile screens, sidebar functionality.
+// MobileSideBar could be animated to slide in out ease-in-out-300
 // For now 1 wallet per profile - need to think properly how to do multiple wallets afterwards.
 // Actually read NFTs from wallet to see which to do
 // LoadingSpinner
-
-// Notes:
-// Maybe a bug with tailwind using w- and h- lol
-// Use padding instead
 
 const NavBar = () => {
   return (

@@ -11,6 +11,8 @@ import { useRouter } from 'next/router';
 import CreateProfile from 'components/Community/CreateProfile';
 import LoadingSpinner from 'styled/LoadingSpinner';
 
+// Profile should be passed as context around app as it'll be used a lot.
+// Aswell as the getProfile() function to easily update the profile state.
 const Community = () => {
   const router = useRouter();
   const communityId = router.query.communityId as string;
@@ -68,8 +70,6 @@ const Community = () => {
           <>
             <div className='hidden sm:block'>
               <SideBar
-                isOpen={isOpen}
-                setIsOpen={setIsOpen}
                 toggleState={toggleState}
                 setToggleState={setToggleState}
               />

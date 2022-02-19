@@ -2,13 +2,14 @@ type SideBarIconProps = {
   icon: any;
   text?: string;
   active?: boolean;
+  width?: number;
 };
 
 const SideBarIcon = (props: SideBarIconProps) => {
   let className =
-    "flex flex-col items-center p-3 font-medium uppercase gap-y-2 hover:bg-cyan-700 hover:rounded-md";
+    'flex flex-col items-center py-6 w-full sm:w-80 font-medium gap-y-2 hover:bg-primaryDark';
 
-  className += props.active ? " bg-cyan-900 rounded-md" : "";
+  className += props.active ? ' bg-primaryDark' : '';
 
   return (
     <div className={className}>
