@@ -21,6 +21,7 @@ export default function Home() {
 // Needs to be made responsive to mobile screens, sidebar functionality.
 // For now 1 wallet per profile - need to think properly how to do multiple wallets afterwards.
 // Actually read NFTs from wallet to see which to do
+// LoadingSpinner
 
 // Notes:
 // Maybe a bug with tailwind using w- and h- lol

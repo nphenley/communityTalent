@@ -6,7 +6,15 @@ module.exports = {
     './styled/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        backgroundDark: 'rgb(15, 15, 36)',
+        background: 'rgb(26, 26, 64)',
+        primary: 'hsl(325, 94%, 66%)',
+        primaryLight: 'hsl(325, 94%, 76%)',
+        secondary: 'rgb(122, 11, 192)',
+      },
+    },
   },
   plugins: [],
 };

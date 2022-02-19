@@ -1,34 +1,30 @@
-type EditProfileProps = {
-  experience: string;
-  languages: string;
-  connections: string;
-  lookingForWork: boolean;
+import Image from 'next/image';
+import { profileNFTImages } from 'constants/hardcoded';
+import { Profile } from 'types/Profile';
+
+type ProfileCardProps = {
+  profile: Profile;
   setEdit: any;
 };
 
-const EditProfile = (props: EditProfileProps) => {
+const ProfileCard = (props: ProfileCardProps) => {
   return (
     <div className='flex flex-col w-full max-w-screen-sm p-4 mt-16 text-cyan-50'>
-      <div>Experience</div>
-      <div className='p-2 mt-2 mb-4 bg-gray-900 text-cyan-50 '>
-        {props.experience}
-      </div>
-
-      <div>Languages</div>
+      <div>Display Name</div>
       <div className='p-2 mt-2 mb-4 bg-gray-900 text-cyan-50'>
-        {props.languages}
+        {props.profile.displayName}
       </div>
 
-      <div>Connections</div>
+      <div>Bio</div>
       <div className='p-2 mt-2 mb-6 bg-gray-900 text-cyan-50'>
-        {props.connections}
+        {props.profile.bio}
       </div>
 
       <div className='flex items-center gap-2'>
         <div>Looking for work?</div>
         <input
           readOnly={true}
-          checked={props.lookingForWork}
+          checked={props.profile.lookingForWork}
           className='text-black'
           type='checkbox'
         />
@@ -43,4 +39,4 @@ const EditProfile = (props: EditProfileProps) => {
   );
 };
 
-export default EditProfile;
+export default ProfileCard;

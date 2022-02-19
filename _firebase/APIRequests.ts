@@ -10,7 +10,6 @@ import {
   doc,
   updateDoc,
   increment,
-  setDoc,
 } from 'firebase/firestore';
 import { Job } from 'types/Job';
 import { Profile } from 'types/Profile';
@@ -30,21 +29,22 @@ export const createProfile = async (profile: Profile) => {
   return docRef.id;
 };
 
-export const editProfile = async (profileId: string, profile: Profile) => {
-  const docRef = await setDoc(doc(firestore, 'profiles', profileId), {
-    ...profile,
-
+export const editProfile = async (
+  profileId: string,
+  data: Partial<Profile>
+) => {
+  const docRef = await updateDoc(doc(firestore, 'profiles', profileId), {
+    ...data,
     dateLastUpdated: Timestamp.now(),
   });
   return docRef;
 };
 
-export const getUserProfile = async (
+export const getProfile = async (
   communityId: string,
   walletAddress: string,
   setProfile: any
 ) => {
-  console.log(communityId, walletAddress);
   const profileQuery = await getDocs(
     query(
       profileCollectionRef,

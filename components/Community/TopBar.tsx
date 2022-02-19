@@ -7,6 +7,8 @@ type TopBarProps = {
   hideHamburgerMenu?: boolean;
 };
 
+// TODO:
+// Fix this for desktop and mobile
 const TopBar = (props: TopBarProps) => {
   const { logout } = useMoralis();
 
@@ -40,7 +42,7 @@ export default TopBar;
 
 const styles = {
   container:
-    'relative py-5 bg-gray-900 text-cyan-400 flex justify-center items-center',
+    'relative py-5 bg-backgroundDark text-primary flex justify-center items-center',
   connectButton: 'absolute top-5 right-8',
   hamburgerButton: 'absolute top-5 left-8',
 };

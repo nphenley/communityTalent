@@ -8,7 +8,7 @@ import { ConnectionContext } from 'contexts/ConnectionContext';
 import { getProfileId } from '_firebase/APIRequests';
 import { useMoralis } from 'react-moralis';
 import { useRouter } from 'next/router';
-import CreateProfileView from 'components/Community/CreateProfileView';
+import CreateProfile from 'components/Community/CreateProfile';
 import LoadingSpinner from 'styled/LoadingSpinner';
 
 const Community = () => {
@@ -59,7 +59,7 @@ const Community = () => {
               hideHamburgerMenu={true}
               setIsOpen={undefined}
             />
-            <CreateProfileView
+            <CreateProfile
               communityId={communityId}
               setConnectionData={setConnectionData}
             />
@@ -90,7 +90,6 @@ const Community = () => {
                 isOpen={isOpen}
                 setIsOpen={setIsOpen}
                 toggleState={toggleState}
-                communityId={communityId}
               />
             </div>
           </>
