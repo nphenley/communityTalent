@@ -51,11 +51,11 @@ const Community = () => {
 
   return (
     <ConnectionContext.Provider value={connectionData}>
-      <div className='flex h-screen bg-background text-white'>
+      <div className='flex h-screen text-white'>
         {loading || isAuthUndefined ? (
           <LoadingSpinner />
         ) : !connectionData!.profileId ? (
-          <div className='flex flex-col w-full'>
+          <div className='flex flex-col w-full bg-background'>
             <TopBar
               isOpen={false}
               hideHamburgerMenu={true}

@@ -45,7 +45,7 @@ const EditProfileCard = (props: EditProfileCardProps) => {
         register={register}
         label='Looking for Work'
         name='lookingForWork'
-        value={props.profile.lookingForWork}
+        defaultChecked={props.profile.lookingForWork}
       />
 
       <input
