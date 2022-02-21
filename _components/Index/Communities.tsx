@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { communityId } from 'constants/hardcoded';
+import { communityId } from '_constants/hardcoded';
 
 const Communities = () => {
   const router = useRouter();

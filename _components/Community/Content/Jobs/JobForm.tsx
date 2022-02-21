@@ -1,19 +1,19 @@
 import { createJob } from '_firebase/APIRequests';
 import { useForm } from 'react-hook-form';
-import { ConnectionContext } from 'contexts/ConnectionContext';
-import { Job } from 'types/Job';
+import { Job } from '_types/Job';
 import { useContext } from 'react';
+import { ProfileContext } from '_contexts/ProfileContext';
 
 const JobForm = () => {
   const { register, handleSubmit } = useForm();
 
-  const connectionData = useContext(ConnectionContext);
+  const profile = useContext(ProfileContext);
 
   const onSubmit = (data: any) => {
     createJob({
       ...data,
       tags: ['dev', 'marketing'],
-      authors: [connectionData?.profileId],
+      authors: [profile!.id],
     } as Job);
   };
 

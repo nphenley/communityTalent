@@ -1,6 +1,6 @@
 import { FaThumbtack, FaSkull } from 'react-icons/fa';
-import EmoteIcon from 'components/Community/SideBar/EmoteIcon';
-import { Job } from 'types/Job';
+import EmoteIcon from '_components/Community/SideBar/EmoteIcon';
+import { Job } from '_types/Job';
 
 type JobCardProps = {
   job: Job;

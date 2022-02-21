@@ -1,33 +1,27 @@
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useContext, useState } from 'react';
-import { ConnectionContext } from 'contexts/ConnectionContext';
+import { ConnectionContext } from '_contexts/ConnectionContext';
 import { createProfile } from '_firebase/APIRequests';
-import { Profile } from 'types/Profile';
-import ToggleField from 'styled/ToggleField';
+import { Profile } from '_types/Profile';
+import ToggleField from '_styled/ToggleField';
 
 type CreateProfileViewProps = {
   communityId: string;
-  setConnectionData: any;
 };
 
 // TODO:
-// Optional fields
-// Larger Text Area for Bio, Experience, Connections
-// Relevant Links
+// More Fitting Input Fields
 const CreateProfileView = (props: CreateProfileViewProps) => {
   const connectionData = useContext(ConnectionContext);
 
   const { register, unregister, handleSubmit } = useForm<Partial<Profile>>();
 
   const onSubmit: SubmitHandler<Partial<Profile>> = async (data: any) => {
-    console.log(data);
-    // const profile: Profile = {
-    //   ...data,
-    //   communityId: props.communityId,
-    //   walletAddresses: [connectionData!.wallet.address],
-    // };
-    // const profileId = await createProfile(profile);
-    // props.setConnectionData({ ...connectionData, profileId: profileId });
+    createProfile({
+      ...data,
+      communityId: props.communityId,
+      walletAddresses: [connectionData!.address],
+    } as Partial<Profile>);
   };
 
   const title = (

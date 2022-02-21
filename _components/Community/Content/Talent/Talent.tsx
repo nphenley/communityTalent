@@ -1,4 +1,4 @@
-import InfoCard from 'components/Community/Content/InfoCard';
+import InfoCard from '_components/Community/Content/InfoCard';
 
 const Talent = () => {
   return (

@@ -1,6 +1,6 @@
 import { useMoralis } from 'react-moralis';
 import { useState } from 'react';
-import StyledButton from 'styled/StyledButton';
+import StyledButton from '_styled/StyledButton';
 
 const ConnectView = () => {
   const { authenticate } = useMoralis();

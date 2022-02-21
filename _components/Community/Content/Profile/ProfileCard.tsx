@@ -1,6 +1,6 @@
 import Image from 'next/image';
-import { profileNFTImages } from 'constants/hardcoded';
-import { Profile } from 'types/Profile';
+import { profileNFTImages } from '_constants/hardcoded';
+import { Profile } from '_types/Profile';
 
 type ProfileCardProps = {
   profile: Profile;

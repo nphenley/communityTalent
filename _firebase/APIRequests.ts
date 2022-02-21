@@ -10,9 +10,10 @@ import {
   doc,
   updateDoc,
   increment,
+  onSnapshot,
 } from 'firebase/firestore';
-import { Job } from 'types/Job';
-import { Profile } from 'types/Profile';
+import { Job } from '_types/Job';
+import { Profile } from '_types/Profile';
 
 const jobsCollectionRef = collection(firestore, 'jobs');
 const pinsCollectionRef = collection(firestore, 'pins');
@@ -20,19 +21,19 @@ const profileCollectionRef = collection(firestore, 'profiles');
 
 // ============== PROFILE ==============
 
-export const createProfile = async (profile: Profile) => {
-  const docRef = await addDoc(collection(firestore, 'profiles'), {
-    ...profile,
+export const createProfile = async (profileData: Partial<Profile>) => {
+  addDoc(collection(firestore, 'profiles'), {
+    ...profileData,
     dateCreated: Timestamp.now(),
     dateLastUpdated: Timestamp.now(),
   });
-  return docRef.id;
 };
 
 export const editProfile = async (
   profileId: string,
   data: Partial<Profile>
 ) => {
+  console.log(profileId);
   const docRef = await updateDoc(doc(firestore, 'profiles', profileId), {
     ...data,
     dateLastUpdated: Timestamp.now(),
@@ -40,21 +41,24 @@ export const editProfile = async (
   return docRef;
 };
 
-export const getProfile = async (
+export const subscribeToProfile = (
   communityId: string,
   walletAddress: string,
-  setProfile: any
+  updateProfile: any
 ) => {
-  const profileQuery = await getDocs(
+  return onSnapshot(
     query(
       profileCollectionRef,
       where('walletAddresses', 'array-contains', walletAddress),
       where('communityId', '==', communityId)
-    )
+    ),
+    (snapshot) =>
+      updateProfile(
+        snapshot.docs.length
+          ? { ...snapshot.docs[0].data(), id: snapshot.docs[0].id }
+          : undefined
+      )
   );
-  const profile =
-    profileQuery.docs.length !== 0 ? profileQuery.docs[0].data() : undefined;
-  setProfile(profile);
 };
 
 // ============== JOBS ==============

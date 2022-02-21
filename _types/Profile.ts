@@ -1,9 +1,9 @@
-import { Tags } from 'types/Tags';
+import { Tags } from '_enums/Tags';
 import { Timestamp } from 'firebase/firestore';
-import { Languages } from 'types/Languages';
+import { Languages } from '_enums/Languages';
 
 export type Profile = {
-  id?: string;
+  id: string;
   dateCreated?: Timestamp;
   dateLastUpdated?: Timestamp;
   communityId: string;

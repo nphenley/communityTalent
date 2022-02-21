@@ -1,24 +1,18 @@
-import { ConnectionContext } from 'contexts/ConnectionContext';
-import { useContext } from 'react';
 import { useForm } from 'react-hook-form';
-import ToggleField from 'styled/ToggleField';
-import { Profile } from 'types/Profile';
+import ToggleField from '_styled/ToggleField';
+import { Profile } from '_types/Profile';
 import { editProfile } from '_firebase/APIRequests';
 
 type EditProfileCardProps = {
   profile: Profile;
-  getProfile: any;
   setEdit: any;
 };
 
 const EditProfileCard = (props: EditProfileCardProps) => {
-  const connectionData = useContext(ConnectionContext);
-
   const { register, handleSubmit } = useForm<Partial<Profile>>();
 
   const onSubmit = async (data: any) => {
-    await editProfile(connectionData?.profileId!, data);
-    await props.getProfile();
+    await editProfile(props.profile!.id!, data);
     props.setEdit(false);
   };
 

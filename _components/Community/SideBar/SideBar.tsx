@@ -1,20 +1,17 @@
-import { FaIdCard, FaNetworkWired, FaBriefcase, FaUser } from 'react-icons/fa';
-import SideBarIcon from 'components/Community/SideBar/SideBarIcon';
+import { FaIdCard, FaNetworkWired, FaBriefcase } from 'react-icons/fa';
+import SideBarIcon from '_components/Community/SideBar/SideBarIcon';
 import Image from 'next/image';
-import { profileNFTImages } from 'constants/hardcoded';
+import { profileNFTImages } from '_constants/hardcoded';
 import { useContext } from 'react';
-import { ConnectionContext } from 'contexts/ConnectionContext';
+import { ProfileContext } from '_contexts/ProfileContext';
 
 type SideBarProps = {
   toggleState: number;
   setToggleState: any;
 };
 
-// TODO: Don't use profileId
-// Use displayName
-// So don't just pass profileId in Context, but the entire user's profile.
 const SideBar = (props: SideBarProps) => {
-  const connectionData = useContext(ConnectionContext);
+  const profile = useContext(ProfileContext);
 
   return (
     <div className={styles.container}>
@@ -25,7 +22,7 @@ const SideBar = (props: SideBarProps) => {
               <Image src={profileNFTImages[3]} height={150} width={150} />
             </div>
           }
-          text={connectionData?.profileId}
+          text={profile!.displayName}
           active={props.toggleState === 4}
         />
       </button>

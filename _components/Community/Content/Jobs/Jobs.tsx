@@ -1,10 +1,10 @@
 import { useEffect, useState, useContext } from 'react';
-import { Job } from 'types/Job';
-import { ConnectionContext } from 'contexts/ConnectionContext';
+import { Job } from '_types/Job';
+import { ConnectionContext } from '_contexts/ConnectionContext';
 import { getJobs, getPins, togglePinned } from '_firebase/APIRequests';
-import JobCard from 'components/Community/Content/Jobs/JobCard';
-import PlusButton from 'components/Community/Content/Jobs/PlusButton';
-import JobForm from 'components/Community/Content/Jobs/JobForm';
+import JobCard from '_components/Community/Content/Jobs/JobCard';
+import PlusButton from '_components/Community/Content/Jobs/PlusButton';
+import JobForm from '_components/Community/Content/Jobs/JobForm';
 
 const Jobs = () => {
   const [addJob, setAddJob] = useState(false);
@@ -14,7 +14,7 @@ const Jobs = () => {
   const connectionData = useContext(ConnectionContext);
 
   useEffect(() => {
-    getPins(connectionData!.wallet.address, setPins);
+    getPins(connectionData!.address, setPins);
     getJobs(setJobs);
   }, [connectionData]);
 
