@@ -44,7 +44,7 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
   );
 
   return (
-    <div className='flex flex-col items-center grow bg-background overflow-y-scroll pt-12 pb-40'>
+    <div className='flex flex-col items-center grow bg-background overflow-y-scroll pt-12 pb-16'>
       <form
         className='flex flex-col w-full gap-8 max-w-screen-sm px-10 sm:px-0'
         onSubmit={handleSubmit(onSubmit)}

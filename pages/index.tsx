@@ -1,4 +1,5 @@
 import { useMoralis } from 'react-moralis';
+import Head from 'next/head';
 
 import Communities from 'components/Index/Communities';
 import ConnectView from 'components/Index/ConnectView';
@@ -8,6 +9,10 @@ export default function Home() {
 
   return (
     <div className='flex flex-col h-screen bg-background text-primary'>
+      <Head>
+        <title>3 Talent</title>
+        <meta name='viewport' content='initial-scale=1.0, width=device-width' />
+      </Head>
       <NavBar />
       <div className='grow'>
         {isAuthenticated ? <Communities /> : <ConnectView />}
@@ -17,9 +22,7 @@ export default function Home() {
 }
 
 // TODO:
-// MobileSideBar could be animated to slide in out ease-in-out-300
 // For now 1 wallet per profile - need to think properly how to do multiple wallets afterwards.
-// Actually read NFTs from wallet to see which to do
 // LoadingSpinner
 
 const NavBar = () => {

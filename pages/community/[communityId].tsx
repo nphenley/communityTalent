@@ -10,6 +10,7 @@ import { useMoralis } from 'react-moralis';
 import { useRouter } from 'next/router';
 import CreateProfile from 'components/Community/CreateProfile';
 import LoadingSpinner from 'styled/LoadingSpinner';
+import Head from 'next/head';
 
 // Profile should be passed as context around app as it'll be used a lot.
 // Aswell as the getProfile() function to easily update the profile state.
@@ -51,11 +52,16 @@ const Community = () => {
 
   return (
     <ConnectionContext.Provider value={connectionData}>
-      <div className='flex h-screen text-white'>
+      <Head>
+        <title>{communityId}</title>
+        <meta name='viewport' content='initial-scale=1.0, width=device-width' />
+      </Head>
+
+      <div className='flex h-screen text-white bg-background'>
         {loading || isAuthUndefined ? (
           <LoadingSpinner />
         ) : !connectionData!.profileId ? (
-          <div className='flex flex-col w-full bg-background'>
+          <div className='flex flex-col w-full'>
             <TopBar
               isOpen={false}
               hideHamburgerMenu={true}
