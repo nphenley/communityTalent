@@ -10,6 +10,7 @@ type ProfileCardProps = {
 
 // TODO:
 // Looking for Work badge
+// Get Profile Pics properly.
 const ProfileCard = (props: ProfileCardProps) => {
   const ruler = <hr className='border-primary'></hr>;
 
@@ -20,7 +21,7 @@ const ProfileCard = (props: ProfileCardProps) => {
       className='absolute top-1 right-4 text-backgroundLight font-bold text-2xl'
       onClick={() => setIsExpanded(!isExpanded)}
     >
-      {isExpanded ? '+' : '-'}
+      {isExpanded ? '-' : '+'}
     </button>
   );
 
@@ -30,7 +31,11 @@ const ProfileCard = (props: ProfileCardProps) => {
 
       <div className='flex items-center justify-center gap-9 mb-4'>
         <div className={styles.imageContainer}>
-          <Image src={profileNFTImages[2]} height={140} width={140} />
+          <Image
+            src={profileNFTImages[props.profile.displayName.length % 5]}
+            height={140}
+            width={140}
+          />
         </div>
         <div className='flex flex-col h-full justify-center gap-1 mt-3'>
           <div className='font-bold'>{props.profile.displayName}</div>
@@ -131,7 +136,7 @@ export default ProfileCard;
 
 const styles = {
   container:
-    'relative bg-backgroundDark rounded-lg shadow-lg w-full max-w-[550px] px-11 py-11 flex flex-col gap-6 overflow-y-scroll max-h-[1000px]',
+    'relative bg-backgroundDark rounded-lg shadow-lg w-full max-w-[550px] px-11 py-11 flex flex-col gap-6 overflow-y-scroll min-h-[600px] max-h-[1000px]',
   imageContainer: 'rounded-full overflow-hidden flex justify-center',
   sectionContainer: 'px-5 pt-2.5 pb-4 gap-5 flex flex-col',
   sectionHeading: 'text-primary font-bold',

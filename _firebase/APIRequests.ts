@@ -60,6 +60,21 @@ export const subscribeToProfile = (
   );
 };
 
+export const getProfiles = async (communityId: string, updateProfiles: any) => {
+  const data = await getDocs(
+    query(profileCollectionRef, where('communityId', '==', communityId))
+  );
+  updateProfiles(
+    data.docs.map(
+      (doc) =>
+        ({
+          ...doc.data(),
+          id: doc.id,
+        } as Profile)
+    )
+  );
+};
+
 // ============== JOBS ==============
 
 export const createJob = (job: Job) => {
