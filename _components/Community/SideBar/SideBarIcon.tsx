@@ -7,7 +7,7 @@ type SideBarIconProps = {
 
 const SideBarIcon = (props: SideBarIconProps) => {
   let className =
-    'flex flex-col items-center py-6 w-full md:w-80 font-medium gap-y-2 hover:bg-primaryDark';
+    'flex flex-col items-center py-6 w-full md:w-60 lg:w-80 font-medium gap-y-2 hover:bg-primaryDark';
 
   className += props.active ? ' bg-primaryDark' : '';
 

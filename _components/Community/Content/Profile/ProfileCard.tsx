@@ -33,8 +33,8 @@ const ProfileCard = (props: ProfileCardProps) => {
         <div className={styles.imageContainer}>
           <Image
             src={profileNFTImages[props.profile.displayName.length % 5]}
-            height={140}
-            width={140}
+            height={100}
+            width={100}
           />
         </div>
         <div className='flex flex-col h-full justify-center gap-1 mt-3'>
@@ -48,86 +48,89 @@ const ProfileCard = (props: ProfileCardProps) => {
         </div>
       </div>
 
-      {ruler}
+      <div className='w-9/12 mx-auto flex flex-col gap-6'>
+        {ruler}
 
-      <div className={styles.sectionContainer}>
-        <div className={styles.sectionHeading}>Bio</div>
-        <div>{props.profile.bio}</div>
-      </div>
-
-      {ruler}
-
-      <div className={styles.sectionContainer}>
-        <div className={styles.sectionHeading}>Tags</div>
-        <div className='gap-1 flex'>
-          {props.profile.tags &&
-            props.profile.tags.map((tag) => (
-              <div className='bg-primaryDark py-1 px-3 rounded-lg'>{tag}</div>
-            ))}
+        <div className={styles.sectionContainer}>
+          <div className={styles.sectionHeading}>Bio</div>
+          <div className='text-sm text-white'>{props.profile.bio}</div>
         </div>
+
+        {ruler}
+
+        <div className={styles.sectionContainer}>
+          <div className={styles.sectionHeading}>Tags</div>
+          <div className='gap-1 flex'>
+            {props.profile.tags &&
+              props.profile.tags.map((tag) => (
+                <div className='bg-primaryDark py-1 px-3 rounded-lg'>{tag}</div>
+              ))}
+          </div>
+        </div>
+
+        {props.alwaysExpanded || isExpanded ? (
+          <>
+            {props.profile.skills && props.profile.skills.length ? (
+              <>
+                {ruler}
+
+                <div className={styles.sectionContainer}>
+                  <div className={styles.sectionHeading}>Skills</div>
+                  <div className='gap-1 flex flex-col px-2'>
+                    {props.profile.skills.map((skill) => (
+                      <div>- {skill}</div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            ) : null}
+
+            {props.profile.experience ? (
+              <>
+                {ruler}
+
+                <div className={styles.sectionContainer}>
+                  <div className={styles.sectionHeading}>Experience</div>
+                  <div>{props.profile.experience}</div>
+                </div>
+              </>
+            ) : null}
+
+            {props.profile.languages && props.profile.languages.length ? (
+              <>
+                {ruler}
+
+                <div className={styles.sectionContainer}>
+                  <div className={styles.sectionHeading}>Languages</div>
+                  <div className='gap-1 flex'>
+                    {props.profile.languages.map((language) => (
+                      <div className='bg-primaryDark py-1 px-3 rounded-lg'>
+                        {language}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            ) : null}
+
+            {props.profile.relevantLinks &&
+            props.profile.relevantLinks.length ? (
+              <>
+                {ruler}
+
+                <div className={styles.sectionContainer}>
+                  <div className={styles.sectionHeading}>Links</div>
+                  <div className='gap-1 flex flex-col px-2'>
+                    {props.profile.relevantLinks.map((link) => (
+                      <div>- {link}</div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            ) : null}
+          </>
+        ) : null}
       </div>
-
-      {props.alwaysExpanded || isExpanded ? (
-        <>
-          {props.profile.skills && props.profile.skills.length ? (
-            <>
-              {ruler}
-
-              <div className={styles.sectionContainer}>
-                <div className={styles.sectionHeading}>Skills</div>
-                <div className='gap-1 flex flex-col px-2'>
-                  {props.profile.skills.map((skill) => (
-                    <div>- {skill}</div>
-                  ))}
-                </div>
-              </div>
-            </>
-          ) : null}
-
-          {props.profile.experience ? (
-            <>
-              {ruler}
-
-              <div className={styles.sectionContainer}>
-                <div className={styles.sectionHeading}>Experience</div>
-                <div>{props.profile.experience}</div>
-              </div>
-            </>
-          ) : null}
-
-          {props.profile.languages && props.profile.languages.length ? (
-            <>
-              {ruler}
-
-              <div className={styles.sectionContainer}>
-                <div className={styles.sectionHeading}>Languages</div>
-                <div className='gap-1 flex'>
-                  {props.profile.languages.map((language) => (
-                    <div className='bg-primaryDark py-1 px-3 rounded-lg'>
-                      {language}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </>
-          ) : null}
-
-          {props.profile.relevantLinks && props.profile.relevantLinks.length ? (
-            <>
-              {ruler}
-
-              <div className={styles.sectionContainer}>
-                <div className={styles.sectionHeading}>Links</div>
-                <div className='gap-1 flex flex-col px-2'>
-                  {props.profile.relevantLinks.map((link) => (
-                    <div>- {link}</div>
-                  ))}
-                </div>
-              </div>
-            </>
-          ) : null}
-        </>
-      ) : null}
     </div>
   );
 };
@@ -136,7 +139,7 @@ export default ProfileCard;
 
 const styles = {
   container:
-    'relative bg-backgroundDark rounded-lg shadow-lg w-full max-w-[550px] px-11 py-11 flex flex-col gap-6 overflow-y-scroll min-h-[600px] max-h-[1000px]',
+    'relative bg-backgroundDark rounded-lg shadow-lg w-full max-w-[550px] py-11 flex flex-col gap-6 overflow-y-scroll min-h-[600px] max-h-[1000px]',
   imageContainer: 'rounded-full overflow-hidden flex justify-center',
   sectionContainer: 'px-5 pt-2.5 pb-4 gap-5 flex flex-col',
   sectionHeading: 'text-primary font-bold',
