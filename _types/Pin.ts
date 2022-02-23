@@ -1,5 +1,5 @@
 export type Pin = {
   id: string;
-  job: string;
+  project: string;
   user: string;
 };

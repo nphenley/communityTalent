@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { getProfiles } from '_firebase/APIRequests';
 import LoadingSpinner from '_styled/LoadingSpinner';
 import { Profile } from '_types/Profile';
-import ProfileCard from '../Profile/ProfileCard';
+import ProfileCard from '_components/Community/Content/Profile/ProfileCard';
 
 const Talent = () => {
   const router = useRouter();

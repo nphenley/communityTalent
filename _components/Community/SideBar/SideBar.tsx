@@ -31,7 +31,7 @@ const SideBar = (props: SideBarProps) => {
         <button onClick={() => props.setToggleState(1)}>
           <SideBarIcon
             icon={<FaBriefcase size='20' />}
-            text={'JOBS'}
+            text={'PROJECTS'}
             active={props.toggleState === 1}
           />
         </button>

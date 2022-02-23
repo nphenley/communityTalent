@@ -12,10 +12,10 @@ import {
   increment,
   onSnapshot,
 } from 'firebase/firestore';
-import { Job } from '_types/Job';
+import { Project } from '_types/Project';
 import { Profile } from '_types/Profile';
 
-const jobsCollectionRef = collection(firestore, 'jobs');
+const projectsCollectionRef = collection(firestore, 'projects');
 const pinsCollectionRef = collection(firestore, 'pins');
 const profileCollectionRef = collection(firestore, 'profiles');
 
@@ -75,27 +75,27 @@ export const getProfiles = async (communityId: string, updateProfiles: any) => {
   );
 };
 
-// ============== JOBS ==============
+// ============== PROJECTS ==============
 
-export const createJob = (job: Job) => {
-  addDoc(collection(firestore, 'jobs'), {
-    ...job,
+export const createProject = (project: Project) => {
+  addDoc(collection(firestore, 'projects'), {
+    ...project,
     dateCreated: Timestamp.now(),
     dateLastUpdated: Timestamp.now(),
   });
 };
 
-export const getJobs = async (setJobs: any) => {
+export const getProjects = async (setProjects: any) => {
   const data = await getDocs(
-    query(jobsCollectionRef, orderBy('dateCreated', 'desc'))
+    query(projectsCollectionRef, orderBy('dateCreated', 'desc'))
   );
-  setJobs(
+  setProjects(
     data.docs.map(
       (doc) =>
         ({
           ...doc.data(),
           id: doc.id,
-        } as Job)
+        } as Project)
     )
   );
 };
@@ -105,7 +105,7 @@ export const getPins = async (walletAddress: string, setPins: any) => {
     query(pinsCollectionRef, where('user', '==', walletAddress))
   );
   let pins: string[] = [];
-  userPins.docs.map((doc) => pins.push(doc.data().job));
+  userPins.docs.map((doc) => pins.push(doc.data().project));
   setPins(pins);
 };
 
@@ -125,8 +125,8 @@ export const getProfileId = async (
 
 // TODO:
 // Atm only increments, otherwise toggle pinned
-export const togglePinned = async (jobId: string) => {
-  updateDoc(doc(jobsCollectionRef, jobId), {
+export const togglePinned = async (projectId: string) => {
+  updateDoc(doc(projectsCollectionRef, projectId), {
     numberOfPins: increment(1),
   });
 };

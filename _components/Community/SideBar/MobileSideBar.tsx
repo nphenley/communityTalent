@@ -50,7 +50,7 @@ const MobileSideBar = (props: SideBarProps) => {
         <button onClick={() => toggleState(1)} className='w-full'>
           <SideBarIcon
             icon={<FaBriefcase size='20' />}
-            text={'Jobs'}
+            text={'Projects'}
             active={props.toggleState === 1}
           />
         </button>

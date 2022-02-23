@@ -1,20 +1,20 @@
-import { createJob } from '_firebase/APIRequests';
+import { createProject } from '_firebase/APIRequests';
 import { useForm } from 'react-hook-form';
-import { Job } from '_types/Job';
+import { Project } from '_types/Project';
 import { useContext } from 'react';
 import { ProfileContext } from '_contexts/ProfileContext';
 
-const JobForm = () => {
+const ProjectForm = () => {
   const { register, handleSubmit } = useForm();
 
   const profile = useContext(ProfileContext);
 
   const onSubmit = (data: any) => {
-    createJob({
+    createProject({
       ...data,
       tags: ['dev', 'marketing'],
       authors: [profile!.id],
-    } as Job);
+    } as Project);
   };
 
   return (
@@ -48,4 +48,4 @@ const JobForm = () => {
     </div>
   );
 };
-export default JobForm;
+export default ProjectForm;

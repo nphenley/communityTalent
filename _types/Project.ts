@@ -1,6 +1,6 @@
 import { Timestamp } from 'firebase/firestore';
 
-export type Job = {
+export type Project = {
   id: string;
   description: string;
   tags: string[];
