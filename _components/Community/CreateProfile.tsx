@@ -1,5 +1,5 @@
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { useContext, useEffect, useState } from 'react';
+import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
+import { useContext, useState } from 'react';
 import { ConnectionContext } from '_contexts/ConnectionContext';
 import { createProfile } from '_firebase/APIRequests';
 import { Profile } from '_types/Profile';
@@ -14,7 +14,8 @@ type CreateProfileViewProps = {
 const CreateProfileView = (props: CreateProfileViewProps) => {
   const connectionData = useContext(ConnectionContext);
 
-  const { register, unregister, handleSubmit } = useForm<Partial<Profile>>();
+  const { control, register, unregister, handleSubmit } =
+    useForm<Partial<Profile>>();
 
   const onSubmit: SubmitHandler<Partial<Profile>> = async (data: any) => {
     // createProfile({
@@ -22,7 +23,6 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
     //   communityId: props.communityId,
     //   walletAddresses: [connectionData!.address],
     // } as Partial<Profile>);
-    console.log('creating profile');
     console.log(data);
   };
 
@@ -59,7 +59,11 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
           name='lookingForWork'
         />
         <InputField register={register} label='Tags' name='tags' />
-        <SkillsInput unregister={unregister} register={register} />
+        <SkillsInput
+          control={control}
+          unregister={unregister}
+          register={register}
+        />
         <OptionalWrapper
           label='Experience'
           reset={unregister}
@@ -158,19 +162,25 @@ const LargeInputField = (props: LargeInputFieldProps) => {
 type OptionalWrapperProps = {
   fieldComponent: any;
   reset: any;
+  onShowField?: any;
   label: string;
 };
 const OptionalWrapper = (props: OptionalWrapperProps) => {
-  const [showField, setShowField] = useState(false);
+  const [isFieldShown, setIsFieldShown] = useState(false);
 
   const hideField = () => {
     props.reset();
-    setShowField(false);
+    setIsFieldShown(false);
+  };
+
+  const showField = () => {
+    setIsFieldShown(true);
+    if (props.onShowField) props.onShowField();
   };
 
   return (
     <div className='relative'>
-      {showField ? (
+      {isFieldShown ? (
         <>
           {props.fieldComponent}
           <button
@@ -182,7 +192,7 @@ const OptionalWrapper = (props: OptionalWrapperProps) => {
         </>
       ) : (
         <div
-          onClick={() => setShowField(true)}
+          onClick={showField}
           className='border-dashed border-2 border-backgroundLight rounded-lg p-6 text-center hover:cursor-pointer font-bold text-backgroundLight'
         >
           + {props.label}
@@ -195,58 +205,47 @@ const OptionalWrapper = (props: OptionalWrapperProps) => {
 type SkillsInputProps = {
   unregister: any;
   register: any;
+  control: any;
 };
 const SkillsInput = (props: SkillsInputProps) => {
-  const initialArray = [
-    <InputField
-      key={0}
-      register={props.register}
-      label={'Skills'}
-      name={`skills.0`}
-    />,
-  ];
+  const { fields, append, remove } = useFieldArray({
+    control: props.control,
+    name: 'skills',
+  });
 
-  const [skills, setSkills] = useState<JSX.Element[]>(initialArray);
-
-  const addSkill = () => {
-    let items: JSX.Element[] = [];
-    for (let i = 0; i < skills.length; i++) items.push(skills[i]);
-    items.push(
-      <InputField
-        key={skills.length + 1}
-        register={props.register}
-        label={''}
-        name={`skills.${skills.length + 1}`}
-      />
-    );
-    setSkills(items);
+  const addField = () => {
+    if (fields.length > 20) return;
+    append(`Skill ${fields.length + 1}`);
   };
 
-  const removeSkill = () => {
-    if (skills.length <= 1) return;
-    let items: JSX.Element[] = [];
-    for (let i = 0; i < skills.length - 1; i++) items.push(skills[i]);
-    setSkills(items);
-  };
-
-  const resetField = () => {
-    props.unregister('skills');
-    setSkills(initialArray);
+  const removeField = () => {
+    if (fields.length <= 1) return;
+    remove(fields.length - 1);
   };
 
   const fieldComponent = (
     <div className='flex flex-col gap-1'>
-      {skills}
+      {fields.map((field, index) => (
+        <InputField
+          key={field.id}
+          register={props.register}
+          label={index === 0 ? 'Skills' : ''}
+          name={`skills.${index}`}
+        />
+      ))}
+
       <div className='mt-2 text-primary flex justify-center gap-2'>
         <button
           className='font-bold px-3 py-1 bg-backgroundDark rounded-lg'
-          onClick={addSkill}
+          onClick={addField}
+          type='button'
         >
           +
         </button>
         <button
           className='font-bold px-3 py-1 bg-backgroundDark rounded-lg'
-          onClick={removeSkill}
+          onClick={removeField}
+          type='button'
         >
           -
         </button>
@@ -257,7 +256,8 @@ const SkillsInput = (props: SkillsInputProps) => {
   return (
     <OptionalWrapper
       label='Skills'
-      reset={resetField}
+      reset={remove}
+      onShowField={() => append('Skill 1')}
       fieldComponent={fieldComponent}
     />
   );

@@ -33,7 +33,6 @@ export const editProfile = async (
   profileId: string,
   data: Partial<Profile>
 ) => {
-  console.log(profileId);
   const docRef = await updateDoc(doc(firestore, 'profiles', profileId), {
     ...data,
     dateLastUpdated: Timestamp.now(),
