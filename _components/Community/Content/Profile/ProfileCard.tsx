@@ -1,9 +1,11 @@
 import Image from 'next/image';
+import { useState } from 'react';
 import { profileNFTImages } from '_constants/hardcoded';
 import { Profile } from '_types/Profile';
 
 type ProfileCardProps = {
   profile: Profile;
+  alwaysExpanded?: boolean;
 };
 
 // TODO:
@@ -11,8 +13,21 @@ type ProfileCardProps = {
 const ProfileCard = (props: ProfileCardProps) => {
   const ruler = <hr className='border-primary'></hr>;
 
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const expandButton = (
+    <button
+      className='absolute top-1 right-4 text-backgroundLight font-bold text-2xl'
+      onClick={() => setIsExpanded(!isExpanded)}
+    >
+      {isExpanded ? '+' : '-'}
+    </button>
+  );
+
   return (
     <div className={styles.container}>
+      {!props.alwaysExpanded && expandButton}
+
       <div className='flex items-center justify-center gap-9 mb-4'>
         <div className={styles.imageContainer}>
           <Image src={profileNFTImages[2]} height={140} width={140} />
@@ -47,46 +62,67 @@ const ProfileCard = (props: ProfileCardProps) => {
         </div>
       </div>
 
-      {ruler}
+      {props.alwaysExpanded || isExpanded ? (
+        <>
+          {props.profile.skills && props.profile.skills.length ? (
+            <>
+              {ruler}
 
-      <div className={styles.sectionContainer}>
-        <div className={styles.sectionHeading}>Skills</div>
-        <div className='gap-1 flex flex-col px-2'>
-          {props.profile.skills &&
-            props.profile.skills.map((skill) => <div>- {skill}</div>)}
-        </div>
-      </div>
-
-      {ruler}
-
-      <div className={styles.sectionContainer}>
-        <div className={styles.sectionHeading}>Experience</div>
-        <div>{props.profile.experience}</div>
-      </div>
-
-      {ruler}
-
-      <div className={styles.sectionContainer}>
-        <div className={styles.sectionHeading}>Languages</div>
-        <div className='gap-1 flex'>
-          {props.profile.languages &&
-            props.profile.languages.map((language) => (
-              <div className='bg-primaryDark py-1 px-3 rounded-lg'>
-                {language}
+              <div className={styles.sectionContainer}>
+                <div className={styles.sectionHeading}>Skills</div>
+                <div className='gap-1 flex flex-col px-2'>
+                  {props.profile.skills.map((skill) => (
+                    <div>- {skill}</div>
+                  ))}
+                </div>
               </div>
-            ))}
-        </div>
-      </div>
+            </>
+          ) : null}
 
-      {ruler}
+          {props.profile.experience ? (
+            <>
+              {ruler}
 
-      <div className={styles.sectionContainer}>
-        <div className={styles.sectionHeading}>Links</div>
-        <div className='gap-1 flex flex-col px-2'>
-          {props.profile.relevantLinks &&
-            props.profile.relevantLinks.map((link) => <div>- {link}</div>)}
-        </div>
-      </div>
+              <div className={styles.sectionContainer}>
+                <div className={styles.sectionHeading}>Experience</div>
+                <div>{props.profile.experience}</div>
+              </div>
+            </>
+          ) : null}
+
+          {props.profile.languages && props.profile.languages.length ? (
+            <>
+              {ruler}
+
+              <div className={styles.sectionContainer}>
+                <div className={styles.sectionHeading}>Languages</div>
+                <div className='gap-1 flex'>
+                  {props.profile.languages.map((language) => (
+                    <div className='bg-primaryDark py-1 px-3 rounded-lg'>
+                      {language}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          ) : null}
+
+          {props.profile.relevantLinks && props.profile.relevantLinks.length ? (
+            <>
+              {ruler}
+
+              <div className={styles.sectionContainer}>
+                <div className={styles.sectionHeading}>Links</div>
+                <div className='gap-1 flex flex-col px-2'>
+                  {props.profile.relevantLinks.map((link) => (
+                    <div>- {link}</div>
+                  ))}
+                </div>
+              </div>
+            </>
+          ) : null}
+        </>
+      ) : null}
     </div>
   );
 };

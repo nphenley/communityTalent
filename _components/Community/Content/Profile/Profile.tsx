@@ -11,7 +11,7 @@ const Profile = () => {
 
   const profileView = (
     <div className='flex flex-col items-center w-full'>
-      <ProfileCard profile={profile!} />
+      <ProfileCard profile={profile!} alwaysExpanded={true} />
       <button
         onClick={() => setEdit(true)}
         className='mt-8 w-20 p-4 bg-primary hover:bg-primaryLight hover:cursor-pointer'
