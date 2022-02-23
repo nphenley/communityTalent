@@ -10,11 +10,11 @@ const Profile = () => {
   const profile = useContext(ProfileContext);
 
   const profileView = (
-    <div className='flex flex-col items-center w-full'>
+    <div className='grid grid-cols-1 overflow-y-scroll'>
       <ProfileCard profile={profile!} alwaysExpanded={true} />
       <button
         onClick={() => setEdit(true)}
-        className='mt-8 w-20 p-4 bg-primary hover:bg-primaryLight hover:cursor-pointer'
+        className='mt-8 mx-auto w-20 p-4 bg-primary hover:bg-primaryLight hover:cursor-pointer'
       >
         Edit
       </button>
