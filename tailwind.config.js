@@ -17,6 +17,8 @@ module.exports = {
         primary: 'hsl(325, 94%, 66%)',
         primaryLight: 'hsl(325, 94%, 76%)',
         secondary: 'rgb(122, 11, 192)',
+
+        grey: '#6b7280',
       },
     },
   },

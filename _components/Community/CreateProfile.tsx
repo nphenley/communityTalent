@@ -9,6 +9,10 @@ type CreateProfileViewProps = {
   communityId: string;
 };
 
+// TODO:
+// Tags and Languages should be a searchable dropdown.
+// \n in strings not saved to database correctly.
+
 // Note:
 // useFieldArray() is for arrays of objects, not arrays of primitive types.
 // Bit weird and strange and kind of shitty, seems to work fine though.

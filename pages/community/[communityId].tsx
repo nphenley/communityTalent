@@ -93,13 +93,13 @@ const Community = () => {
             </div>
           ) : (
             <>
-              <div className='hidden sm:block'>
+              <div className='hidden md:block'>
                 <SideBar
                   toggleState={toggleState}
                   setToggleState={setToggleState}
                 />
               </div>
-              <div className='block sm:hidden'>
+              <div className='block md:hidden'>
                 <MobileSideBar
                   isOpen={isOpen}
                   setIsOpen={setIsOpen}

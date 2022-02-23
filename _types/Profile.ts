@@ -11,7 +11,6 @@ export type Profile = {
   displayName: string;
   twitterName?: string;
   discordName?: string;
-  displayWallet?: string;
   bio: string;
   lookingForWork: boolean;
   tags: Tags[];

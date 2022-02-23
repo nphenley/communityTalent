@@ -2,11 +2,9 @@ import {
   FaIdCard,
   FaNetworkWired,
   FaBriefcase,
-  FaUser,
   FaArrowLeft,
 } from 'react-icons/fa';
 import SideBarIcon from '_components/Community/SideBar/SideBarIcon';
-import ProfileIcon from '_components/Community/SideBar/ProfileIcon';
 import { profileNFTImages } from '_constants/hardcoded';
 import Image from 'next/image';
 
@@ -33,7 +31,10 @@ const MobileSideBar = (props: SideBarProps) => {
         <SideBarIcon icon={<FaArrowLeft size='20' />} />
       </button>
 
-      <button className='w-full mb-8 mt-4' onClick={() => toggleState(4)}>
+      <button
+        className='w-full mb-8 mt-4 flex justify-center'
+        onClick={() => toggleState(4)}
+      >
         <SideBarIcon
           icon={
             <div className='flex justify-center mb-1 overflow-hidden rounded-full'>
@@ -45,8 +46,8 @@ const MobileSideBar = (props: SideBarProps) => {
         />
       </button>
 
-      <div className='flex flex-col w-full grow gap-y-6'>
-        <button onClick={() => toggleState(1)}>
+      <div className='flex flex-col w-full grow gap-y-6 items-center'>
+        <button onClick={() => toggleState(1)} className='w-full'>
           <SideBarIcon
             icon={<FaBriefcase size='20' />}
             text={'Jobs'}
@@ -54,7 +55,7 @@ const MobileSideBar = (props: SideBarProps) => {
           />
         </button>
 
-        <button onClick={() => toggleState(2)}>
+        <button onClick={() => toggleState(2)} className='w-full'>
           <SideBarIcon
             icon={<FaIdCard size='20' />}
             text={'Talent'}
@@ -62,7 +63,7 @@ const MobileSideBar = (props: SideBarProps) => {
           />
         </button>
 
-        <button onClick={() => toggleState(3)}>
+        <button onClick={() => toggleState(3)} className='w-full'>
           <SideBarIcon
             icon={<FaNetworkWired size='25' />}
             text={'Connections'}

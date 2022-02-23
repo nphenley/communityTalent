@@ -9,15 +9,25 @@ const Profile = () => {
 
   const profile = useContext(ProfileContext);
 
+  const profileView = (
+    <div className='flex flex-col items-center w-full'>
+      <ProfileCard profile={profile!} />
+      <button
+        onClick={() => setEdit(true)}
+        className='mt-8 w-20 p-4 bg-primary hover:bg-primaryLight hover:cursor-pointer'
+      >
+        Edit
+      </button>
+    </div>
+  );
+
   return (
-    <div className='flex flex-col items-center'>
-      <div className='mt-4 '>
-        {!edit ? (
-          <ProfileCard profile={profile!} setEdit={setEdit} />
-        ) : (
-          <EditProfileCard profile={profile!} setEdit={setEdit} />
-        )}
-      </div>
+    <div className='flex flex-col items-center justify-center h-full'>
+      {!edit ? (
+        profileView
+      ) : (
+        <EditProfileCard profile={profile!} setEdit={setEdit} />
+      )}
     </div>
   );
 };

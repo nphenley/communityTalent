@@ -47,6 +47,6 @@ const styles = {
   disconnectButtonContainer: 'absolute right-3 h-full flex items-center',
   disconnectButton: 'p-2 rounded-full',
   hamburgerButtonContainer:
-    'sm:hidden absolute left-5 h-full flex items-center',
+    'md:hidden absolute left-5 h-full flex items-center',
   hamburgerButton: 'p-2',
 };
