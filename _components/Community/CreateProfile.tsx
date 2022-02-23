@@ -1,9 +1,17 @@
-import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
+import {
+  Controller,
+  SubmitHandler,
+  useFieldArray,
+  useForm,
+} from 'react-hook-form';
 import { useContext, useState } from 'react';
 import { ConnectionContext } from '_contexts/ConnectionContext';
 import { createProfile } from '_firebase/APIRequests';
 import { Profile } from '_types/Profile';
 import StyledToggleField from '_styled/StyledToggleField';
+import Select from 'react-select';
+import { Tags } from '_enums/Tags';
+import { Languages } from '_enums/Languages';
 
 type CreateProfileViewProps = {
   communityId: string;
@@ -60,6 +68,20 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
     </p>
   );
 
+  const tagsOptions = Object.keys(Tags).map((key) => {
+    return {
+      value: (Tags as any)[key],
+      label: (Tags as any)[key],
+    };
+  });
+
+  const languagesOptions = Object.keys(Languages).map((key) => {
+    return {
+      value: (Languages as any)[key],
+      label: (Languages as any)[key],
+    };
+  });
+
   return (
     <div className='flex flex-col items-center grow bg-background overflow-y-scroll pt-12 pb-16'>
       <form
@@ -79,7 +101,12 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
           label='Looking for Work'
           name='lookingForWork'
         />
-        <InputField register={register} label='Tags' name='tags' />
+        <SelectField
+          control={control}
+          label='Tags'
+          options={tagsOptions}
+          name='tags'
+        />
         <ArrayInput
           label='Skills'
           fieldName='Skill'
@@ -94,13 +121,10 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
               name={`skills.${index}`}
             />
           ))}
-          control={control}
-          unregister={unregister}
-          register={register}
         />
         <OptionalWrapper
           label='Experience'
-          reset={unregister}
+          reset={() => unregister('experience')}
           fieldComponent={
             <LargeInputField
               register={register}
@@ -111,18 +135,19 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
         />
         <OptionalWrapper
           label='Languages'
-          reset={unregister}
+          reset={() => unregister('languages')}
           fieldComponent={
-            <InputField
-              register={register}
+            <SelectField
+              control={control}
               label='Languages'
+              options={languagesOptions}
               name='languages'
             />
           }
         />
         <OptionalWrapper
           label='Connections'
-          reset={unregister}
+          reset={() => unregister('connections')}
           fieldComponent={
             <LargeInputField
               register={register}
@@ -145,9 +170,6 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
               name={`relevantLinks.${index}`}
             />
           ))}
-          control={control}
-          unregister={unregister}
-          register={register}
         />
         <input
           className='p-4 bg-primary rounded-lg hover:bg-primaryLight hover:cursor-pointer'
@@ -250,9 +272,6 @@ type ArrayInputProps = {
   append: any;
   remove: any;
   fieldComponents: any;
-  unregister: any;
-  register: any;
-  control: any;
 };
 const ArrayInput = (props: ArrayInputProps) => {
   const addField = () => {
@@ -294,5 +313,38 @@ const ArrayInput = (props: ArrayInputProps) => {
       onShowField={() => props.append(`${props.fieldName} 1`)}
       fieldComponent={fieldComponent}
     />
+  );
+};
+
+type SelectFieldProps = {
+  control: any;
+  name: string;
+  label: string;
+  options: any;
+};
+const SelectField = (props: SelectFieldProps) => {
+  const onValueChange = (e: any, onChange: any) => {
+    let values = [];
+    for (const obj of e) values.push(obj.value);
+    return onChange(values);
+  };
+
+  return (
+    <div className='flex flex-col gap-4 sm:gap-0 sm:flex-row items-center px-2'>
+      <label className='sm:w-1/3 text-primary text-center'>{props.label}</label>
+
+      <Controller
+        control={props.control}
+        name={props.name}
+        render={({ field: { onChange } }) => (
+          <Select
+            className='grow'
+            onChange={(e) => onValueChange(e, onChange)}
+            options={props.options}
+            isMulti
+          />
+        )}
+      />
+    </div>
   );
 };
