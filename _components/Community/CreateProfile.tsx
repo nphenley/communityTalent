@@ -316,6 +316,7 @@ const ArrayInput = (props: ArrayInputProps) => {
   );
 };
 
+// Using react-select, so can only style <Select /> without tailwind, in globals.css
 type SelectFieldProps = {
   control: any;
   name: string;
@@ -339,6 +340,7 @@ const SelectField = (props: SelectFieldProps) => {
         render={({ field: { onChange } }) => (
           <Select
             className='grow'
+            classNamePrefix='profile-form'
             onChange={(e) => onValueChange(e, onChange)}
             options={props.options}
             isMulti

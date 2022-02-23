@@ -30,3 +30,56 @@
     transform: rotate(360deg);
   }
 }
+
+.profile-form__control {
+  border: 0px !important;
+  background-color: hsl(240, 41%, 10%) !important;
+  color: white !important;
+  width: 100% !important;
+  border-radius: 8px !important;
+}
+
+.profile-form__value-container {
+  color: white !important;
+  width: 100% !important;
+  padding: 12px !important;
+  border-radius: 10px !important;
+}
+
+.profile-form__indicators {
+  display: none !important;
+}
+
+.profile-form__menu {
+  color: white !important;
+}
+
+.profile-form__menu-list {
+  color: white !important;
+  background-color: hsl(240, 41%, 10%) !important;
+}
+
+.profile-form__option {
+  color: white !important;
+  background-color: hsl(240, 41%, 10%) !important;
+}
+
+.profile-form__multi-value {
+  background-color: hsl(325, 94%, 66%) !important;
+  padding: 4px !important;
+  margin-right: 4px !important;
+  border-radius: 8px !important;
+}
+
+.profile-form__multi-value__label {
+  color: white !important;
+}
+
+.profile-form__multi-value__remove:hover {
+  background-color: hsl(325, 94%, 66%) !important;
+}
+
+.profile-form__input-container {
+  margin-left: 10px !important;
+  color: white !important;
+}
