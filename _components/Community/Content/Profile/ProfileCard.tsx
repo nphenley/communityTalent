@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { profileNFTImages } from '_constants/hardcoded';
 import { Profile } from '_types/Profile';
+import { GiPlainCircle } from 'react-icons/gi';
 
 type ProfileCardProps = {
   profile: Profile;
@@ -78,7 +79,9 @@ const ProfileCard = (props: ProfileCardProps) => {
                   <div className={styles.sectionHeading}>Skills</div>
                   <div className={styles.sectionBulletpoints}>
                     {props.profile.skills.map((skill) => (
-                      <div>- {skill}</div>
+                      <div className='flex items-center gap-2 '>
+                        <GiPlainCircle size={8} className='mt-0.5' /> {skill}
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -122,7 +125,9 @@ const ProfileCard = (props: ProfileCardProps) => {
                   <div className={styles.sectionHeading}>Links</div>
                   <div className={styles.sectionBulletpoints}>
                     {props.profile.relevantLinks.map((link) => (
-                      <div>- {link}</div>
+                      <div className='flex items-center gap-2 '>
+                        <GiPlainCircle size={8} className='mt-0.5' /> {link}
+                      </div>
                     ))}
                   </div>
                 </div>
