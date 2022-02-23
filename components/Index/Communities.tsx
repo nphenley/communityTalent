@@ -21,12 +21,12 @@ const Communities = () => {
   const options = {
     chain: 'eth',
     address: '0x5487Bde943cC667D18FA5D1C7445A10CbB3a6e8D',
-    limit: 5,
+    limit: 20,
   };
 
-  // useEffect(() => {
-  //   getNfts()
-  // }, []);
+  useEffect(() => {
+    getNfts(Web3Api, setNftImages, options);
+  }, []);
 
   return (
     <div className='flex flex-wrap gap-12 p-12'>
@@ -49,19 +49,19 @@ const Communities = () => {
         Test Community
       </button>
 
-      <button onClick={() => getNfts(Web3Api, options, setNftImages)}>
-        click
-      </button>
-
       <div>
         {loadingNfts ? (
           <LoadingSpinner />
         ) : (
-          <div className='grid grid-flow-col'>
+          <div className='grid grid-cols-5'>
             {nftImages.map((nft) => (
               <div>
-                {nft && nft.image && <img src={nft.image}></img>}
-                {nft && nft.image_url && <img src={nft.image_url}></img>}
+                {nft && (nft.image || nft.image_url) && (
+                  <div>
+                    <img src={nft.image || nft.image_url}></img>
+                    <span>{nft.name}</span>
+                  </div>
+                )}
               </div>
             ))}
           </div>
