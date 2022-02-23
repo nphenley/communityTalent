@@ -256,7 +256,7 @@ const OptionalWrapper = (props: OptionalWrapperProps) => {
       ) : (
         <div
           onClick={showField}
-          className='border-dashed border-2 border-backgroundLight rounded-lg p-6 text-center hover:cursor-pointer font-bold text-backgroundLight'
+          className='mx-2 border-dashed border-2 border-backgroundLight rounded-lg p-6 text-center hover:cursor-pointer font-bold text-backgroundLight'
         >
           + {props.label}
         </div>
