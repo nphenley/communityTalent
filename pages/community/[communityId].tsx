@@ -27,7 +27,7 @@ const Community = () => {
   const [profile, setProfile] = useState<Profile>();
 
   const [isOpen, setIsOpen] = useState(false);
-  const [toggleState, setToggleState] = useState(1);
+  const [toggleState, setToggleState] = useState(2);
 
   useEffect(() => {
     if (isAuthUndefined || !router.query.communityId) return;

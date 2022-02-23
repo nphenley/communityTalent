@@ -24,7 +24,7 @@ const Talent = () => {
   return loadingProfiles ? (
     <LoadingSpinner />
   ) : (
-    <div className='grid grid-cols-1 lg:grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 3xl:grid-cols-4 4xl:grid-cols-5 gap-3'>
+    <div className='grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 3xl:grid-cols-3 4xl:grid-cols-4 5xl:grid-cols-5 gap-4'>
       {profiles.map((profile) => (
         <div className='flex items-center flex-col' key={profile.id}>
           <ProfileCard profile={profile} />

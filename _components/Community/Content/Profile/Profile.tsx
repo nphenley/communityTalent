@@ -10,7 +10,7 @@ const Profile = () => {
   const profile = useContext(ProfileContext);
 
   const profileView = (
-    <div className='grid grid-cols-1 overflow-y-scroll'>
+    <div className='grid grid-cols-1 overflow-y-scroll max-w-screen-md w-full'>
       <ProfileCard profile={profile!} alwaysExpanded={true} />
       <button
         onClick={() => setEdit(true)}

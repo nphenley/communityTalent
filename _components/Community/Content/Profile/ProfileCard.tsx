@@ -53,7 +53,7 @@ const ProfileCard = (props: ProfileCardProps) => {
 
         <div className={styles.sectionContainer}>
           <div className={styles.sectionHeading}>Bio</div>
-          <div className='text-sm text-white'>{props.profile.bio}</div>
+          <div className={styles.sectionParagraph}>{props.profile.bio}</div>
         </div>
 
         {ruler}
@@ -63,7 +63,7 @@ const ProfileCard = (props: ProfileCardProps) => {
           <div className='gap-1 flex'>
             {props.profile.tags &&
               props.profile.tags.map((tag) => (
-                <div className='bg-primaryDark py-1 px-3 rounded-lg'>{tag}</div>
+                <div className={styles.sectionTags}>{tag}</div>
               ))}
           </div>
         </div>
@@ -76,7 +76,7 @@ const ProfileCard = (props: ProfileCardProps) => {
 
                 <div className={styles.sectionContainer}>
                   <div className={styles.sectionHeading}>Skills</div>
-                  <div className='gap-1 flex flex-col px-2'>
+                  <div className={styles.sectionBulletpoints}>
                     {props.profile.skills.map((skill) => (
                       <div>- {skill}</div>
                     ))}
@@ -91,7 +91,9 @@ const ProfileCard = (props: ProfileCardProps) => {
 
                 <div className={styles.sectionContainer}>
                   <div className={styles.sectionHeading}>Experience</div>
-                  <div>{props.profile.experience}</div>
+                  <div className={styles.sectionParagraph}>
+                    {props.profile.experience}
+                  </div>
                 </div>
               </>
             ) : null}
@@ -104,9 +106,7 @@ const ProfileCard = (props: ProfileCardProps) => {
                   <div className={styles.sectionHeading}>Languages</div>
                   <div className='gap-1 flex'>
                     {props.profile.languages.map((language) => (
-                      <div className='bg-primaryDark py-1 px-3 rounded-lg'>
-                        {language}
-                      </div>
+                      <div className={styles.sectionTags}>{language}</div>
                     ))}
                   </div>
                 </div>
@@ -120,7 +120,7 @@ const ProfileCard = (props: ProfileCardProps) => {
 
                 <div className={styles.sectionContainer}>
                   <div className={styles.sectionHeading}>Links</div>
-                  <div className='gap-1 flex flex-col px-2'>
+                  <div className={styles.sectionBulletpoints}>
                     {props.profile.relevantLinks.map((link) => (
                       <div>- {link}</div>
                     ))}
@@ -139,8 +139,11 @@ export default ProfileCard;
 
 const styles = {
   container:
-    'relative bg-backgroundDark rounded-lg shadow-lg w-full max-w-[550px] py-11 flex flex-col gap-6 overflow-y-scroll min-h-[600px] max-h-[1000px]',
+    'relative bg-backgroundDark rounded-lg shadow-lg w-full py-11 flex flex-col gap-6 overflow-y-scroll min-h-[600px] max-h-[1000px] mx-auto',
   imageContainer: 'rounded-full overflow-hidden flex justify-center',
   sectionContainer: 'px-5 pt-2.5 pb-4 gap-5 flex flex-col',
   sectionHeading: 'text-primary font-bold',
+  sectionParagraph: '',
+  sectionBulletpoints: 'gap-1 flex flex-col px-2',
+  sectionTags: 'bg-primaryDark py-1 px-3 rounded-lg',
 };
