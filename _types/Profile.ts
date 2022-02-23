@@ -16,13 +16,8 @@ export type Profile = {
   lookingForWork: boolean;
   tags: Tags[];
   skills?: [];
-  experience?: {
-    startDate: string;
-    endDate: string;
-    title: string;
-    description: string;
-  }[];
+  experience?: string;
   languages?: Languages[];
   connections?: string;
-  relevantLinks?: { title: string; link: string }[];
+  relevantLinks?: string[];
 };

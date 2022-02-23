@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import ToggleField from '_styled/ToggleField';
+import StyledToggleField from '_styled/StyledToggleField';
 import { Profile } from '_types/Profile';
 import { editProfile } from '_firebase/APIRequests';
 
@@ -35,7 +35,7 @@ const EditProfileCard = (props: EditProfileCardProps) => {
         {...register('bio')}
       />
 
-      <ToggleField
+      <StyledToggleField
         register={register}
         label='Looking for Work'
         name='lookingForWork'

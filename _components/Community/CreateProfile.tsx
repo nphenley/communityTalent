@@ -3,14 +3,11 @@ import { useContext, useState } from 'react';
 import { ConnectionContext } from '_contexts/ConnectionContext';
 import { createProfile } from '_firebase/APIRequests';
 import { Profile } from '_types/Profile';
-import ToggleField from '_styled/ToggleField';
+import StyledToggleField from '_styled/StyledToggleField';
 
 type CreateProfileViewProps = {
   communityId: string;
 };
-
-// TODO:
-// More Fitting Input Fields
 
 // Note:
 // useFieldArray() is for arrays of objects, not arrays of primitive types.
@@ -30,21 +27,20 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
   });
 
   const {
-    fields: experienceFields,
-    append: experienceAppend,
-    remove: experienceRemove,
+    fields: relevantLinksFields,
+    append: relevantLinksAppend,
+    remove: relevantLinksRemove,
   } = useFieldArray({
     control: control,
-    name: 'experience',
+    name: 'relevantLinks',
   });
 
   const onSubmit: SubmitHandler<Partial<Profile>> = async (data: any) => {
-    // createProfile({
-    //   ...data,
-    //   communityId: props.communityId,
-    //   walletAddresses: [connectionData!.address],
-    // } as Partial<Profile>);
-    console.log(data);
+    createProfile({
+      ...data,
+      communityId: props.communityId,
+      walletAddresses: [connectionData!.address],
+    } as Partial<Profile>);
   };
 
   const title = (
@@ -74,14 +70,15 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
           name='displayName'
         />
         <LargeInputField register={register} label='Bio' name='bio' />
-        <ToggleField
+        <StyledToggleField
           register={register}
           label='Looking for Work'
           name='lookingForWork'
         />
         <InputField register={register} label='Tags' name='tags' />
         <ArrayInput
-          fieldName='Skills'
+          label='Skills'
+          fieldName='Skill'
           fields={skillsFields}
           append={skillsAppend}
           remove={skillsRemove}
@@ -97,28 +94,22 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
           unregister={unregister}
           register={register}
         />
-        <ArrayInput
-          fieldName='Experience'
-          fields={experienceFields}
-          append={experienceAppend}
-          remove={experienceRemove}
-          fieldComponents={experienceFields.map((field, index) => (
+        <OptionalWrapper
+          label='Experience'
+          reset={unregister}
+          fieldComponent={
             <LargeInputField
-              key={field.id}
               register={register}
-              label={index === 0 ? 'Experience' : ''}
-              name={`experience.${index}`}
+              label='Experience'
+              name='experience'
             />
-          ))}
-          control={control}
-          unregister={unregister}
-          register={register}
+          }
         />
         <OptionalWrapper
           label='Languages'
           reset={unregister}
           fieldComponent={
-            <LargeInputField
+            <InputField
               register={register}
               label='Languages'
               name='languages'
@@ -136,16 +127,23 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
             />
           }
         />
-        <OptionalWrapper
+        <ArrayInput
           label='Relevant Links'
-          reset={unregister}
-          fieldComponent={
-            <LargeInputField
+          fieldName='Link'
+          fields={relevantLinksFields}
+          append={relevantLinksAppend}
+          remove={relevantLinksRemove}
+          fieldComponents={relevantLinksFields.map((field, index) => (
+            <InputField
+              key={field.id}
               register={register}
-              label='Relevant Links'
-              name='relevantLinks'
+              label={index === 0 ? 'Relevant Links' : ''}
+              name={`relevantLinks.${index}`}
             />
-          }
+          ))}
+          control={control}
+          unregister={unregister}
+          register={register}
         />
         <input
           className='p-4 bg-primary rounded-lg hover:bg-primaryLight hover:cursor-pointer'
@@ -242,7 +240,8 @@ const OptionalWrapper = (props: OptionalWrapperProps) => {
 };
 
 type ArrayInputProps = {
-  fieldName: any;
+  fieldName: string;
+  label: string;
   fields: any;
   append: any;
   remove: any;
@@ -286,7 +285,7 @@ const ArrayInput = (props: ArrayInputProps) => {
 
   return (
     <OptionalWrapper
-      label={props.fieldName}
+      label={props.label}
       reset={props.remove}
       onShowField={() => props.append(`${props.fieldName} 1`)}
       fieldComponent={fieldComponent}
