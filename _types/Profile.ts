@@ -15,7 +15,7 @@ export type Profile = {
   bio: string;
   lookingForWork: boolean;
   tags: Tags[];
-  skills: string[];
+  skills?: [];
   experience?: {
     startDate: string;
     endDate: string;

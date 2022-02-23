@@ -11,11 +11,32 @@ type CreateProfileViewProps = {
 
 // TODO:
 // More Fitting Input Fields
+
+// Note:
+// useFieldArray() is for arrays of objects, not arrays of primitive types.
+// Bit weird and strange and kind of shitty, seems to work fine though.
 const CreateProfileView = (props: CreateProfileViewProps) => {
   const connectionData = useContext(ConnectionContext);
 
-  const { control, register, unregister, handleSubmit } =
-    useForm<Partial<Profile>>();
+  const { control, register, unregister, handleSubmit } = useForm();
+
+  const {
+    fields: skillsFields,
+    append: skillsAppend,
+    remove: skillsRemove,
+  } = useFieldArray({
+    control: control,
+    name: 'skills',
+  });
+
+  const {
+    fields: experienceFields,
+    append: experienceAppend,
+    remove: experienceRemove,
+  } = useFieldArray({
+    control: control,
+    name: 'experience',
+  });
 
   const onSubmit: SubmitHandler<Partial<Profile>> = async (data: any) => {
     // createProfile({
@@ -59,21 +80,39 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
           name='lookingForWork'
         />
         <InputField register={register} label='Tags' name='tags' />
-        <SkillsInput
+        <ArrayInput
+          fieldName='Skills'
+          fields={skillsFields}
+          append={skillsAppend}
+          remove={skillsRemove}
+          fieldComponents={skillsFields.map((field, index) => (
+            <InputField
+              key={field.id}
+              register={register}
+              label={index === 0 ? 'Skills' : ''}
+              name={`skills.${index}`}
+            />
+          ))}
           control={control}
           unregister={unregister}
           register={register}
         />
-        <OptionalWrapper
-          label='Experience'
-          reset={unregister}
-          fieldComponent={
+        <ArrayInput
+          fieldName='Experience'
+          fields={experienceFields}
+          append={experienceAppend}
+          remove={experienceRemove}
+          fieldComponents={experienceFields.map((field, index) => (
             <LargeInputField
+              key={field.id}
               register={register}
-              label='Experience'
-              name='experience'
+              label={index === 0 ? 'Experience' : ''}
+              name={`experience.${index}`}
             />
-          }
+          ))}
+          control={control}
+          unregister={unregister}
+          register={register}
         />
         <OptionalWrapper
           label='Languages'
@@ -202,38 +241,30 @@ const OptionalWrapper = (props: OptionalWrapperProps) => {
   );
 };
 
-type SkillsInputProps = {
+type ArrayInputProps = {
+  fieldName: any;
+  fields: any;
+  append: any;
+  remove: any;
+  fieldComponents: any;
   unregister: any;
   register: any;
   control: any;
 };
-const SkillsInput = (props: SkillsInputProps) => {
-  const { fields, append, remove } = useFieldArray({
-    control: props.control,
-    name: 'skills',
-  });
-
+const ArrayInput = (props: ArrayInputProps) => {
   const addField = () => {
-    if (fields.length > 20) return;
-    append(`Skill ${fields.length + 1}`);
+    if (props.fields.length > 20) return;
+    props.append(`${props.fieldName} ${props.fields.length + 1}`);
   };
 
   const removeField = () => {
-    if (fields.length <= 1) return;
-    remove(fields.length - 1);
+    if (props.fields.length <= 1) return;
+    props.remove(props.fields.length - 1);
   };
 
   const fieldComponent = (
     <div className='flex flex-col gap-1'>
-      {fields.map((field, index) => (
-        <InputField
-          key={field.id}
-          register={props.register}
-          label={index === 0 ? 'Skills' : ''}
-          name={`skills.${index}`}
-        />
-      ))}
-
+      {props.fieldComponents}
       <div className='mt-2 text-primary flex justify-center gap-2'>
         <button
           className='font-bold px-3 py-1 bg-backgroundDark rounded-lg'
@@ -255,9 +286,9 @@ const SkillsInput = (props: SkillsInputProps) => {
 
   return (
     <OptionalWrapper
-      label='Skills'
-      reset={remove}
-      onShowField={() => append('Skill 1')}
+      label={props.fieldName}
+      reset={props.remove}
+      onShowField={() => props.append(`${props.fieldName} 1`)}
       fieldComponent={fieldComponent}
     />
   );
