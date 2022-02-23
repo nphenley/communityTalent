@@ -1,5 +1,5 @@
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { ConnectionContext } from '_contexts/ConnectionContext';
 import { createProfile } from '_firebase/APIRequests';
 import { Profile } from '_types/Profile';
@@ -17,11 +17,13 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
   const { register, unregister, handleSubmit } = useForm<Partial<Profile>>();
 
   const onSubmit: SubmitHandler<Partial<Profile>> = async (data: any) => {
-    createProfile({
-      ...data,
-      communityId: props.communityId,
-      walletAddresses: [connectionData!.address],
-    } as Partial<Profile>);
+    // createProfile({
+    //   ...data,
+    //   communityId: props.communityId,
+    //   walletAddresses: [connectionData!.address],
+    // } as Partial<Profile>);
+    console.log('creating profile');
+    console.log(data);
   };
 
   const title = (
@@ -57,18 +59,10 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
           name='lookingForWork'
         />
         <InputField register={register} label='Tags' name='tags' />
-        <OptionalWrapper
-          label='Skills'
-          unregister={unregister}
-          name='skills'
-          fieldComponent={
-            <LargeInputField register={register} label='Skills' name='skills' />
-          }
-        />
+        <SkillsInput unregister={unregister} register={register} />
         <OptionalWrapper
           label='Experience'
-          unregister={unregister}
-          name='experience'
+          reset={unregister}
           fieldComponent={
             <LargeInputField
               register={register}
@@ -79,8 +73,7 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
         />
         <OptionalWrapper
           label='Languages'
-          unregister={unregister}
-          name='languages'
+          reset={unregister}
           fieldComponent={
             <LargeInputField
               register={register}
@@ -91,8 +84,7 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
         />
         <OptionalWrapper
           label='Connections'
-          unregister={unregister}
-          name='connections'
+          reset={unregister}
           fieldComponent={
             <LargeInputField
               register={register}
@@ -103,8 +95,7 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
         />
         <OptionalWrapper
           label='Relevant Links'
-          unregister={unregister}
-          name='relevantLinks'
+          reset={unregister}
           fieldComponent={
             <LargeInputField
               register={register}
@@ -147,6 +138,7 @@ type LargeInputFieldProps = {
   register: any;
   label: string;
   name: string;
+  maxLength?: number;
 };
 
 const LargeInputField = (props: LargeInputFieldProps) => {
@@ -156,7 +148,7 @@ const LargeInputField = (props: LargeInputFieldProps) => {
       <textarea
         className='w-full sm:w-fit grow h-60 sm:h-40 p-5 bg-backgroundDark rounded-lg resize-none'
         placeholder={props.label}
-        maxLength={300}
+        maxLength={props.maxLength ? props.maxLength : 300}
         {...props.register(props.name)}
       />
     </div>
@@ -165,15 +157,14 @@ const LargeInputField = (props: LargeInputFieldProps) => {
 
 type OptionalWrapperProps = {
   fieldComponent: any;
-  unregister: any;
-  name: string;
+  reset: any;
   label: string;
 };
 const OptionalWrapper = (props: OptionalWrapperProps) => {
   const [showField, setShowField] = useState(false);
 
   const hideField = () => {
-    props.unregister(props.name);
+    props.reset();
     setShowField(false);
   };
 
@@ -198,5 +189,76 @@ const OptionalWrapper = (props: OptionalWrapperProps) => {
         </div>
       )}
     </div>
+  );
+};
+
+type SkillsInputProps = {
+  unregister: any;
+  register: any;
+};
+const SkillsInput = (props: SkillsInputProps) => {
+  const initialArray = [
+    <InputField
+      key={0}
+      register={props.register}
+      label={'Skills'}
+      name={`skills.0`}
+    />,
+  ];
+
+  const [skills, setSkills] = useState<JSX.Element[]>(initialArray);
+
+  const addSkill = () => {
+    let items: JSX.Element[] = [];
+    for (let i = 0; i < skills.length; i++) items.push(skills[i]);
+    items.push(
+      <InputField
+        key={skills.length + 1}
+        register={props.register}
+        label={''}
+        name={`skills.${skills.length + 1}`}
+      />
+    );
+    setSkills(items);
+  };
+
+  const removeSkill = () => {
+    if (skills.length <= 1) return;
+    let items: JSX.Element[] = [];
+    for (let i = 0; i < skills.length - 1; i++) items.push(skills[i]);
+    setSkills(items);
+  };
+
+  const resetField = () => {
+    props.unregister('skills');
+    setSkills(initialArray);
+  };
+
+  const fieldComponent = (
+    <div className='flex flex-col gap-1'>
+      {skills}
+      <div className='mt-2 text-primary flex justify-center gap-2'>
+        <button
+          className='font-bold px-3 py-1 bg-backgroundDark rounded-lg'
+          onClick={addSkill}
+        >
+          +
+        </button>
+        <button
+          className='font-bold px-3 py-1 bg-backgroundDark rounded-lg'
+          onClick={removeSkill}
+        >
+          -
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <OptionalWrapper
+      label='Skills'
+      reset={resetField}
+      fieldComponent={fieldComponent}
+    />
   );
 };
