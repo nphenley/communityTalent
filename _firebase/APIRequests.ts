@@ -5,6 +5,7 @@ import {
   Timestamp,
   getDocs,
   query,
+  getDoc,
   orderBy,
   where,
   doc,
@@ -18,6 +19,7 @@ import { Profile } from '_types/Profile';
 const projectsCollectionRef = collection(firestore, 'projects');
 const pinsCollectionRef = collection(firestore, 'pins');
 const profileCollectionRef = collection(firestore, 'profiles');
+const solanaNftsCollectionRef = collection(firestore, 'solanaNfts');
 
 // ============== PROFILE ==============
 
@@ -129,4 +131,19 @@ export const togglePinned = async (projectId: string) => {
   updateDoc(doc(projectsCollectionRef, projectId), {
     numberOfPins: increment(1),
   });
+};
+
+// ============== solanaNfts ==============
+
+export const checkMatches = async (userNfts: string[]) => {
+  let list: string[] = [];
+  userNfts.forEach(async (nft) => {
+    const match = await getDocs(
+      query(solanaNftsCollectionRef, where('tokenAddress', '==', nft))
+    );
+    if (match.docs[0]) {
+      list.push(match.docs[0].data().communityId);
+    }
+  });
+  return list;
 };
