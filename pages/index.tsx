@@ -3,9 +3,10 @@ import Head from 'next/head';
 
 import Communities from '_components/Index/Communities';
 import ConnectView from '_components/Index/ConnectView';
+import { useEffect } from 'react';
 
 export default function Home() {
-  const { isAuthenticated } = useMoralis();
+  const { isAuthenticated, logout } = useMoralis();
 
   return (
     <div className='flex flex-col h-screen bg-background text-primary'>
@@ -27,7 +28,7 @@ export default function Home() {
 
 const NavBar = () => {
   return (
-    <div className='w-full text-center uppercase text-xl p-8 font-bold'>
+    <div className='w-full p-8 text-xl font-bold text-center uppercase'>
       3 Talent
     </div>
   );
