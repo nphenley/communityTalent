@@ -9,15 +9,19 @@ const Profile = () => {
 
   const profile = useContext(ProfileContext);
 
+  const editButton = (
+    <button
+      onClick={() => setEdit(true)}
+      className='mx-auto w-20 py-3 px-1 bg-primaryDark rounded-lg hover:bg-primary hover:cursor-pointer'
+    >
+      Edit
+    </button>
+  );
+
   const profileView = (
-    <div className='grid grid-cols-1 overflow-y-scroll max-w-screen-md w-full'>
+    <div className='grid grid-cols-1 overflow-y-scroll max-w-screen-md w-full gap-4 py-4'>
+      {editButton}
       <ProfileCard profile={profile!} alwaysExpanded={true} />
-      <button
-        onClick={() => setEdit(true)}
-        className='mt-8 mx-auto w-20 p-4 bg-primary hover:bg-primaryLight hover:cursor-pointer'
-      >
-        Edit
-      </button>
     </div>
   );
 
