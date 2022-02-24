@@ -79,7 +79,7 @@ const Community = () => {
           />
         </Head>
 
-        <div className='flex h-screen text-white bg-background'>
+        <div className='flex h-screen text-white bg-background break-words'>
           {isAuthUndefined || loadingConnectionData || loadingProfile ? (
             <LoadingSpinner />
           ) : !profile ? (

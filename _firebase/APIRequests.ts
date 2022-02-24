@@ -29,7 +29,7 @@ export const createProfile = async (profileData: Partial<Profile>) => {
   });
 };
 
-export const editProfile = async (
+export const updateProfile = async (
   profileId: string,
   data: Partial<Profile>
 ) => {

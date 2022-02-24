@@ -57,17 +57,23 @@ const ProfileCard = (props: ProfileCardProps) => {
           <div className={styles.sectionParagraph}>{props.profile.bio}</div>
         </div>
 
-        {ruler}
+        {props.profile.skills && props.profile.skills.length ? (
+          <>
+            {ruler}
 
-        <div className={styles.sectionContainer}>
-          <div className={styles.sectionHeading}>Tags</div>
-          <div className='gap-1 flex'>
-            {props.profile.tags &&
-              props.profile.tags.map((tag) => (
-                <div className={styles.sectionTags}>{tag}</div>
-              ))}
-          </div>
-        </div>
+            <div className={styles.sectionContainer}>
+              <div className={styles.sectionHeading}>Tags</div>
+              <div className='gap-1 flex'>
+                {props.profile.tags &&
+                  props.profile.tags.map((tag) => (
+                    <div key={tag} className={styles.sectionTags}>
+                      {tag}
+                    </div>
+                  ))}
+              </div>
+            </div>
+          </>
+        ) : null}
 
         {props.alwaysExpanded || isExpanded ? (
           <>
@@ -79,8 +85,11 @@ const ProfileCard = (props: ProfileCardProps) => {
                   <div className={styles.sectionHeading}>Skills</div>
                   <div className={styles.sectionBulletpoints}>
                     {props.profile.skills.map((skill) => (
-                      <div className='flex items-center gap-2 '>
-                        <GiPlainCircle size={8} className='mt-0.5' /> {skill}
+                      <div key={skill} className='flex items-center gap-2'>
+                        <div>
+                          <GiPlainCircle size={8} />
+                        </div>
+                        <div className='break-all'>{skill}</div>
                       </div>
                     ))}
                   </div>
@@ -109,7 +118,9 @@ const ProfileCard = (props: ProfileCardProps) => {
                   <div className={styles.sectionHeading}>Languages</div>
                   <div className='gap-1 flex'>
                     {props.profile.languages.map((language) => (
-                      <div className={styles.sectionTags}>{language}</div>
+                      <div key={language} className={styles.sectionTags}>
+                        {language}
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -125,8 +136,11 @@ const ProfileCard = (props: ProfileCardProps) => {
                   <div className={styles.sectionHeading}>Links</div>
                   <div className={styles.sectionBulletpoints}>
                     {props.profile.relevantLinks.map((link) => (
-                      <div className='flex items-center gap-2 '>
-                        <GiPlainCircle size={8} className='mt-0.5' /> {link}
+                      <div key={link} className='flex items-center gap-2 '>
+                        <div>
+                          <GiPlainCircle size={8} />
+                        </div>
+                        <div className='break-all'>{link}</div>
                       </div>
                     ))}
                   </div>
@@ -149,6 +163,6 @@ const styles = {
   sectionContainer: 'px-5 pt-2.5 pb-4 gap-5 flex flex-col',
   sectionHeading: 'text-primary font-bold',
   sectionParagraph: '',
-  sectionBulletpoints: 'gap-1 flex flex-col px-2',
+  sectionBulletpoints: 'gap-1 flex flex-col px-2 break-words',
   sectionTags: 'bg-primaryDark py-1 px-3 rounded-lg',
 };

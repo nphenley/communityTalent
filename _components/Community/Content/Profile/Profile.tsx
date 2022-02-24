@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react';
 import { Profile } from '_types/Profile';
 import ProfileCard from '_components/Community/Content/Profile/ProfileCard';
-import EditProfileCard from '_components/Community/Content/Profile/EditProfileCard';
+import EditProfileView from '_components/Community/Content/Profile/EditProfileView';
 import { ProfileContext } from '_contexts/ProfileContext';
 
 const Profile = () => {
@@ -30,7 +30,7 @@ const Profile = () => {
       {!edit ? (
         profileView
       ) : (
-        <EditProfileCard profile={profile!} setEdit={setEdit} />
+        <EditProfileView profile={profile!} setEdit={setEdit} />
       )}
     </div>
   );
