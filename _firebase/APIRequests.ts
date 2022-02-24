@@ -15,11 +15,19 @@ import {
 } from 'firebase/firestore';
 import { Project } from '_types/Project';
 import { Profile } from '_types/Profile';
+import { Community } from '_types/Community';
 
 const projectsCollectionRef = collection(firestore, 'projects');
 const pinsCollectionRef = collection(firestore, 'pins');
 const profileCollectionRef = collection(firestore, 'profiles');
-const solanaNftsCollectionRef = collection(firestore, 'solanaNfts');
+const solNftTokenAddressesCollectionRef = collection(
+  firestore,
+  'solNftTokenAddresses'
+);
+const solNftCommunitiesCollectionRef = collection(
+  firestore,
+  'solNftCommunities'
+);
 
 // ============== PROFILE ==============
 
@@ -133,17 +141,21 @@ export const togglePinned = async (projectId: string) => {
   });
 };
 
-// ============== solanaNfts ==============
+// ==================== SOLANA NFTS ====================
 
-export const checkMatches = async (userNfts: string[]) => {
-  let list: string[] = [];
+export const checkMatches = async (userNfts: string[], setCommunities: any) => {
+  let count = 0;
+  let list: Community[] = [];
   userNfts.forEach(async (nft) => {
-    const match = await getDocs(
-      query(solanaNftsCollectionRef, where('tokenAddress', '==', nft))
-    );
-    if (match.docs[0]) {
-      list.push(match.docs[0].data().communityId);
+    const match = await getDoc(doc(solNftTokenAddressesCollectionRef, nft));
+    if (match.exists()) {
+      const communityId = match.data()!.communityId;
+      const community = await getDoc(
+        doc(solNftCommunitiesCollectionRef, communityId)
+      );
+      list.push({ communityId: communityId, name: community.data()!.name });
     }
+    count++;
+    if (count === userNfts.length) setCommunities(list);
   });
-  return list;
 };
