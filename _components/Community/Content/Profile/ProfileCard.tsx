@@ -54,7 +54,9 @@ const ProfileCard = (props: ProfileCardProps) => {
 
         <div className={styles.sectionContainer}>
           <div className={styles.sectionHeading}>Bio</div>
-          <div className={styles.sectionParagraph}>{props.profile.bio}</div>
+          <div className={styles.sectionParagraph}>
+            {props.profile.bio.replace('<br/>', '\n')}
+          </div>
         </div>
 
         {props.profile.skills && props.profile.skills.length ? (
@@ -104,7 +106,7 @@ const ProfileCard = (props: ProfileCardProps) => {
                 <div className={styles.sectionContainer}>
                   <div className={styles.sectionHeading}>Experience</div>
                   <div className={styles.sectionParagraph}>
-                    {props.profile.experience}
+                    {props.profile.experience.replace('<br/>', '\n')}
                   </div>
                 </div>
               </>
@@ -162,7 +164,7 @@ const styles = {
   imageContainer: 'rounded-full overflow-hidden flex justify-center',
   sectionContainer: 'px-5 pt-2.5 pb-4 gap-5 flex flex-col',
   sectionHeading: 'text-primary font-bold',
-  sectionParagraph: '',
+  sectionParagraph: 'whitespace-pre-wrap',
   sectionBulletpoints: 'gap-1 flex flex-col px-2 break-words',
   sectionTags: 'bg-primaryDark py-1 px-3 rounded-lg',
 };

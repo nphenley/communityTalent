@@ -356,8 +356,6 @@ const ArrayInput = (props: ArrayInputProps) => {
     props.remove(props.fields.length - 1);
   };
 
-  console.log(props.fields);
-
   const fieldComponent = (
     <div className='flex flex-col gap-1'>
       {props.fieldComponents}
