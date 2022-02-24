@@ -12,11 +12,13 @@ type CommunitiesProps = {
 
 const Communities = (props: CommunitiesProps) => {
   const router = useRouter();
-  const [communities, setCommunities] = useState<Community[]>([]);
+  const [data, setData] = useState<{ community: Community; image: string }[]>(
+    []
+  );
 
   const findUserCommunities = async () => {
     const userNfts = await getUserNftsSolana(props.connectedWalletAddress);
-    checkMatches(userNfts, setCommunities);
+    checkMatches(userNfts, setData);
   };
 
   useEffect(() => {
@@ -25,14 +27,16 @@ const Communities = (props: CommunitiesProps) => {
 
   return (
     <div className='flex flex-wrap gap-12 p-12'>
-      {communities.length ? (
-        communities.map((community) => (
+      {data.length ? (
+        data.map((elem) => (
           <button
-            key={community.communityId}
+            key={elem.community.communityId}
             className='text-white rounded-full bg-primary h-44 w-44 hover:bg-primaryLight'
-            onClick={() => router.push(`/community/${community.communityId}`)}
+            onClick={() =>
+              router.push(`/community/${elem.community.communityId}`)
+            }
           >
-            {community.name}
+            {elem.community.name} {elem.image}
           </button>
         ))
       ) : (

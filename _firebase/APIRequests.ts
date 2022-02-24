@@ -143,19 +143,27 @@ export const togglePinned = async (projectId: string) => {
 
 // ==================== SOLANA NFTS ====================
 
-export const checkMatches = async (userNfts: string[], setCommunities: any) => {
-  let count = 0;
-  let list: Community[] = [];
-  userNfts.forEach(async (nft) => {
-    const match = await getDoc(doc(solNftTokenAddressesCollectionRef, nft));
-    if (match.exists()) {
+export const checkMatches = async (
+  userNfts: { tokenAddress: string; image: string }[],
+  setData: any
+) => {
+  let list: { community: Community; image: string }[] = [];
+
+  await Promise.all(
+    userNfts.map(async (nft) => {
+      const match = await getDoc(
+        doc(solNftTokenAddressesCollectionRef, nft.tokenAddress)
+      );
+      if (!match.exists()) return;
       const communityId = match.data()!.communityId;
       const community = await getDoc(
         doc(solNftCommunitiesCollectionRef, communityId)
       );
-      list.push({ communityId: communityId, name: community.data()!.name });
-    }
-    count++;
-    if (count === userNfts.length) setCommunities(list);
-  });
+      list.push({
+        community: { communityId: communityId, name: community.data()!.name },
+        image: nft.image,
+      });
+    })
+  );
+  setData(list);
 };
