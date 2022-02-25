@@ -1,4 +1,4 @@
 export type Community = {
-  communityId: string;
+  communityId?: string;
   name: string;
 };

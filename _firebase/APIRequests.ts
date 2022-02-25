@@ -28,6 +28,10 @@ const solNftCommunitiesCollectionRef = collection(
   firestore,
   'solNftCommunities'
 );
+const ethNftTokenAddressesCollectionRef = collection(
+  firestore,
+  'ethNftTokenAddresses'
+);
 
 // ============== PROFILE ==============
 
