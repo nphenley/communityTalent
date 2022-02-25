@@ -28,13 +28,14 @@ const SideBar = (props: SideBarProps) => {
       </button>
 
       <div className='flex flex-col grow gap-y-6'>
-        <button onClick={() => props.setToggleState(1)}>
+        <div>
           <SideBarIcon
             icon={<FaBriefcase size='20' />}
             text={'PROJECTS'}
-            active={props.toggleState === 1}
+            active={false}
+            wip={true}
           />
-        </button>
+        </div>
 
         <button onClick={() => props.setToggleState(2)}>
           <SideBarIcon
@@ -44,13 +45,14 @@ const SideBar = (props: SideBarProps) => {
           />
         </button>
 
-        <button onClick={() => props.setToggleState(3)}>
+        <div>
           <SideBarIcon
             icon={<FaNetworkWired size='25' />}
             text={'CONNECTIONS'}
-            active={props.toggleState === 3}
+            active={false}
+            wip={true}
           />
-        </button>
+        </div>
       </div>
     </div>
   );

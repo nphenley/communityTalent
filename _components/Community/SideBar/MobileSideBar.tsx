@@ -51,13 +51,14 @@ const MobileSideBar = (props: SideBarProps) => {
       </button>
 
       <div className='flex flex-col w-full grow gap-y-6 items-center'>
-        <button onClick={() => toggleState(1)} className='w-full'>
+        <div className='w-full'>
           <SideBarIcon
             icon={<FaBriefcase size='20' />}
             text={'Projects'}
             active={props.toggleState === 1}
+            wip={true}
           />
-        </button>
+        </div>
 
         <button onClick={() => toggleState(2)} className='w-full'>
           <SideBarIcon
@@ -67,13 +68,14 @@ const MobileSideBar = (props: SideBarProps) => {
           />
         </button>
 
-        <button onClick={() => toggleState(3)} className='w-full'>
+        <div className='w-full'>
           <SideBarIcon
             icon={<FaNetworkWired size='25' />}
             text={'Connections'}
             active={props.toggleState === 3}
+            wip={true}
           />
-        </button>
+        </div>
       </div>
     </div>
   );
