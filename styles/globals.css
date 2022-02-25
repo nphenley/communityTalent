@@ -101,11 +101,6 @@
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: hsl(325, 94%, 16%);
+  background: hsl(240, 41%, 55%);
   border-radius: 10px;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: 'hsl(325, 94%, 66%)';
 }
