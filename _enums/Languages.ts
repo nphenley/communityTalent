@@ -6,7 +6,7 @@ export enum Languages {
   ITALIAN = 'Italian',
   SWEDISH = 'Swedish',
   POLISH = 'Polish',
-  MANDARIN = 'Chinese',
+  MANDARIN = 'Mandarin',
   KOREAN = 'Korean',
   JAPANESE = 'Japanese',
   HINDI = 'Hindi',
