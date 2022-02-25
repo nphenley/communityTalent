@@ -21,9 +21,10 @@ import { getUserNftsSolana } from '_helpers/getUserNfts';
 
 const Community = () => {
   const router = useRouter();
-
   const communityId = router.query.communityId as string;
+
   const { isAuthUndefined, isAuthenticated, user } = useMoralis();
+
   const [loadingHasRequiredNft, setLoadingHasRequiredNft] = useState(true);
 
   const [loadingConnectionData, setLoadingConnectionData] = useState(true);
@@ -34,23 +35,6 @@ const Community = () => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [toggleState, setToggleState] = useState(2);
-
-  const updateHasRequiredNft = (hasRequiredNft: boolean) => {
-    if (!hasRequiredNft) {
-      router.push('/');
-    } else {
-      setLoadingHasRequiredNft(false);
-    }
-  };
-  const checkUserHasRequiredNft = async () => {
-    const userNfts = await getUserNftsSolana(connectionData!.address!);
-    checkMatchForCommunity(userNfts, communityId, updateHasRequiredNft);
-  };
-
-  useEffect(() => {
-    if (!connectionData) return;
-    checkUserHasRequiredNft();
-  }, [connectionData]);
 
   useEffect(() => {
     if (isAuthUndefined || !router.query.communityId) return;
@@ -72,13 +56,25 @@ const Community = () => {
     setLoadingConnectionData(false);
   };
 
-  const updateProfile = (profile: Profile) => {
-    setProfile(profile);
-    setLoadingProfile(false);
+  useEffect(() => {
+    if (!connectionData) return;
+    checkUserHasRequiredNft();
+  }, [connectionData]);
+
+  const checkUserHasRequiredNft = async () => {
+    const userNfts = await getUserNftsSolana(connectionData!.address!);
+    checkMatchForCommunity(userNfts, communityId, updateHasRequiredNft);
+  };
+
+  const updateHasRequiredNft = (hasRequiredNft: boolean) => {
+    if (!hasRequiredNft) {
+      router.push('/');
+    } else {
+      setLoadingHasRequiredNft(false);
+    }
   };
 
   useEffect(() => {
-    setLoadingProfile(true);
     if (!connectionData) {
       setLoadingProfile(false);
       return;
@@ -90,6 +86,11 @@ const Community = () => {
     );
     return unsubscribe;
   }, [connectionData]);
+
+  const updateProfile = (profile: Profile) => {
+    setProfile(profile);
+    setLoadingProfile(false);
+  };
 
   return (
     <ConnectionContext.Provider value={connectionData}>

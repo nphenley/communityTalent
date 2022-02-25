@@ -7,6 +7,8 @@ import {
 import SideBarIcon from '_components/Community/SideBar/SideBarIcon';
 import { profileNFTImages } from '_constants/dev';
 import Image from 'next/image';
+import { useContext } from 'react';
+import { ProfileContext } from '_contexts/ProfileContext';
 
 type SideBarProps = {
   isOpen: boolean;
@@ -16,6 +18,8 @@ type SideBarProps = {
 };
 
 const MobileSideBar = (props: SideBarProps) => {
+  const profile = useContext(ProfileContext);
+
   let containerClass =
     'absolute w-full z-50 bg-backgroundDark shadow-lg text-primary flex flex-col items-center min-h-screen ease-in-out duration-300';
   containerClass += props.isOpen ? ' translate-x-0' : ' -translate-x-full';
@@ -41,7 +45,7 @@ const MobileSideBar = (props: SideBarProps) => {
               <Image src={profileNFTImages[3]} height={150} width={150} />
             </div>
           }
-          text={'Richpepsi'}
+          text={profile!.displayName}
           active={props.toggleState === 4}
         />
       </button>
