@@ -9,8 +9,8 @@ export type Profile = {
   communityId: string;
   walletAddresses: string[];
   displayName: string;
-  twitterName?: string;
-  discordName?: string;
+  twitterHandle?: string;
+  discordUsername?: string;
   bio: string;
   lookingForWork: boolean;
   tags: Tags[];

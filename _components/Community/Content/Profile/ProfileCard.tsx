@@ -40,11 +40,11 @@ const ProfileCard = (props: ProfileCardProps) => {
         </div>
         <div className='flex flex-col h-full justify-center gap-1 mt-3'>
           <div className='font-bold'>{props.profile.displayName}</div>
-          {props.profile.displayName && (
-            <div className='text-grey'>@{props.profile.displayName}</div>
+          {props.profile.twitterHandle && (
+            <div className='text-grey'>{props.profile.twitterHandle}</div>
           )}
           <div className='text-grey'>
-            {props.profile.displayName && props.profile.displayName}#3200
+            {props.profile.discordUsername && props.profile.discordUsername}
           </div>
         </div>
       </div>
