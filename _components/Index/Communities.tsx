@@ -24,7 +24,11 @@ const Communities = (props: CommunitiesProps) => {
       checkMatches(userNfts, setData);
     }
     if (props.network === Networks.ETH) {
-      await getUserNftsEth(getNFTBalances, setData);
+      await getUserNftsEth(
+        getNFTBalances,
+        props.connectedWalletAddress,
+        setData
+      );
     }
   };
 

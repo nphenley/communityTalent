@@ -20,11 +20,15 @@ export const getUserNftsSolana = async (connectedWalletAddress: string) => {
   return mint;
 };
 
-export const getUserNftsEth = async (getNFTBalances: any, setData: any) => {
+export const getUserNftsEth = async (
+  getNFTBalances: any,
+  userAddress: string,
+  setData: any
+) => {
   const nfts = await getNFTBalances({
     params: {
       chain: 'eth',
-      address: '0x5487Bde943cC667D18FA5D1C7445A10CbB3a6e8D', //'0xDAF13057afA49d98a57F647603C06490F974e953', //'', //'0xDAF13057afA49d98a57F647603C06490F974e953',
+      address: userAddress,
     },
   });
 
