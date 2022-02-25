@@ -35,10 +35,10 @@ const Communities = (props: CommunitiesProps) => {
               router.push(`community/${elem.community.communityId}`)
             }
           >
-            <div className='flex justify-center overflow-hidden rounded-full'>
+            <div className='flex justify-center overflow-hidden rounded-full mb-2'>
               <img src={elem.image} height={150} width={150} />
             </div>
-            {elem.community.name}
+            <div>{elem.community.name}</div>
           </button>
         ))
       ) : (
