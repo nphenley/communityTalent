@@ -11,16 +11,18 @@ type ContentProps = {
 
 const Content = (props: ContentProps) => {
   return (
-    <div className='overflow-y-auto px-4 lg:px-0 lg:max-w-[96%] mx-auto w-full py-4'>
-      {props.toggleState === 1 ? (
-        <Projects />
-      ) : props.toggleState === 2 ? (
-        <Talent />
-      ) : props.toggleState === 3 ? (
-        <Connections />
-      ) : props.toggleState === 4 ? (
-        <Profile />
-      ) : null}
+    <div className='overflow-y-auto'>
+      <div className=' px-4 lg:px-0 lg:max-w-[96%] mx-auto w-full py-4'>
+        {props.toggleState === 1 ? (
+          <Projects />
+        ) : props.toggleState === 2 ? (
+          <Talent />
+        ) : props.toggleState === 3 ? (
+          <Connections />
+        ) : props.toggleState === 4 ? (
+          <Profile />
+        ) : null}
+      </div>
     </div>
   );
 };
