@@ -52,6 +52,12 @@ const EditProfileView = (props: EditProfileViewProps) => {
     control,
   });
 
+  const [showDiscord, setShowDiscord] = useState(
+    props.profile.discordUsername ? true : false
+  );
+  const [showTwitter, setShowTwitter] = useState(
+    props.profile.twitterHandle ? true : false
+  );
   const [showSkills, setShowSkills] = useState(
     props.profile.skills && props.profile.skills.length ? true : false
   );
@@ -155,10 +161,42 @@ const EditProfileView = (props: EditProfileViewProps) => {
               label={index === 0 ? 'Skills' : ''}
               name={`skills.${index}`}
               required={false}
-              maxLength={100}
+              maxLength={50}
             />
           ))}
         />
+        <OptionalWrapper
+          label='Discord Username'
+          fieldComponent={
+            <InputField
+              register={register}
+              label='Discord Username'
+              name='discordUsername'
+              defaultValue={props.profile.discordUsername}
+              required={true}
+              maxLength={40}
+            />
+          }
+          isFieldShown={showDiscord}
+          setIsFieldShown={setShowDiscord}
+        />
+
+        <OptionalWrapper
+          label='Twitter Handle'
+          fieldComponent={
+            <InputField
+              register={register}
+              label='Twitter Handle'
+              name='twitterHandle'
+              defaultValue={props.profile.twitterHandle}
+              required={true}
+              maxLength={20}
+            />
+          }
+          isFieldShown={showTwitter}
+          setIsFieldShown={setShowTwitter}
+        />
+
         <OptionalWrapper
           label='Experience'
           fieldComponent={
@@ -176,6 +214,7 @@ const EditProfileView = (props: EditProfileViewProps) => {
           isFieldShown={showExperience}
           setIsFieldShown={setShowExperience}
         />
+
         <OptionalWrapper
           label='Languages'
           fieldComponent={

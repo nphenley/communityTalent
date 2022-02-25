@@ -55,7 +55,7 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
   };
 
   const title = (
-    <h1 className='mb-4 text-3xl text-primary font-bold text-center'>
+    <h1 className='mb-4 text-3xl font-bold text-center text-primary'>
       Create Profile
     </h1>
   );
@@ -82,9 +82,9 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
   });
 
   return (
-    <div className='flex flex-col items-center grow bg-background overflow-y-auto pt-12 pb-16'>
+    <div className='flex flex-col items-center pt-12 pb-16 overflow-y-scroll grow bg-background'>
       <form
-        className='flex flex-col w-full gap-8 max-w-screen-sm px-10 sm:px-0'
+        className='flex flex-col w-full max-w-screen-sm gap-8 px-10 sm:px-0'
         onSubmit={handleSubmit(onSubmit)}
       >
         {title}
@@ -93,8 +93,16 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
           register={register}
           label='Display Name'
           name='displayName'
+          required={true}
+          maxLength={40}
         />
-        <LargeInputField register={register} label='Bio' name='bio' />
+        <LargeInputField
+          register={register}
+          label='Bio'
+          name='bio'
+          required={true}
+          maxLength={160}
+        />
         <StyledToggleField
           register={register}
           label='Looking for Work'
@@ -106,6 +114,34 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
           options={tagsOptions}
           name='tags'
         />
+        <OptionalWrapper
+          label='Discord Username'
+          fieldComponent={
+            <InputField
+              register={register}
+              label='Discord Username'
+              name='discordUsername'
+              required={true}
+              maxLength={40}
+            />
+          }
+          reset={() => unregister('discordUsername')}
+        />
+
+        <OptionalWrapper
+          label='Twitter Handle'
+          fieldComponent={
+            <InputField
+              register={register}
+              label='Twitter Handle'
+              name='twitterHandle'
+              required={true}
+              maxLength={40}
+            />
+          }
+          reset={() => unregister('twitterHandle')}
+        />
+
         <ArrayInput
           label='Skills'
           fieldName='Skill'
@@ -118,6 +154,8 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
               register={register}
               label={index === 0 ? 'Skills' : ''}
               name={`skills.${index}`}
+              required={false}
+              maxLength={100}
             />
           ))}
         />
@@ -129,6 +167,8 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
               register={register}
               label='Experience'
               name='experience'
+              required={false}
+              maxLength={500}
             />
           }
         />
@@ -152,6 +192,8 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
               register={register}
               label='Connections'
               name='connections'
+              required={false}
+              maxLength={500}
             />
           }
         />
@@ -167,11 +209,13 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
               register={register}
               label={index === 0 ? 'Relevant Links' : ''}
               name={`relevantLinks.${index}`}
+              required={false}
+              maxLength={40}
             />
           ))}
         />
         <input
-          className='p-4 bg-primary rounded-lg hover:bg-primaryLight hover:cursor-pointer'
+          className='p-4 rounded-lg bg-primary hover:bg-primaryLight hover:cursor-pointer'
           type='submit'
         />
       </form>
@@ -185,14 +229,16 @@ type InputFieldProps = {
   register: any;
   label: string;
   name: string;
+  required: boolean;
+  maxLength: number;
 };
 
 const InputField = (props: InputFieldProps) => {
   return (
-    <div className='flex flex-col gap-4 sm:gap-0 sm:flex-row items-center px-2'>
-      <label className='sm:w-1/3 text-primary text-center'>{props.label}</label>
+    <div className='flex flex-col items-center gap-4 px-2 sm:gap-0 sm:flex-row'>
+      <label className='text-center sm:w-1/3 text-primary'>{props.label}</label>
       <input
-        className='w-full sm:w-fit grow p-3 bg-backgroundDark rounded-lg'
+        className='w-full p-3 rounded-lg sm:w-fit grow bg-backgroundDark'
         placeholder={props.label}
         {...props.register(props.name)}
       />
@@ -204,15 +250,16 @@ type LargeInputFieldProps = {
   register: any;
   label: string;
   name: string;
+  required: boolean;
   maxLength?: number;
 };
 
 const LargeInputField = (props: LargeInputFieldProps) => {
   return (
-    <div className='flex flex-col gap-4 sm:gap-0 sm:flex-row items-center px-2'>
-      <label className='sm:w-1/3 text-primary text-center'>{props.label}</label>
+    <div className='flex flex-col items-center gap-4 px-2 sm:gap-0 sm:flex-row'>
+      <label className='text-center sm:w-1/3 text-primary'>{props.label}</label>
       <textarea
-        className='w-full sm:w-fit grow h-60 sm:h-40 p-5 bg-backgroundDark rounded-lg resize-none'
+        className='w-full p-5 rounded-lg resize-none sm:w-fit grow h-60 sm:h-40 bg-backgroundDark'
         placeholder={props.label}
         maxLength={props.maxLength ? props.maxLength : 300}
         {...props.register(props.name)}
@@ -246,7 +293,7 @@ const OptionalWrapper = (props: OptionalWrapperProps) => {
         <>
           {props.fieldComponent}
           <button
-            className='absolute -top-2 sm:-top-1 right-5 rounded-lg text-backgroundLight font-bold text-3xl'
+            className='absolute text-3xl font-bold rounded-lg -top-2 sm:-top-1 right-5 text-backgroundLight'
             onClick={hideField}
           >
             -
@@ -255,7 +302,7 @@ const OptionalWrapper = (props: OptionalWrapperProps) => {
       ) : (
         <div
           onClick={showField}
-          className='mx-2 border-dashed border-2 border-backgroundLight rounded-lg p-6 text-center hover:cursor-pointer font-bold text-backgroundLight'
+          className='p-6 mx-2 font-bold text-center border-2 border-dashed rounded-lg border-backgroundLight hover:cursor-pointer text-backgroundLight'
         >
           + {props.label}
         </div>
@@ -286,16 +333,16 @@ const ArrayInput = (props: ArrayInputProps) => {
   const fieldComponent = (
     <div className='flex flex-col gap-1'>
       {props.fieldComponents}
-      <div className='mt-2 text-primary flex justify-center gap-2'>
+      <div className='flex justify-center gap-2 mt-2 text-primary'>
         <button
-          className='font-bold px-3 py-1 bg-backgroundDark rounded-lg'
+          className='px-3 py-1 font-bold rounded-lg bg-backgroundDark'
           onClick={addField}
           type='button'
         >
           +
         </button>
         <button
-          className='font-bold px-3 py-1 bg-backgroundDark rounded-lg'
+          className='px-3 py-1 font-bold rounded-lg bg-backgroundDark'
           onClick={removeField}
           type='button'
         >
@@ -330,8 +377,8 @@ const SelectField = (props: SelectFieldProps) => {
   };
 
   return (
-    <div className='flex flex-col gap-4 sm:gap-0 sm:flex-row items-center px-2'>
-      <label className='sm:w-1/3 text-primary text-center'>{props.label}</label>
+    <div className='flex flex-col items-center gap-4 px-2 sm:gap-0 sm:flex-row'>
+      <label className='text-center sm:w-1/3 text-primary'>{props.label}</label>
 
       <Controller
         control={props.control}
