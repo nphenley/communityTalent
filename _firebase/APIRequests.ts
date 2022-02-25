@@ -5,51 +5,107 @@ import {
   Timestamp,
   getDocs,
   query,
+  getDoc,
   orderBy,
   where,
   doc,
   updateDoc,
   increment,
+  onSnapshot,
 } from 'firebase/firestore';
-import { Job } from 'types/Job';
-import { Profile } from 'types/Profile';
+import { Project } from '_types/Project';
+import { Profile } from '_types/Profile';
+import { Community } from '_types/Community';
 
-const jobsCollectionRef = collection(firestore, 'jobs');
+const projectsCollectionRef = collection(firestore, 'projects');
 const pinsCollectionRef = collection(firestore, 'pins');
 const profileCollectionRef = collection(firestore, 'profiles');
+const solNftTokenAddressesCollectionRef = collection(
+  firestore,
+  'solNftTokenAddresses'
+);
+const solNftCommunitiesCollectionRef = collection(
+  firestore,
+  'solNftCommunities'
+);
 
 // ============== PROFILE ==============
 
-export const createProfile = async (profile: Profile) => {
-  const docRef = await addDoc(collection(firestore, 'profiles'), {
-    ...profile,
-    dateCreated: Timestamp.now(),
-    dateLastUpdated: Timestamp.now(),
-  });
-  return docRef.id;
-};
-
-// ============== JOBS ==============
-
-export const createJob = (job: Job) => {
-  addDoc(collection(firestore, 'jobs'), {
-    ...job,
+export const createProfile = async (profileData: Partial<Profile>) => {
+  addDoc(collection(firestore, 'profiles'), {
+    ...profileData,
     dateCreated: Timestamp.now(),
     dateLastUpdated: Timestamp.now(),
   });
 };
 
-export const getJobs = async (setJobs: any) => {
-  const data = await getDocs(
-    query(jobsCollectionRef, orderBy('dateCreated', 'desc'))
+export const updateProfile = async (
+  profileId: string,
+  data: Partial<Profile>
+) => {
+  const docRef = await updateDoc(doc(firestore, 'profiles', profileId), {
+    ...data,
+    dateLastUpdated: Timestamp.now(),
+  });
+  return docRef;
+};
+
+export const subscribeToProfile = (
+  communityId: string,
+  walletAddress: string,
+  updateProfile: any
+) => {
+  return onSnapshot(
+    query(
+      profileCollectionRef,
+      where('walletAddress', '==', walletAddress),
+      where('communityId', '==', communityId)
+    ),
+    (snapshot) =>
+      updateProfile(
+        snapshot.docs.length
+          ? { ...snapshot.docs[0].data(), id: snapshot.docs[0].id }
+          : undefined
+      )
   );
-  setJobs(
+};
+
+export const getProfiles = async (communityId: string, updateProfiles: any) => {
+  const data = await getDocs(
+    query(profileCollectionRef, where('communityId', '==', communityId))
+  );
+  updateProfiles(
     data.docs.map(
       (doc) =>
         ({
           ...doc.data(),
           id: doc.id,
-        } as Job)
+        } as Profile)
+    )
+  );
+};
+
+// ============== PROJECTS ==============
+
+export const createProject = (project: Project) => {
+  addDoc(collection(firestore, 'projects'), {
+    ...project,
+    dateCreated: Timestamp.now(),
+    dateLastUpdated: Timestamp.now(),
+  });
+};
+
+export const getProjects = async (setProjects: any) => {
+  const data = await getDocs(
+    query(projectsCollectionRef, orderBy('dateCreated', 'desc'))
+  );
+  setProjects(
+    data.docs.map(
+      (doc) =>
+        ({
+          ...doc.data(),
+          id: doc.id,
+        } as Project)
     )
   );
 };
@@ -59,30 +115,60 @@ export const getPins = async (walletAddress: string, setPins: any) => {
     query(pinsCollectionRef, where('user', '==', walletAddress))
   );
   let pins: string[] = [];
-  userPins.docs.map((doc) => pins.push(doc.data().job));
+  userPins.docs.map((doc) => pins.push(doc.data().project));
   setPins(pins);
-};
-
-export const getProfileId = async (
-  communityId: string,
-  walletAddress: string
-) => {
-  console.log(communityId, walletAddress);
-  const profileId = await getDocs(
-    query(
-      profileCollectionRef,
-      where('walletAddresses', 'array-contains', walletAddress),
-      where('communityId', '==', communityId)
-    )
-  );
-  console.log(profileId.docs.length);
-  return profileId.docs.length !== 0 ? profileId.docs[0].id : undefined;
 };
 
 // TODO:
 // Atm only increments, otherwise toggle pinned
-export const togglePinned = async (jobId: string) => {
-  updateDoc(doc(jobsCollectionRef, jobId), {
+export const togglePinned = async (projectId: string) => {
+  updateDoc(doc(projectsCollectionRef, projectId), {
     numberOfPins: increment(1),
   });
+};
+
+// ==================== SOLANA NFTS ====================
+
+export const checkMatches = async (
+  userNfts: { tokenAddress: string; image: string }[],
+  setData: any
+) => {
+  let list: { community: Community; image: string }[] = [];
+
+  await Promise.all(
+    userNfts.map(async (nft) => {
+      const match = await getDoc(
+        doc(solNftTokenAddressesCollectionRef, nft.tokenAddress)
+      );
+      if (!match.exists()) return;
+      const communityId = match.data()!.communityId;
+      const community = await getDoc(
+        doc(solNftCommunitiesCollectionRef, communityId)
+      );
+      list.push({
+        community: { communityId: communityId, name: community.data()!.name },
+        image: nft.image,
+      });
+    })
+  );
+  setData(list);
+};
+
+export const checkMatchForCommunity = async (
+  userNfts: { tokenAddress: string; image: string }[],
+  communityId: string,
+  updateHasRequiredNft: any
+) => {
+  let hasRequiredNft = false;
+  await Promise.all(
+    userNfts.map(async (nft) => {
+      const match = await getDoc(
+        doc(solNftTokenAddressesCollectionRef, nft.tokenAddress)
+      );
+      if (match.exists() && match.data().communityId === communityId) {
+        hasRequiredNft = true;
+      }
+    })
+  );
+  updateHasRequiredNft(hasRequiredNft);
 };

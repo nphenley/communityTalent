@@ -1,0 +1,17 @@
+export enum Tags {
+  ART = 'Art',
+  GRAPHIC_DESIGN = 'Graphic Design',
+  ANIMATION = 'Animation',
+  MUSIC = 'Music',
+  WRITING = 'Writing',
+  DIGITAL_ART = 'Digital Art',
+  PHYSICAL_ART = 'Physical Art',
+  DEV = 'Dev',
+  FRONTEND_DEV = 'Frontend Dev',
+  BACKEND_DEV = 'Backend Dev',
+  BLOCKCHAIN_DEV = 'Blockchain Dev',
+  DEV_OPS = 'Dev Ops',
+  COMMUNITY = 'Community',
+  MARKETING = 'Marketing',
+  MERCH = 'Merch',
+}

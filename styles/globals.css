@@ -1,3 +1,112 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* LOADING SPINNER  */
+
+.loadingSpinner {
+  border: 8px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  border-top: 8px solid rgba(255, 255, 255, 0.7);
+  width: 60px;
+  height: 60px;
+  -webkit-animation: spin 1.2s linear infinite; /* Safari */
+  animation: spin 1.2s linear infinite;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* REACT-SELECT  */
+
+.profile-form__control {
+  border: 0px !important;
+  background-color: hsl(240, 41%, 10%) !important;
+  color: white !important;
+  border-radius: 8px !important;
+  padding: 12px !important;
+}
+
+.profile-form__value-container {
+  color: white !important;
+  border-radius: 10px !important;
+}
+
+.profile-form__indicators {
+  display: none !important;
+}
+
+.profile-form__menu {
+  color: white !important;
+}
+
+.profile-form__menu-list {
+  color: white !important;
+  background-color: hsl(240, 41%, 10%) !important;
+}
+
+.profile-form__option {
+  color: white !important;
+  background-color: hsl(240, 41%, 10%) !important;
+}
+
+.profile-form__multi-value {
+  background-color: hsl(325, 94%, 66%) !important;
+  padding: 4px !important;
+  margin-right: 4px !important;
+  border-radius: 8px !important;
+}
+
+.profile-form__multi-value__label {
+  color: white !important;
+}
+
+.profile-form__multi-value__remove:hover {
+  background-color: hsl(325, 94%, 66%) !important;
+}
+
+.profile-form__input-container {
+  margin-left: 10px !important;
+  color: white !important;
+}
+
+/* SCROLLBAR  */
+
+/* width */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: hsla(240, 41%, 30%, 0.5);
+  border-radius: 10px;
+  height: 50px !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsla(240, 41%, 30%, 1);
+  border-radius: 10px;
+  height: 50px !important;
+}

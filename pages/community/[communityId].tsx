@@ -1,42 +1,40 @@
-import SideBar from 'components/Community/SideBar/SideBar';
-import Content from 'components/Community/Content/Content';
-import TopBar from 'components/Community/TopBar';
-import MobileSideBar from 'components/Community/SideBar/MobileSideBar';
+import SideBar from '_components/Community/SideBar/SideBar';
+import Content from '_components/Community/Content/Content';
+import TopBar from '_components/Community/TopBar';
+import MobileSideBar from '_components/Community/SideBar/MobileSideBar';
 import { useState, useEffect } from 'react';
-import { ConnectionData } from 'types/ConnectionData';
-import { ConnectionContext } from 'contexts/ConnectionContext';
-import { getProfileId } from '_firebase/APIRequests';
+import { ConnectionData } from '_types/ConnectionData';
+import { ConnectionContext } from '_contexts/ConnectionContext';
+import {
+  checkMatchForCommunity,
+  subscribeToProfile,
+} from '_firebase/APIRequests';
 import { useMoralis } from 'react-moralis';
 import { useRouter } from 'next/router';
-import CreateProfileView from 'components/Community/CreateProfileView';
-import LoadingSpinner from 'styled/LoadingSpinner';
+import CreateProfile from '_components/Community/CreateProfile';
+import LoadingSpinner from '_styled/LoadingSpinner';
+import Head from 'next/head';
+import { Profile } from '_types/Profile';
+import { Networks } from '_enums/Networks';
+import { ProfileContext } from '_contexts/ProfileContext';
+import { getUserNftsSolana } from '_helpers/getUserNfts';
 
 const Community = () => {
   const router = useRouter();
   const communityId = router.query.communityId as string;
+
   const { isAuthUndefined, isAuthenticated, user } = useMoralis();
+
+  const [loadingHasRequiredNft, setLoadingHasRequiredNft] = useState(true);
+
+  const [loadingConnectionData, setLoadingConnectionData] = useState(true);
   const [connectionData, setConnectionData] = useState<ConnectionData>();
 
-  const [loading, setLoading] = useState(true);
+  const [loadingProfile, setLoadingProfile] = useState(true);
+  const [profile, setProfile] = useState<Profile>();
+
   const [isOpen, setIsOpen] = useState(false);
-
-  const [toggleState, setToggleState] = useState(1);
-
-  const initConnectionData = async () => {
-    setLoading(true);
-    const isEth = user!.attributes.ethAddress ? true : false;
-    const connectedWalletAddress = isEth
-      ? user!.attributes.ethAddress
-      : user!.attributes.solAddress;
-
-    const profileId = await getProfileId(communityId, connectedWalletAddress);
-
-    setConnectionData({
-      wallet: { isEth: isEth, address: connectedWalletAddress },
-      profileId: profileId,
-    });
-    setLoading(false);
-  };
+  const [toggleState, setToggleState] = useState(2);
 
   useEffect(() => {
     if (isAuthUndefined || !router.query.communityId) return;
@@ -47,54 +45,109 @@ const Community = () => {
     initConnectionData();
   }, [isAuthUndefined, isAuthenticated, router.query]);
 
+  const initConnectionData = async () => {
+    setLoadingConnectionData(true);
+    setConnectionData({
+      network: user!.attributes.ethAddress ? Networks.ETH : Networks.SOL,
+      address: user!.attributes.ethAddress
+        ? user!.attributes.ethAddress
+        : user!.attributes.solAddress,
+    });
+    setLoadingConnectionData(false);
+  };
+
+  useEffect(() => {
+    if (!connectionData) return;
+    checkUserHasRequiredNft();
+  }, [connectionData]);
+
+  const checkUserHasRequiredNft = async () => {
+    const userNfts = await getUserNftsSolana(connectionData!.address!);
+    checkMatchForCommunity(userNfts, communityId, updateHasRequiredNft);
+  };
+
+  const updateHasRequiredNft = (hasRequiredNft: boolean) => {
+    if (!hasRequiredNft) {
+      router.push('/');
+    } else {
+      setLoadingHasRequiredNft(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!connectionData) {
+      setLoadingProfile(false);
+      return;
+    }
+    const unsubscribe = subscribeToProfile(
+      communityId,
+      connectionData?.address,
+      updateProfile
+    );
+    return unsubscribe;
+  }, [connectionData]);
+
+  const updateProfile = (profile: Profile) => {
+    setProfile(profile);
+    setLoadingProfile(false);
+  };
+
   return (
     <ConnectionContext.Provider value={connectionData}>
-      <div className='flex h-screen'>
-        {loading || isAuthUndefined ? (
-          <LoadingSpinner />
-        ) : !connectionData!.profileId ? (
-          <div className='flex flex-col w-full'>
-            <TopBar
-              isOpen={false}
-              hideHamburgerMenu={true}
-              setIsOpen={undefined}
-            />
-            <CreateProfileView
-              communityId={communityId}
-              setConnectionData={setConnectionData}
-            />
-          </div>
-        ) : (
-          <>
-            <div className='hidden sm:block'>
-              <SideBar
-                isOpen={isOpen}
-                setIsOpen={setIsOpen}
-                toggleState={toggleState}
-                setToggleState={setToggleState}
-              />
-            </div>
-            <div className='block sm:hidden'>
-              <MobileSideBar
-                isOpen={isOpen}
-                setIsOpen={setIsOpen}
-                toggleState={toggleState}
-                setToggleState={setToggleState}
-              />
-            </div>
+      <ProfileContext.Provider value={profile}>
+        <Head>
+          <title>community/{communityId}</title>
+          <meta
+            name='viewport'
+            content='initial-scale=1.0, width=device-width'
+          />
+        </Head>
 
-            <div className='flex flex-col grow'>
-              <TopBar isOpen={isOpen} setIsOpen={setIsOpen} />
-
-              <Content
-                isOpen={isOpen}
-                setIsOpen={setIsOpen}
-                toggleState={toggleState}
+        <div className='flex h-screen text-white break-words bg-background'>
+          {isAuthUndefined ||
+          loadingConnectionData ||
+          loadingHasRequiredNft ||
+          loadingProfile ? (
+            <LoadingSpinner />
+          ) : !profile ? (
+            <div className='flex flex-col w-full'>
+              <TopBar
+                isOpen={false}
+                hideHamburgerMenu={true}
+                setIsOpen={undefined}
               />
+              <CreateProfile communityId={communityId} />
             </div>
-          </>
-        )}
-      </div>
+          ) : (
+            <>
+              <div className='hidden md:block'>
+                <SideBar
+                  toggleState={toggleState}
+                  setToggleState={setToggleState}
+                />
+              </div>
+              <div className='block md:hidden'>
+                <MobileSideBar
+                  isOpen={isOpen}
+                  setIsOpen={setIsOpen}
+                  toggleState={toggleState}
+                  setToggleState={setToggleState}
+                />
+              </div>
+
+              <div className='flex flex-col grow'>
+                <TopBar isOpen={isOpen} setIsOpen={setIsOpen} />
+
+                <Content
+                  isOpen={isOpen}
+                  setIsOpen={setIsOpen}
+                  toggleState={toggleState}
+                />
+              </div>
+            </>
+          )}
+        </div>
+      </ProfileContext.Provider>
     </ConnectionContext.Provider>
   );
 };
