@@ -1,5 +1,3 @@
-export const communityId = 'testCommunityId';
-
 export const profileNFTImages = [
   '/assets/1.webp',
   '/assets/2.webp',

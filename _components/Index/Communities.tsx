@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { getUserNftsSolana } from '_helpers/getUserNfts';
 import { Networks } from '_enums/Networks';
 import { Community } from '_types/Community';
-import Image from 'next/image';
 
 type CommunitiesProps = {
   network: Networks;
@@ -31,14 +30,12 @@ const Communities = (props: CommunitiesProps) => {
       {data.length ? (
         data.map((elem) => (
           <button
+            key={elem.community.communityId}
             onClick={() =>
               router.push(`community/${elem.community.communityId}`)
             }
           >
-            <div
-              key={elem.community.communityId}
-              className='flex justify-center overflow-hidden rounded-full'
-            >
+            <div className='flex justify-center overflow-hidden rounded-full'>
               <img src={elem.image} height={150} width={150} />
             </div>
             {elem.community.name}

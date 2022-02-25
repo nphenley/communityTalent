@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { useState } from 'react';
-import { profileNFTImages } from '_constants/hardcoded';
+import { profileNFTImages } from '_constants/dev';
 import { Profile } from '_types/Profile';
 import { GiPlainCircle } from 'react-icons/gi';
 

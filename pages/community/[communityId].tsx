@@ -29,6 +29,8 @@ const Community = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [toggleState, setToggleState] = useState(2);
 
+  // TODO:
+  // Verify user has chimpion in wallet.
   useEffect(() => {
     if (isAuthUndefined || !router.query.communityId) return;
     if (!isAuthenticated) {

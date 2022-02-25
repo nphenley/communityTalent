@@ -1,11 +1,12 @@
 import { getParsedNftAccountsByOwner } from '@nfteyez/sol-rayz';
 import { Connection } from '@solana/web3.js';
+import { mainNetUrl } from '_constants/solanaConstants';
 
 export const getUserNftsSolana = async (connectedWalletAddress: string) => {
   let mint: { tokenAddress: string; image: string }[] = [];
   const nfts = await getParsedNftAccountsByOwner({
     publicAddress: connectedWalletAddress,
-    connection: new Connection('https://api.mainnet-beta.solana.com'),
+    connection: new Connection(mainNetUrl),
   });
   await Promise.all(
     nfts.map(async (nft) => {

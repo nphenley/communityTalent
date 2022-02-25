@@ -1,7 +1,7 @@
 import { FaIdCard, FaNetworkWired, FaBriefcase } from 'react-icons/fa';
 import SideBarIcon from '_components/Community/SideBar/SideBarIcon';
 import Image from 'next/image';
-import { profileNFTImages } from '_constants/hardcoded';
+import { profileNFTImages } from '_constants/dev';
 import { useContext } from 'react';
 import { ProfileContext } from '_contexts/ProfileContext';
 

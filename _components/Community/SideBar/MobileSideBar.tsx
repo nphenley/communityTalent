@@ -5,7 +5,7 @@ import {
   FaArrowLeft,
 } from 'react-icons/fa';
 import SideBarIcon from '_components/Community/SideBar/SideBarIcon';
-import { profileNFTImages } from '_constants/hardcoded';
+import { profileNFTImages } from '_constants/dev';
 import Image from 'next/image';
 
 type SideBarProps = {
