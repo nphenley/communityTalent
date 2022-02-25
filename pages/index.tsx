@@ -26,10 +26,13 @@ export default function Home() {
       <NavBar />
       <div className='grow'>
         {isAuthenticated ? (
-          <Communities
-            network={network}
-            connectedWalletAddress={connectedWalletAddress}
-          />
+          <div>
+            <DisconnectButton />
+            <Communities
+              network={network}
+              connectedWalletAddress={connectedWalletAddress}
+            />
+          </div>
         ) : (
           <ConnectView />
         )}
@@ -46,6 +49,18 @@ const NavBar = () => {
   return (
     <div className='w-full p-8 text-xl font-bold text-center uppercase'>
       3 Talent
+    </div>
+  );
+};
+
+const DisconnectButton = () => {
+  const { logout } = useMoralis();
+
+  return (
+    <div className='absolute right-3 top-6'>
+      <button onClick={() => logout()} className='p-2 rounded-full'>
+        Disconnect
+      </button>
     </div>
   );
 };
