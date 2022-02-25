@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+/* LOADING SPINNER  */
+
 .loadingSpinner {
   border: 8px solid rgba(255, 255, 255, 0.2);
   border-radius: 50%;
@@ -30,6 +32,8 @@
     transform: rotate(360deg);
   }
 }
+
+/* REACT-SELECT  */
 
 .profile-form__control {
   border: 0px !important;
@@ -81,4 +85,27 @@
 .profile-form__input-container {
   margin-left: 10px !important;
   color: white !important;
+}
+
+/* SCROLLBAR  */
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: hsl(240, 41%, 10%);
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
