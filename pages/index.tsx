@@ -3,9 +3,19 @@ import Head from 'next/head';
 
 import Communities from '_components/Index/Communities';
 import ConnectView from '_components/Index/ConnectView';
+import { Networks } from '_enums/Networks';
 
 export default function Home() {
-  const { isAuthenticated } = useMoralis();
+  const { isAuthenticated, user } = useMoralis();
+
+  const network: Networks = user?.attributes.ethAddress
+    ? Networks.ETH
+    : Networks.SOL;
+
+  const connectedWalletAddress =
+    network === Networks.ETH
+      ? user?.attributes.ethAddress
+      : user?.attributes.solAddress;
 
   return (
     <div className='flex flex-col h-screen bg-background text-primary'>
@@ -15,7 +25,17 @@ export default function Home() {
       </Head>
       <NavBar />
       <div className='grow'>
-        {isAuthenticated ? <Communities /> : <ConnectView />}
+        {isAuthenticated ? (
+          <div>
+            <DisconnectButton />
+            <Communities
+              network={network}
+              connectedWalletAddress={connectedWalletAddress}
+            />
+          </div>
+        ) : (
+          <ConnectView />
+        )}
       </div>
     </div>
   );
@@ -27,8 +47,20 @@ export default function Home() {
 
 const NavBar = () => {
   return (
-    <div className='w-full text-center uppercase text-xl p-8 font-bold'>
+    <div className='w-full p-8 text-xl font-bold text-center uppercase'>
       3 Talent
+    </div>
+  );
+};
+
+const DisconnectButton = () => {
+  const { logout } = useMoralis();
+
+  return (
+    <div className='absolute right-3 top-6'>
+      <button onClick={() => logout()} className='p-2 rounded-full'>
+        Disconnect
+      </button>
     </div>
   );
 };

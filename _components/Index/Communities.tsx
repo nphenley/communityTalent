@@ -1,29 +1,52 @@
 import { useRouter } from 'next/router';
-import { communityId } from '_constants/hardcoded';
+import { checkMatches } from '_firebase/APIRequests';
+import { useEffect, useState } from 'react';
+import { getUserNftsSolana } from '_helpers/getUserNfts';
+import { Networks } from '_enums/Networks';
+import { Community } from '_types/Community';
+import Image from 'next/image';
 
-const Communities = () => {
+type CommunitiesProps = {
+  network: Networks;
+  connectedWalletAddress: string;
+};
+
+const Communities = (props: CommunitiesProps) => {
   const router = useRouter();
+  const [data, setData] = useState<{ community: Community; image: string }[]>(
+    []
+  );
+
+  const findUserCommunities = async () => {
+    const userNfts = await getUserNftsSolana(props.connectedWalletAddress);
+    checkMatches(userNfts, setData);
+  };
+
+  useEffect(() => {
+    findUserCommunities();
+  }, []);
 
   return (
-    <div className='p-12 flex flex-wrap gap-12'>
-      <button
-        className='rounded-full text-white bg-primary h-44 w-44 hover:bg-primaryLight'
-        onClick={() => router.push(`/community/${communityId}`)}
-      >
-        Test Community
-      </button>
-      <button
-        className='rounded-full text-white bg-primary h-44 w-44 hover:bg-primaryLight'
-        onClick={() => router.push(`/community/${communityId}`)}
-      >
-        Test Community
-      </button>
-      <button
-        className='rounded-full text-white bg-primary h-44 w-44 hover:bg-primaryLight'
-        onClick={() => router.push(`/community/${communityId}`)}
-      >
-        Test Community
-      </button>
+    <div className='flex flex-wrap gap-12 p-12'>
+      {data.length ? (
+        data.map((elem) => (
+          <button
+            onClick={() =>
+              router.push(`community/${elem.community.communityId}`)
+            }
+          >
+            <div
+              key={elem.community.communityId}
+              className='flex justify-center overflow-hidden rounded-full'
+            >
+              <img src={elem.image} height={150} width={150} />
+            </div>
+            {elem.community.name}
+          </button>
+        ))
+      ) : (
+        <div>You are not eligible to join any communities!</div>
+      )}
     </div>
   );
 };
