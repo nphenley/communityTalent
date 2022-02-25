@@ -29,21 +29,6 @@ const Talent = () => {
           <ProfileCard profile={profile} />
         </div>
       ))}
-      {profiles.map((profile) => (
-        <div className='flex flex-col items-center' key={profile.id}>
-          <ProfileCard profile={profile} />
-        </div>
-      ))}
-      {profiles.map((profile) => (
-        <div className='flex flex-col items-center' key={profile.id}>
-          <ProfileCard profile={profile} />
-        </div>
-      ))}
-      {profiles.map((profile) => (
-        <div className='flex flex-col items-center' key={profile.id}>
-          <ProfileCard profile={profile} />
-        </div>
-      ))}
     </div>
   );
 };

@@ -123,7 +123,7 @@ const EditProfileView = (props: EditProfileViewProps) => {
           name='displayName'
           defaultValue={props.profile.displayName}
           required={true}
-          maxLength={40}
+          maxLength={34}
         />
         <LargeInputField
           register={register}
@@ -146,6 +146,37 @@ const EditProfileView = (props: EditProfileViewProps) => {
           name='tags'
           defaultValues={props.profile.tags ? props.profile.tags : []}
         />
+        <OptionalWrapper
+          label='Discord Username'
+          fieldComponent={
+            <InputField
+              register={register}
+              label='Discord Username'
+              name='discordUsername'
+              defaultValue={props.profile.discordUsername}
+              required={true}
+              maxLength={37}
+            />
+          }
+          isFieldShown={showDiscord}
+          setIsFieldShown={setShowDiscord}
+        />
+
+        <OptionalWrapper
+          label='Twitter Handle'
+          fieldComponent={
+            <InputField
+              register={register}
+              label='Twitter Handle'
+              name='twitterHandle'
+              defaultValue={props.profile.twitterHandle}
+              required={true}
+              maxLength={16}
+            />
+          }
+          isFieldShown={showTwitter}
+          setIsFieldShown={setShowTwitter}
+        />
         <ArrayInput
           label='Skills'
           fieldName='Skill'
@@ -164,37 +195,6 @@ const EditProfileView = (props: EditProfileViewProps) => {
               maxLength={50}
             />
           ))}
-        />
-        <OptionalWrapper
-          label='Discord Username'
-          fieldComponent={
-            <InputField
-              register={register}
-              label='Discord Username'
-              name='discordUsername'
-              defaultValue={props.profile.discordUsername}
-              required={true}
-              maxLength={40}
-            />
-          }
-          isFieldShown={showDiscord}
-          setIsFieldShown={setShowDiscord}
-        />
-
-        <OptionalWrapper
-          label='Twitter Handle'
-          fieldComponent={
-            <InputField
-              register={register}
-              label='Twitter Handle'
-              name='twitterHandle'
-              defaultValue={props.profile.twitterHandle}
-              required={true}
-              maxLength={20}
-            />
-          }
-          isFieldShown={showTwitter}
-          setIsFieldShown={setShowTwitter}
         />
 
         <OptionalWrapper
@@ -451,23 +451,24 @@ const SelectField = (props: SelectFieldProps) => {
   });
 
   return (
-    <div className='flex flex-col items-center gap-4 px-2 sm:gap-0 sm:flex-row'>
-      <label className='text-center sm:w-1/3 text-primary'>{props.label}</label>
-
-      <Controller
-        control={props.control}
-        name={props.name}
-        render={({ field: { onChange } }) => (
-          <Select
-            className='grow'
-            classNamePrefix='profile-form'
-            onChange={(e) => onValueChange(e, onChange)}
-            options={props.options}
-            defaultValue={defaultValues}
-            isMulti
-          />
-        )}
-      />
+    <div className='grid grid-cols-1 items-center sm:grid-cols-3 px-2 space-y-2 -mt-1'>
+      <label className='text-center text-primary'>{props.label}</label>
+      <div className='col-span-2'>
+        <Controller
+          control={props.control}
+          name={props.name}
+          render={({ field: { onChange } }) => (
+            <Select
+              className='grow'
+              classNamePrefix='profile-form'
+              onChange={(e) => onValueChange(e, onChange)}
+              options={props.options}
+              defaultValue={defaultValues}
+              isMulti
+            />
+          )}
+        />
+      </div>
     </div>
   );
 };

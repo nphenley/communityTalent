@@ -50,7 +50,7 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
     createProfile({
       ...data,
       communityId: props.communityId,
-      walletAddresses: [connectionData!.address],
+      walletAddress: connectionData!.address,
     } as Partial<Profile>);
   };
 
@@ -94,7 +94,7 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
           label='Display Name'
           name='displayName'
           required={true}
-          maxLength={40}
+          maxLength={34}
         />
         <LargeInputField
           register={register}
@@ -122,7 +122,7 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
               label='Discord Username'
               name='discordUsername'
               required={true}
-              maxLength={40}
+              maxLength={37}
             />
           }
           reset={() => unregister('discordUsername')}
@@ -136,7 +136,7 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
               label='Twitter Handle'
               name='twitterHandle'
               required={true}
-              maxLength={40}
+              maxLength={16}
             />
           }
           reset={() => unregister('twitterHandle')}
@@ -155,7 +155,7 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
               label={index === 0 ? 'Skills' : ''}
               name={`skills.${index}`}
               required={false}
-              maxLength={100}
+              maxLength={50}
             />
           ))}
         />

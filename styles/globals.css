@@ -39,13 +39,12 @@
   border: 0px !important;
   background-color: hsl(240, 41%, 10%) !important;
   color: white !important;
-  min-width: 280px !important;
   border-radius: 8px !important;
+  padding: 12px !important;
 }
 
 .profile-form__value-container {
   color: white !important;
-  padding: 12px !important;
   border-radius: 10px !important;
 }
 

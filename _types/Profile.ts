@@ -7,7 +7,7 @@ export type Profile = {
   dateCreated?: Timestamp;
   dateLastUpdated?: Timestamp;
   communityId: string;
-  walletAddresses: string[];
+  walletAddress: string;
   displayName: string;
   twitterHandle?: string;
   discordUsername?: string;

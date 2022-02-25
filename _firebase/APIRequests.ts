@@ -58,7 +58,7 @@ export const subscribeToProfile = (
   return onSnapshot(
     query(
       profileCollectionRef,
-      where('walletAddresses', 'array-contains', walletAddress),
+      where('walletAddress', '==', walletAddress),
       where('communityId', '==', communityId)
     ),
     (snapshot) =>
@@ -117,20 +117,6 @@ export const getPins = async (walletAddress: string, setPins: any) => {
   let pins: string[] = [];
   userPins.docs.map((doc) => pins.push(doc.data().project));
   setPins(pins);
-};
-
-export const getProfileId = async (
-  communityId: string,
-  walletAddress: string
-) => {
-  const profileId = await getDocs(
-    query(
-      profileCollectionRef,
-      where('walletAddresses', 'array-contains', walletAddress),
-      where('communityId', '==', communityId)
-    )
-  );
-  return profileId.docs.length !== 0 ? profileId.docs[0].id : undefined;
 };
 
 // TODO:

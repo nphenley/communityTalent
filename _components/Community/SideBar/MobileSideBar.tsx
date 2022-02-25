@@ -31,7 +31,7 @@ const MobileSideBar = (props: SideBarProps) => {
 
   return (
     <div className={containerClass}>
-      <button onClick={() => props.setIsOpen(false)}>
+      <button className='w-full' onClick={() => props.setIsOpen(false)}>
         <SideBarIcon icon={<FaArrowLeft size='20' />} />
       </button>
 
