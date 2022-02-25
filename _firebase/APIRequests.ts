@@ -167,3 +167,22 @@ export const checkMatches = async (
   );
   setData(list);
 };
+
+export const checkMatchForCommunity = async (
+  userNfts: { tokenAddress: string; image: string }[],
+  communityId: string,
+  updateHasRequiredNft: any
+) => {
+  let hasRequiredNft = false;
+  await Promise.all(
+    userNfts.map(async (nft) => {
+      const match = await getDoc(
+        doc(solNftTokenAddressesCollectionRef, nft.tokenAddress)
+      );
+      if (match.exists() && match.data().communityId === communityId) {
+        hasRequiredNft = true;
+      }
+    })
+  );
+  updateHasRequiredNft(hasRequiredNft);
+};

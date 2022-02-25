@@ -5,7 +5,10 @@ import MobileSideBar from '_components/Community/SideBar/MobileSideBar';
 import { useState, useEffect } from 'react';
 import { ConnectionData } from '_types/ConnectionData';
 import { ConnectionContext } from '_contexts/ConnectionContext';
-import { subscribeToProfile } from '_firebase/APIRequests';
+import {
+  checkMatchForCommunity,
+  subscribeToProfile,
+} from '_firebase/APIRequests';
 import { useMoralis } from 'react-moralis';
 import { useRouter } from 'next/router';
 import CreateProfile from '_components/Community/CreateProfile';
@@ -14,11 +17,14 @@ import Head from 'next/head';
 import { Profile } from '_types/Profile';
 import { Networks } from '_enums/Networks';
 import { ProfileContext } from '_contexts/ProfileContext';
+import { getUserNftsSolana } from '_helpers/getUserNfts';
 
 const Community = () => {
   const router = useRouter();
+
   const communityId = router.query.communityId as string;
   const { isAuthUndefined, isAuthenticated, user } = useMoralis();
+  const [loadingHasRequiredNft, setLoadingHasRequiredNft] = useState(true);
 
   const [loadingConnectionData, setLoadingConnectionData] = useState(true);
   const [connectionData, setConnectionData] = useState<ConnectionData>();
@@ -29,8 +35,23 @@ const Community = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [toggleState, setToggleState] = useState(2);
 
-  // TODO:
-  // Verify user has chimpion in wallet.
+  const updateHasRequiredNft = (hasRequiredNft: boolean) => {
+    if (!hasRequiredNft) {
+      router.push('/');
+    } else {
+      setLoadingHasRequiredNft(false);
+    }
+  };
+  const checkUserHasRequiredNft = async () => {
+    const userNfts = await getUserNftsSolana(connectionData!.address!);
+    checkMatchForCommunity(userNfts, communityId, updateHasRequiredNft);
+  };
+
+  useEffect(() => {
+    if (!connectionData) return;
+    checkUserHasRequiredNft();
+  }, [connectionData]);
+
   useEffect(() => {
     if (isAuthUndefined || !router.query.communityId) return;
     if (!isAuthenticated) {
@@ -81,8 +102,11 @@ const Community = () => {
           />
         </Head>
 
-        <div className='flex h-screen text-white bg-background break-words'>
-          {isAuthUndefined || loadingConnectionData || loadingProfile ? (
+        <div className='flex h-screen text-white break-words bg-background'>
+          {isAuthUndefined ||
+          loadingConnectionData ||
+          loadingHasRequiredNft ||
+          loadingProfile ? (
             <LoadingSpinner />
           ) : !profile ? (
             <div className='flex flex-col w-full'>

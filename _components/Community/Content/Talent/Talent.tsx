@@ -12,7 +12,6 @@ const Talent = () => {
   const [profiles, setProfiles] = useState<Profile[]>([]);
 
   const updateProfiles = (profiles: Profile[]) => {
-    console.log(profiles);
     setProfiles(profiles);
     setLoadingProfiles(false);
   };
@@ -24,9 +23,9 @@ const Talent = () => {
   return loadingProfiles ? (
     <LoadingSpinner />
   ) : (
-    <div className='grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 3xl:grid-cols-3 4xl:grid-cols-4 5xl:grid-cols-5 gap-4'>
+    <div className='grid grid-cols-1 gap-4 lg:grid-cols-2 2xl:grid-cols-3 3xl:grid-cols-3 4xl:grid-cols-4 5xl:grid-cols-5'>
       {profiles.map((profile) => (
-        <div className='flex items-center flex-col' key={profile.id}>
+        <div className='flex flex-col items-center' key={profile.id}>
           <ProfileCard profile={profile} />
         </div>
       ))}
