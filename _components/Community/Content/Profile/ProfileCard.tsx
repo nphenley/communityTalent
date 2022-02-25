@@ -160,7 +160,7 @@ export default ProfileCard;
 
 const styles = {
   container:
-    'relative bg-backgroundDark rounded-lg shadow-lg w-full py-11 flex flex-col gap-6 overflow-y-scroll min-h-[600px] max-h-[1000px] mx-auto',
+    'relative bg-backgroundDark rounded-lg shadow-lg w-full py-11 flex flex-col gap-6 overflow-y-auto min-h-[600px] max-h-[1000px] mx-auto',
   imageContainer: 'rounded-full overflow-hidden flex justify-center',
   sectionContainer: 'px-5 pt-2.5 pb-4 gap-5 flex flex-col',
   sectionHeading: 'text-primary font-bold',

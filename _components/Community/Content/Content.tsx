@@ -11,7 +11,7 @@ type ContentProps = {
 
 const Content = (props: ContentProps) => {
   return (
-    <div className='overflow-y-scroll px-4 lg:px-0 lg:max-w-[96%] mx-auto w-full py-4'>
+    <div className='overflow-y-auto px-4 lg:px-0 lg:max-w-[96%] mx-auto w-full py-4'>
       {props.toggleState === 1 ? (
         <Projects />
       ) : props.toggleState === 2 ? (
