@@ -85,6 +85,20 @@ export const getProfiles = async (communityId: string, updateProfiles: any) => {
   );
 };
 
+export const checkForProfile = async (
+  walletAddress: string,
+  setOldProfile: any
+) => {
+  const userProfiles = await getDocs(
+    query(profileCollectionRef, where('walletAddress', '==', walletAddress))
+  );
+  const profile = userProfiles.docs.length
+    ? { ...userProfiles.docs[0].data() }
+    : undefined;
+  console.log(profile);
+  setOldProfile(profile);
+};
+
 // ============== PROJECTS ==============
 
 export const createProject = (project: Project) => {

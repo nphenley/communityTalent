@@ -23,11 +23,12 @@ export const getUserNftsSolana = async (connectedWalletAddress: string) => {
 export const getUserNftsEth = async (
   getNFTBalances: any,
   userAddress: string,
-  updateData: any
+  updateData: any,
+  chainId: string
 ) => {
   const nftsInWallet = await getNFTBalances({
     params: {
-      chain: 'eth',
+      chain: chainId,
       address: userAddress,
     },
   });
@@ -66,13 +67,14 @@ export const getUserNftsEth = async (
 
 export const checkEthMatchForCommunity = async (
   getNFTBalances: any,
+  chainId: string,
   userAddress: string,
   communityId: string,
   updateHasRequiredNft: (hasRequiredNft: boolean) => void
 ) => {
   const nfts = await getNFTBalances({
     params: {
-      chain: 'eth',
+      chain: chainId,
       address: userAddress,
       token_addresses: communityId,
     },

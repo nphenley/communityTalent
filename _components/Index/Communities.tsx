@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { getUserNftsSolana, getUserNftsEth } from '_helpers/getUserNfts';
 import { Networks } from '_enums/Networks';
 import { Community } from '_types/Community';
-import { useNFTBalances } from 'react-moralis';
+import { useMoralis, useNFTBalances } from 'react-moralis';
 import LoadingSpinner from '_styled/LoadingSpinner';
 import Image from 'next/image';
 
@@ -16,6 +16,7 @@ type CommunitiesProps = {
 const Communities = (props: CommunitiesProps) => {
   const router = useRouter();
   const { getNFTBalances } = useNFTBalances();
+  const { chainId } = useMoralis();
 
   const [loadingData, setLoadingData] = useState(true);
   const [data, setData] = useState<Community[]>([]);
@@ -36,7 +37,8 @@ const Communities = (props: CommunitiesProps) => {
         await getUserNftsEth(
           getNFTBalances,
           props.connectedWalletAddress,
-          updateData
+          updateData,
+          chainId ? chainId : 'eth'
         );
         break;
     }
@@ -44,7 +46,7 @@ const Communities = (props: CommunitiesProps) => {
 
   useEffect(() => {
     findUserCommunities();
-  }, []);
+  }, [chainId]);
 
   return loadingData ? (
     <LoadingSpinner />
@@ -73,7 +75,7 @@ type CommunityButtonProps = {
 const CommunityButton = (props: CommunityButtonProps) => {
   return (
     <button
-      className='mx-auto space-y-3 flex-col flex items-center'
+      className='flex flex-col items-center mx-auto space-y-3'
       key={props.community.id}
       onClick={() => {
         props.router.push(`community/${props.community.id}`);
