@@ -46,6 +46,12 @@ export const getUserNftsEth = async (
           jsonMetadata.image =
             'https://ipfs.io/ipfs/' + jsonMetadata.image.replace('ipfs://', '');
         }
+
+        if (jsonMetadata.image.endsWith('.mp4')) {
+          jsonMetadata.image =
+            'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png';
+        }
+
         nftInfo.push({
           name: jsonMetadata.collection ? jsonMetadata.collection : nft.name,
           image: jsonMetadata.image,
