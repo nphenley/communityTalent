@@ -105,8 +105,8 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
         />
         <StyledToggleField
           register={register}
-          label='Looking for Work'
-          name='lookingForWork'
+          label='Looking for Project'
+          name='lookingForProject'
         />
         <SelectField
           control={control}
@@ -185,13 +185,13 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
           }
         />
         <OptionalWrapper
-          label='Connections'
-          reset={() => unregister('connections')}
+          label='Contacts'
+          reset={() => unregister('contacts')}
           fieldComponent={
             <LargeInputField
               register={register}
-              label='Connections'
-              name='connections'
+              label='Contacts'
+              name='contacts'
               required={false}
               maxLength={500}
             />

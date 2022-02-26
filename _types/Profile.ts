@@ -12,11 +12,11 @@ export type Profile = {
   twitterHandle?: string;
   discordUsername?: string;
   bio: string;
-  lookingForWork: boolean;
+  lookingForProject: boolean;
   tags: Tags[];
   skills?: [];
   experience?: string;
   languages?: Languages[];
-  connections?: string;
+  contacts?: string;
   relevantLinks?: string[];
 };

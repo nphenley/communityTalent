@@ -4,9 +4,10 @@ import Image from 'next/image';
 import { profileNFTImages } from '_constants/dev';
 import { useContext } from 'react';
 import { ProfileContext } from '_contexts/ProfileContext';
+import { Sections } from '_enums/Sections';
 
 type SideBarProps = {
-  toggleState: number;
+  toggleState: Sections;
   setToggleState: any;
 };
 
@@ -15,7 +16,10 @@ const SideBar = (props: SideBarProps) => {
 
   return (
     <div className={styles.container}>
-      <button className='w-full' onClick={() => props.setToggleState(4)}>
+      <button
+        className='w-full'
+        onClick={() => props.setToggleState(Sections.PROFILE)}
+      >
         <SideBarIcon
           icon={
             <div className='rounded-full overflow-hidden flex justify-center mb-4'>
@@ -23,7 +27,7 @@ const SideBar = (props: SideBarProps) => {
             </div>
           }
           text={profile!.displayName}
-          active={props.toggleState === 4}
+          active={props.toggleState === Sections.PROFILE}
         />
       </button>
 
@@ -37,22 +41,13 @@ const SideBar = (props: SideBarProps) => {
           />
         </div>
 
-        <button onClick={() => props.setToggleState(2)}>
+        <button onClick={() => props.setToggleState(Sections.TALENT)}>
           <SideBarIcon
             icon={<FaIdCard size='20' />}
             text={'TALENT'}
-            active={props.toggleState === 2}
+            active={props.toggleState === Sections.TALENT}
           />
         </button>
-
-        <div>
-          <SideBarIcon
-            icon={<FaNetworkWired size='25' />}
-            text={'CONNECTIONS'}
-            active={false}
-            wip={true}
-          />
-        </div>
       </div>
     </div>
   );

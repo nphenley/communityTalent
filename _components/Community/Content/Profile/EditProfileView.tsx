@@ -67,8 +67,8 @@ const EditProfileView = (props: EditProfileViewProps) => {
   const [showLanguages, setShowLanguages] = useState(
     props.profile.languages && props.profile.languages.length ? true : false
   );
-  const [showConnections, setShowConnections] = useState(
-    props.profile.connections ? true : false
+  const [showContacts, setShowContacts] = useState(
+    props.profile.contacts ? true : false
   );
   const [showLinks, setShowLinks] = useState(
     props.profile.relevantLinks && props.profile.relevantLinks.length
@@ -83,7 +83,7 @@ const EditProfileView = (props: EditProfileViewProps) => {
     if (!showSkills) data.skills = [];
     if (!showExperience) data.experience = '';
     if (!showLanguages) data.languages = [];
-    if (!showConnections) data.connections = '';
+    if (!showContacts) data.contacts = '';
     if (!showLinks) data.relevantLinks = [];
 
     updateProfile(props.profile.id, data);
@@ -135,9 +135,9 @@ const EditProfileView = (props: EditProfileViewProps) => {
         />
         <StyledToggleField
           register={register}
-          label='Looking for Work'
-          name='lookingForWork'
-          defaultChecked={props.profile.lookingForWork}
+          label='Looking for Project'
+          name='lookingForProject'
+          defaultChecked={props.profile.lookingForProject}
         />
         <SelectField
           control={control}
@@ -232,21 +232,21 @@ const EditProfileView = (props: EditProfileViewProps) => {
           setIsFieldShown={setShowLanguages}
         />
         <OptionalWrapper
-          label='Connections'
+          label='Contacts'
           fieldComponent={
             <LargeInputField
               register={register}
-              label='Connections'
-              name='connections'
+              label='Contacts'
+              name='contacts'
               defaultValue={
-                props.profile.connections ? props.profile.connections : ''
+                props.profile.contacts ? props.profile.contacts : ''
               }
               required={false}
               maxLength={500}
             />
           }
-          isFieldShown={showConnections}
-          setIsFieldShown={setShowConnections}
+          isFieldShown={showContacts}
+          setIsFieldShown={setShowContacts}
         />
         <ArrayInput
           label='Relevant Links'

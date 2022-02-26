@@ -26,10 +26,10 @@ const ProfileCard = (props: ProfileCardProps) => {
     </button>
   );
 
-  const lookingForWorkBadge = (
+  const lookingForProjectBadge = (
     <div className='flex justify-center items-center -mt-4 -mb-2'>
       <div className='rounded-md flex text-sm bg-primaryDark px-2 py-1 gap-1.5 items-center'>
-        <div>Looking For Work</div>
+        <div>Looking For Project</div>
         <div className='-mt-0.5'>
           <MdWork size={16} />
         </div>
@@ -80,7 +80,7 @@ const ProfileCard = (props: ProfileCardProps) => {
         </div>
       </div>
 
-      {props.profile.lookingForWork === true && lookingForWorkBadge}
+      {props.profile.lookingForProject === true && lookingForProjectBadge}
 
       <div className='w-9/12 mx-auto flex flex-col gap-6'>
         {ruler}
@@ -143,14 +143,14 @@ const ProfileCard = (props: ProfileCardProps) => {
           </>
         ) : null}
 
-        {props.profile.connections ? (
+        {props.profile.contacts ? (
           <>
             {ruler}
 
             <div className={styles.sectionContainer}>
-              <div className={styles.sectionHeading}>Connections</div>
+              <div className={styles.sectionHeading}>Contacts</div>
               <div className={styles.sectionParagraph}>
-                {props.profile.connections.replace('<br/>', '\n')}
+                {props.profile.contacts.replace('<br/>', '\n')}
               </div>
             </div>
           </>

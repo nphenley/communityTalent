@@ -17,13 +17,19 @@ import Head from 'next/head';
 import { Profile } from '_types/Profile';
 import { Networks } from '_enums/Networks';
 import { ProfileContext } from '_contexts/ProfileContext';
-import { getUserNftsSolana } from '_helpers/getUserNfts';
+import {
+  checkEthMatchForCommunity,
+  getUserNftsSolana,
+} from '_helpers/getUserNfts';
+import { useNFTBalances } from 'react-moralis';
+import { Sections } from '_enums/Sections';
 
 const Community = () => {
   const router = useRouter();
   const communityId = router.query.communityId as string;
 
   const { isAuthUndefined, isAuthenticated, user } = useMoralis();
+  const { getNFTBalances } = useNFTBalances();
 
   const [loadingHasRequiredNft, setLoadingHasRequiredNft] = useState(true);
 
@@ -34,7 +40,7 @@ const Community = () => {
   const [profile, setProfile] = useState<Profile>();
 
   const [isOpen, setIsOpen] = useState(false);
-  const [toggleState, setToggleState] = useState(2);
+  const [toggleState, setToggleState] = useState<Sections>(Sections.TALENT);
 
   useEffect(() => {
     if (isAuthUndefined || !router.query.communityId) return;
@@ -62,8 +68,17 @@ const Community = () => {
   }, [connectionData]);
 
   const checkUserHasRequiredNft = async () => {
-    const userNfts = await getUserNftsSolana(connectionData!.address!);
-    checkMatchForCommunity(userNfts, communityId, updateHasRequiredNft);
+    if (connectionData!.network === Networks.SOL) {
+      const userNfts = await getUserNftsSolana(connectionData!.address!);
+      checkMatchForCommunity(userNfts, communityId, updateHasRequiredNft);
+    } else {
+      checkEthMatchForCommunity(
+        getNFTBalances,
+        connectionData!.address,
+        communityId,
+        updateHasRequiredNft
+      );
+    }
   };
 
   const updateHasRequiredNft = (hasRequiredNft: boolean) => {
