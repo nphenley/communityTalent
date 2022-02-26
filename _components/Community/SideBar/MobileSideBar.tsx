@@ -9,11 +9,12 @@ import { profileNFTImages } from '_constants/dev';
 import Image from 'next/image';
 import { useContext } from 'react';
 import { ProfileContext } from '_contexts/ProfileContext';
+import { Sections } from '_enums/Sections';
 
 type SideBarProps = {
   isOpen: boolean;
   setIsOpen: any;
-  toggleState: number;
+  toggleState: Sections;
   setToggleState: any;
 };
 
@@ -24,7 +25,7 @@ const MobileSideBar = (props: SideBarProps) => {
     'absolute w-full z-50 bg-backgroundDark shadow-lg text-primary flex flex-col items-center min-h-screen ease-in-out duration-300';
   containerClass += props.isOpen ? ' translate-x-0' : ' -translate-x-full';
 
-  const toggleState = (toggleState: number) => {
+  const toggleState = (toggleState: Sections) => {
     props.setToggleState(toggleState);
     props.setIsOpen(false);
   };
@@ -37,7 +38,7 @@ const MobileSideBar = (props: SideBarProps) => {
 
       <button
         className='w-full mb-8 mt-4 flex justify-center'
-        onClick={() => toggleState(4)}
+        onClick={() => toggleState(Sections.PROFILE)}
       >
         <SideBarIcon
           icon={
@@ -46,7 +47,7 @@ const MobileSideBar = (props: SideBarProps) => {
             </div>
           }
           text={profile!.displayName}
-          active={props.toggleState === 4}
+          active={props.toggleState === Sections.PROFILE}
         />
       </button>
 
@@ -55,27 +56,18 @@ const MobileSideBar = (props: SideBarProps) => {
           <SideBarIcon
             icon={<FaBriefcase size='20' />}
             text={'Projects'}
-            active={props.toggleState === 1}
+            active={props.toggleState === Sections.PROJECTS}
             wip={true}
           />
         </div>
 
-        <button onClick={() => toggleState(2)} className='w-full'>
+        <button onClick={() => toggleState(Sections.TALENT)} className='w-full'>
           <SideBarIcon
             icon={<FaIdCard size='20' />}
             text={'Talent'}
-            active={props.toggleState === 2}
+            active={props.toggleState === Sections.TALENT}
           />
         </button>
-
-        <div className='w-full'>
-          <SideBarIcon
-            icon={<FaNetworkWired size='25' />}
-            text={'Connections'}
-            active={props.toggleState === 3}
-            wip={true}
-          />
-        </div>
       </div>
     </div>
   );

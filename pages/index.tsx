@@ -20,19 +20,19 @@ export default function Home() {
   return (
     <div className='flex flex-col h-screen bg-background text-primary'>
       <Head>
-        <title>3 Talent</title>
+        <title>Web 3 Talent</title>
         <meta name='viewport' content='initial-scale=1.0, width=device-width' />
       </Head>
       <NavBar />
-      <div className='overflow-y-auto'>
+      <div className='grow overflow-y-auto'>
         {isAuthenticated ? (
-          <div>
+          <>
             <DisconnectButton />
             <Communities
               network={network}
               connectedWalletAddress={connectedWalletAddress}
             />
-          </div>
+          </>
         ) : (
           <ConnectView />
         )}
@@ -41,14 +41,10 @@ export default function Home() {
   );
 }
 
-// TODO:
-// For now 1 wallet per profile - need to think properly how to do multiple wallets afterwards.
-// LoadingSpinner
-
 const NavBar = () => {
   return (
     <div className='w-full p-8 text-xl font-bold text-center uppercase'>
-      3 Talent
+      Web 3 Talent
     </div>
   );
 };

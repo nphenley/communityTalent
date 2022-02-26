@@ -22,6 +22,7 @@ import {
   getUserNftsSolana,
 } from '_helpers/getUserNfts';
 import { useNFTBalances } from 'react-moralis';
+import { Sections } from '_enums/Sections';
 
 const Community = () => {
   const router = useRouter();
@@ -39,7 +40,7 @@ const Community = () => {
   const [profile, setProfile] = useState<Profile>();
 
   const [isOpen, setIsOpen] = useState(false);
-  const [toggleState, setToggleState] = useState(2);
+  const [toggleState, setToggleState] = useState<Sections>(Sections.TALENT);
 
   useEffect(() => {
     if (isAuthUndefined || !router.query.communityId) return;

@@ -131,9 +131,9 @@ export const togglePinned = async (projectId: string) => {
 
 export const checkMatches = async (
   userNfts: { tokenAddress: string; image: string }[],
-  setData: any
+  updateData: any
 ) => {
-  let list: { community: Community; image: string }[] = [];
+  let list: Community[] = [];
 
   await Promise.all(
     userNfts.map(async (nft) => {
@@ -146,12 +146,13 @@ export const checkMatches = async (
         doc(solNftCommunitiesCollectionRef, communityId)
       );
       list.push({
-        community: { id: communityId, name: community.data()!.name },
+        id: communityId,
+        name: community.data()!.name,
         image: nft.image,
       });
     })
   );
-  setData(list);
+  updateData(list);
 };
 
 export const checkMatchForCommunity = async (

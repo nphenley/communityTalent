@@ -23,71 +23,45 @@ export const getUserNftsSolana = async (connectedWalletAddress: string) => {
 export const getUserNftsEth = async (
   getNFTBalances: any,
   userAddress: string,
-  setData: any
+  updateData: any
 ) => {
-  const nfts = await getNFTBalances({
+  const nftsInWallet = await getNFTBalances({
     params: {
       chain: 'eth',
       address: userAddress,
     },
   });
 
-  let tokenAddresses: string[] = [];
-  let nftInfo: { name: string; image: string; tokenAddress: string }[] = [];
-  let filteredNftInfo: {
-    community: Community;
-    image: string;
-  }[] = [];
-  await Promise.all(
-    nfts.result.map(async (nft: any) => {
-      if (nft.metadata) {
-        const jsonMetadata = JSON.parse(nft.metadata);
-        if (jsonMetadata.image.startsWith('ipfs')) {
-          jsonMetadata.image =
-            'https://ipfs.io/ipfs/' + jsonMetadata.image.replace('ipfs://', '');
-        }
+  let tokenAddressSet = new Set<string>();
 
-        if (jsonMetadata.image.endsWith('.mp4')) {
-          jsonMetadata.image =
-            'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png';
-        }
+  let communities: Community[] = [];
 
-        nftInfo.push({
-          name: jsonMetadata.collection ? jsonMetadata.collection : nft.name,
-          image: jsonMetadata.image,
-          tokenAddress: nft.token_address,
-        });
-      } // else {
-      // const metadata = await fetch(nft.token_uri).catch((e) =>
-      //   console.log('failed to fetch')
-      // );
-      // if (!metadata) return;
+  nftsInWallet.result.map((nft: any) => {
+    if (!nft.metadata) return;
 
-      // const jsonMetadata = await metadata.json();
+    const jsonMetadata = JSON.parse(nft.metadata);
 
-      // if (jsonMetadata.image.startsWith('ipfs')) {
-      //   jsonMetadata.image =
-      //     'https://ipfs.io/ipfs/' + jsonMetadata.image.replace('ipfs://', '');
-      // }
-      // nftInfo.push({
-      //   name: nft.name,
-      //   image: jsonMetadata.image,
-      //   tokenAddress: nft.token_address,
-      // });
-      // //}
-    })
-  );
+    if (!jsonMetadata.image && jsonMetadata.image_url)
+      jsonMetadata.image = jsonMetadata.image_url;
 
-  nftInfo.forEach((nft) => {
-    if (!tokenAddresses.includes(nft.tokenAddress)) {
-      filteredNftInfo.push({
-        community: { id: nft.tokenAddress, name: nft.name },
-        image: nft.image,
-      });
-      tokenAddresses.push(nft.tokenAddress);
+    if (jsonMetadata.image.startsWith('ipfs')) {
+      jsonMetadata.image =
+        'https://ipfs.io/ipfs/' + jsonMetadata.image.replace('ipfs://', '');
+    } else if (jsonMetadata.image.endsWith('.mp4')) {
+      jsonMetadata.image =
+        'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png';
     }
+
+    if (tokenAddressSet.has(nft.token_address)) return;
+    communities.push({
+      name: jsonMetadata.collection ? jsonMetadata.collection : nft.name,
+      image: jsonMetadata.image,
+      id: nft.token_address,
+    });
+    tokenAddressSet.add(nft.token_address);
   });
-  setData(filteredNftInfo);
+
+  updateData(communities);
 };
 
 export const checkEthMatchForCommunity = async (
