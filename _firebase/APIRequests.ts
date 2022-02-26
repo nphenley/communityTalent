@@ -28,10 +28,6 @@ const solNftCommunitiesCollectionRef = collection(
   firestore,
   'solNftCommunities'
 );
-const ethNftTokenAddressesCollectionRef = collection(
-  firestore,
-  'ethNftTokenAddresses'
-);
 
 // ============== PROFILE ==============
 
@@ -150,7 +146,7 @@ export const checkMatches = async (
         doc(solNftCommunitiesCollectionRef, communityId)
       );
       list.push({
-        community: { communityId: communityId, name: community.data()!.name },
+        community: { id: communityId, name: community.data()!.name },
         image: nft.image,
       });
     })

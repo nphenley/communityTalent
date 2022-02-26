@@ -13,9 +13,9 @@ type CommunitiesProps = {
 
 const Communities = (props: CommunitiesProps) => {
   const router = useRouter();
-  const [data, setData] = useState<
-    { community: Community; image: string; tokenAddress?: string }[]
-  >([]);
+  const [data, setData] = useState<{ community: Community; image: string }[]>(
+    []
+  );
   const { getNFTBalances } = useNFTBalances();
 
   const findUserCommunities = async () => {
@@ -43,13 +43,9 @@ const Communities = (props: CommunitiesProps) => {
         {data.length ? (
           data.map((elem) => (
             <button
-              key={elem.community.communityId}
+              key={elem.community.id}
               onClick={() => {
-                if (props.network === Networks.SOL) {
-                  router.push(`community/${elem.community.communityId}`);
-                } else {
-                  router.push(`community/${elem.tokenAddress!}`);
-                }
+                router.push(`community/${elem.community.id}`);
               }}
             >
               <div className='flex justify-center mb-2 overflow-hidden rounded-full w-44 h-44'>

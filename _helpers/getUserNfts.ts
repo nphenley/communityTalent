@@ -37,7 +37,6 @@ export const getUserNftsEth = async (
   let filteredNftInfo: {
     community: Community;
     image: string;
-    tokenAddress?: string;
   }[] = [];
   await Promise.all(
     nfts.result.map(async (nft: any) => {
@@ -76,13 +75,10 @@ export const getUserNftsEth = async (
   nftInfo.forEach((nft) => {
     if (!tokenAddresses.includes(nft.tokenAddress)) {
       filteredNftInfo.push({
-        community: { name: nft.name },
+        community: { id: nft.tokenAddress, name: nft.name },
         image: nft.image,
-        tokenAddress: nft.tokenAddress,
       });
       tokenAddresses.push(nft.tokenAddress);
-    } else {
-      console.log('duplicate');
     }
   });
   setData(filteredNftInfo);
