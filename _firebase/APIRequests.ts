@@ -12,6 +12,8 @@ import {
   updateDoc,
   increment,
   onSnapshot,
+  deleteDoc,
+  setDoc,
 } from 'firebase/firestore';
 import { Project } from '_types/Project';
 import { Profile } from '_types/Profile';
@@ -27,6 +29,10 @@ const solNftTokenAddressesCollectionRef = collection(
 const solNftCommunitiesCollectionRef = collection(
   firestore,
   'solNftCommunities'
+);
+const pinnedCommunitiesCollectionRef = collection(
+  firestore,
+  'pinnedCommunities'
 );
 
 // ============== PROFILE ==============
@@ -186,4 +192,37 @@ export const checkMatchForCommunity = async (
     })
   );
   updateHasRequiredNft(hasRequiredNft);
+};
+
+// ==================== COMMUNITY PINS ====================
+
+export const isCommunityPinned = async (
+  walletAddress: string,
+  communityId: string
+) => {
+  const concatString = walletAddress + '_' + communityId;
+  const community = await getDoc(
+    doc(pinnedCommunitiesCollectionRef, concatString)
+  );
+  return community.exists();
+};
+
+export const unpinCommunity = async (
+  walletAddress: string,
+  communityId: string,
+  findUserCommunities: any
+) => {
+  const concatString = walletAddress + '_' + communityId;
+  await deleteDoc(doc(pinnedCommunitiesCollectionRef, concatString));
+  findUserCommunities();
+};
+
+export const pinCommunity = async (
+  walletAddress: string,
+  communityId: string,
+  findUserCommunities: any
+) => {
+  const concatString = walletAddress + '_' + communityId;
+  await setDoc(doc(pinnedCommunitiesCollectionRef, concatString), {});
+  findUserCommunities();
 };
