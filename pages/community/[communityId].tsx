@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 import { ConnectionData } from '_types/ConnectionData';
 import { ConnectionContext } from '_contexts/ConnectionContext';
 import {
-  checkForProfile,
+  checkForExistingProfile,
   checkMatchForCommunity,
   subscribeToProfile,
 } from '_firebase/APIRequests';
@@ -67,7 +67,7 @@ const Community = () => {
   useEffect(() => {
     if (loadingHasRequiredNft || connectionData!.network === Networks.SOL)
       return;
-    checkForProfile(connectionData!.address, setOldProfile);
+    checkForExistingProfile(connectionData!.address, setOldProfile);
   }, [loadingHasRequiredNft]);
 
   useEffect(() => {

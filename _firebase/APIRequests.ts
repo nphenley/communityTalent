@@ -38,7 +38,7 @@ const pinnedCommunitiesCollectionRef = collection(
 // ============== PROFILE ==============
 
 export const createProfile = async (profileData: Partial<Profile>) => {
-  addDoc(collection(firestore, 'profiles'), {
+  addDoc(profileCollectionRef, {
     ...profileData,
     dateCreated: Timestamp.now(),
     dateLastUpdated: Timestamp.now(),
@@ -49,7 +49,7 @@ export const updateProfile = async (
   profileId: string,
   data: Partial<Profile>
 ) => {
-  const docRef = await updateDoc(doc(firestore, 'profiles', profileId), {
+  const docRef = await updateDoc(doc(profileCollectionRef, profileId), {
     ...data,
     dateLastUpdated: Timestamp.now(),
   });
@@ -91,18 +91,35 @@ export const getProfiles = async (communityId: string, updateProfiles: any) => {
   );
 };
 
-export const checkForProfile = async (
+export const checkForExistingProfile = async (
   walletAddress: string,
-  setOldProfile: any
+  setExistingProfile: any
 ) => {
   const userProfiles = await getDocs(
-    query(profileCollectionRef, where('walletAddress', '==', walletAddress))
+    query(
+      profileCollectionRef,
+      where('walletAddress', '==', walletAddress),
+      orderBy('dateLastUpdated', 'desc')
+    )
   );
   const profile = userProfiles.docs.length
     ? { ...userProfiles.docs[0].data() }
     : undefined;
   console.log(profile);
-  setOldProfile(profile);
+  setExistingProfile(profile);
+};
+
+export const importProfile = (
+  communityId: string,
+  existingProfile: Profile
+) => {
+  console.log(existingProfile);
+  addDoc(profileCollectionRef, {
+    ...existingProfile,
+    communityId: communityId,
+    dateCreated: Timestamp.now(),
+    dateLastUpdated: Timestamp.now(),
+  });
 };
 
 // ============== PROJECTS ==============

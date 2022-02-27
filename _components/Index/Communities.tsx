@@ -77,13 +77,21 @@ const Communities = (props: CommunitiesProps) => {
       <div className='flex flex-row-reverse gap-x-2'>
         <button
           onClick={() => setIsPinning(!isPinning)}
-          className={styles.buttonContainer}
+          className={styles.buttonContainer.concat(
+            isPinning
+              ? ' bg-primary text-white'
+              : ' bg-backgroundDark text-backgroundLight'
+          )}
         >
           Pin
         </button>
-        {pinnedCommunities.length ? (
+        {pinnedCommunities.length && !isPinning ? (
           <button
-            className={styles.buttonContainer}
+            className={styles.buttonContainer.concat(
+              showAll
+                ? ' bg-primary text-white'
+                : ' bg-backgroundDark text-backgroundLight'
+            )}
             onClick={() => setShowAll(!showAll)}
           >
             Show All
@@ -101,6 +109,7 @@ const Communities = (props: CommunitiesProps) => {
                 <div className='relative'>
                   {isPinning && (
                     <button
+                      className='absolute top-0 right-0'
                       onClick={() =>
                         unpinCommunity(
                           props.connectedWalletAddress,
@@ -123,7 +132,7 @@ const Communities = (props: CommunitiesProps) => {
           </div>
         ) : null}
 
-        {showAll || !pinnedCommunities.length ? (
+        {showAll || isPinning || !pinnedCommunities.length ? (
           <div>
             <div className={styles.sectionHeading}>All:</div>
             {communities.length ? (
@@ -132,6 +141,7 @@ const Communities = (props: CommunitiesProps) => {
                   <div className='relative'>
                     {isPinning && (
                       <button
+                        className='absolute top-0 right-0'
                         onClick={() =>
                           pinCommunity(
                             props.connectedWalletAddress,
@@ -195,6 +205,5 @@ const styles = {
   sectionHeading: 'text-xl font-bold',
   communitiesContainer:
     'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 3xl:grid-cols-8 4xl:grid-cols-9 gap-x-0 gap-y-12',
-  buttonContainer:
-    'rounded-lg px-3 py-2 bg-backgroundDark text-backgroundLight font-bold ',
+  buttonContainer: 'rounded-lg px-3 py-2 font-bold ',
 };
