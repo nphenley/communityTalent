@@ -2,6 +2,7 @@ import { getParsedNftAccountsByOwner } from '@nfteyez/sol-rayz';
 import { Connection } from '@solana/web3.js';
 
 import { mainNetUrl } from '_constants/solanaConstants';
+import { isCommunityPinned } from '_firebase/APIRequests';
 import { Community } from '_types/Community';
 
 export const getUserNftsSolana = async (connectedWalletAddress: string) => {
@@ -23,56 +24,75 @@ export const getUserNftsSolana = async (connectedWalletAddress: string) => {
 export const getUserNftsEth = async (
   getNFTBalances: any,
   userAddress: string,
-  updateData: any
+  updateData: any,
+  chainId: string
 ) => {
   const nftsInWallet = await getNFTBalances({
     params: {
-      chain: 'eth',
+      chain: chainId,
       address: userAddress,
     },
   });
 
   let tokenAddressSet = new Set<string>();
-
+  let pinnedCommunities: Community[] = [];
   let communities: Community[] = [];
 
-  nftsInWallet.result.map((nft: any) => {
-    if (!nft.metadata) return;
+  await Promise.all(
+    nftsInWallet.result.map(async (nft: any) => {
+      if (!nft.metadata) return;
 
-    const jsonMetadata = JSON.parse(nft.metadata);
+      const jsonMetadata = JSON.parse(nft.metadata);
 
-    if (!jsonMetadata.image && jsonMetadata.image_url)
-      jsonMetadata.image = jsonMetadata.image_url;
+      if (!jsonMetadata.image && jsonMetadata.image_url)
+        jsonMetadata.image = jsonMetadata.image_url;
 
-    if (jsonMetadata.image.startsWith('ipfs')) {
-      jsonMetadata.image =
-        'https://ipfs.io/ipfs/' + jsonMetadata.image.replace('ipfs://', '');
-    } else if (jsonMetadata.image.endsWith('.mp4')) {
-      jsonMetadata.image =
-        'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png';
-    }
+      if (jsonMetadata.image.startsWith('ipfs')) {
+        jsonMetadata.image =
+          'https://ipfs.io/ipfs/' + jsonMetadata.image.replace('ipfs://', '');
+      } else if (jsonMetadata.image.endsWith('.mp4')) {
+        jsonMetadata.image =
+          'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png';
+      }
 
-    if (tokenAddressSet.has(nft.token_address)) return;
-    communities.push({
-      name: jsonMetadata.collection ? jsonMetadata.collection : nft.name,
-      image: jsonMetadata.image,
-      id: nft.token_address,
-    });
-    tokenAddressSet.add(nft.token_address);
+      const isPinned = await isCommunityPinned(userAddress, nft.token_address);
+      const community = {
+        name: jsonMetadata.collection ? jsonMetadata.collection : nft.name,
+        image: jsonMetadata.image,
+        id: nft.token_address,
+      };
+      if (isPinned) pinnedCommunities.push(community);
+      communities.push(community);
+    })
+  );
+  let uniquePinnedCommunities: Community[] = [];
+  let uniqueCommunities: Community[] = [];
+
+  communities.forEach((community) => {
+    if (tokenAddressSet.has(community.id)) return;
+    uniqueCommunities.push(community);
+    tokenAddressSet.add(community.id);
+  });
+  tokenAddressSet.clear();
+  pinnedCommunities.forEach((community) => {
+    if (tokenAddressSet.has(community.id)) return;
+    uniquePinnedCommunities.push(community);
+    tokenAddressSet.add(community.id);
   });
 
-  updateData(communities);
+  updateData(uniqueCommunities, uniquePinnedCommunities);
 };
 
 export const checkEthMatchForCommunity = async (
   getNFTBalances: any,
+  chainId: string,
   userAddress: string,
   communityId: string,
   updateHasRequiredNft: (hasRequiredNft: boolean) => void
 ) => {
   const nfts = await getNFTBalances({
     params: {
-      chain: 'eth',
+      chain: chainId,
       address: userAddress,
       token_addresses: communityId,
     },

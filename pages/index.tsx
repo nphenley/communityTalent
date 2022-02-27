@@ -24,7 +24,7 @@ export default function Home() {
         <meta name='viewport' content='initial-scale=1.0, width=device-width' />
       </Head>
       <NavBar />
-      <div className='grow overflow-y-auto'>
+      <div className='overflow-y-scroll grow'>
         {isAuthenticated ? (
           <>
             <DisconnectButton />

@@ -12,6 +12,8 @@ import {
   updateDoc,
   increment,
   onSnapshot,
+  deleteDoc,
+  setDoc,
 } from 'firebase/firestore';
 import { Project } from '_types/Project';
 import { Profile } from '_types/Profile';
@@ -28,11 +30,15 @@ const solNftCommunitiesCollectionRef = collection(
   firestore,
   'solNftCommunities'
 );
+const pinnedCommunitiesCollectionRef = collection(
+  firestore,
+  'pinnedCommunities'
+);
 
 // ============== PROFILE ==============
 
 export const createProfile = async (profileData: Partial<Profile>) => {
-  addDoc(collection(firestore, 'profiles'), {
+  addDoc(profileCollectionRef, {
     ...profileData,
     dateCreated: Timestamp.now(),
     dateLastUpdated: Timestamp.now(),
@@ -43,7 +49,7 @@ export const updateProfile = async (
   profileId: string,
   data: Partial<Profile>
 ) => {
-  const docRef = await updateDoc(doc(firestore, 'profiles', profileId), {
+  const docRef = await updateDoc(doc(profileCollectionRef, profileId), {
     ...data,
     dateLastUpdated: Timestamp.now(),
   });
@@ -83,6 +89,37 @@ export const getProfiles = async (communityId: string, updateProfiles: any) => {
         } as Profile)
     )
   );
+};
+
+export const checkForExistingProfile = async (
+  walletAddress: string,
+  setExistingProfile: any
+) => {
+  const userProfiles = await getDocs(
+    query(
+      profileCollectionRef,
+      where('walletAddress', '==', walletAddress),
+      orderBy('dateLastUpdated', 'desc')
+    )
+  );
+  const profile = userProfiles.docs.length
+    ? { ...userProfiles.docs[0].data() }
+    : undefined;
+  console.log(profile);
+  setExistingProfile(profile);
+};
+
+export const importProfile = (
+  communityId: string,
+  existingProfile: Profile
+) => {
+  console.log(existingProfile);
+  addDoc(profileCollectionRef, {
+    ...existingProfile,
+    communityId: communityId,
+    dateCreated: Timestamp.now(),
+    dateLastUpdated: Timestamp.now(),
+  });
 };
 
 // ============== PROJECTS ==============
@@ -172,4 +209,37 @@ export const checkMatchForCommunity = async (
     })
   );
   updateHasRequiredNft(hasRequiredNft);
+};
+
+// ==================== COMMUNITY PINS ====================
+
+export const isCommunityPinned = async (
+  walletAddress: string,
+  communityId: string
+) => {
+  const concatString = walletAddress + '_' + communityId;
+  const community = await getDoc(
+    doc(pinnedCommunitiesCollectionRef, concatString)
+  );
+  return community.exists();
+};
+
+export const unpinCommunity = async (
+  walletAddress: string,
+  communityId: string,
+  findUserCommunities: any
+) => {
+  const concatString = walletAddress + '_' + communityId;
+  await deleteDoc(doc(pinnedCommunitiesCollectionRef, concatString));
+  findUserCommunities();
+};
+
+export const pinCommunity = async (
+  walletAddress: string,
+  communityId: string,
+  findUserCommunities: any
+) => {
+  const concatString = walletAddress + '_' + communityId;
+  await setDoc(doc(pinnedCommunitiesCollectionRef, concatString), {});
+  findUserCommunities();
 };

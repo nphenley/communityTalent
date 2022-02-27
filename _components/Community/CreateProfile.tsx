@@ -4,9 +4,13 @@ import {
   useFieldArray,
   useForm,
 } from 'react-hook-form';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { ConnectionContext } from '_contexts/ConnectionContext';
-import { createProfile } from '_firebase/APIRequests';
+import {
+  checkForExistingProfile,
+  createProfile,
+  importProfile,
+} from '_firebase/APIRequests';
 import { Profile } from '_types/Profile';
 import StyledToggleField from '_styled/StyledToggleField';
 import Select from 'react-select';
@@ -25,7 +29,7 @@ type CreateProfileViewProps = {
 // Bit weird and strange and kind of shitty, seems to work fine though.
 const CreateProfileView = (props: CreateProfileViewProps) => {
   const connectionData = useContext(ConnectionContext);
-
+  const [existingProfile, setExistingProfile] = useState<Profile>();
   const { control, register, unregister, handleSubmit } = useForm();
 
   const {
@@ -60,7 +64,18 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
     </h1>
   );
 
-  const description = (
+  const description = existingProfile ? (
+    <div className='flex flex-row-reverse items-center gap-4 mb-4 text-center'>
+      <button
+        onClick={() => importProfile(props.communityId, existingProfile)}
+        className='px-3 py-2 font-bold text-white rounded-lg bg-primary'
+      >
+        Import
+      </button>
+      You have an existing profile in another community, would like to import
+      it?
+    </div>
+  ) : (
     <p className='mb-4 text-center'>
       This is your first time connecting with this wallet, please create a
       profile.
@@ -80,6 +95,11 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
       label: (Languages as any)[key],
     };
   });
+
+  useEffect(() => {
+    if (!connectionData) return;
+    checkForExistingProfile(connectionData.address, setExistingProfile);
+  }, [connectionData]);
 
   return (
     <div className='flex flex-col items-center pt-12 pb-16 overflow-y-scroll grow bg-background'>

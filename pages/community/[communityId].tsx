@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { ConnectionData } from '_types/ConnectionData';
 import { ConnectionContext } from '_contexts/ConnectionContext';
 import {
+  checkForExistingProfile,
   checkMatchForCommunity,
   subscribeToProfile,
 } from '_firebase/APIRequests';
@@ -28,7 +29,7 @@ const Community = () => {
   const router = useRouter();
   const communityId = router.query.communityId as string;
 
-  const { isAuthUndefined, isAuthenticated, user } = useMoralis();
+  const { isAuthUndefined, isAuthenticated, user, chainId } = useMoralis();
   const { getNFTBalances } = useNFTBalances();
 
   const [loadingHasRequiredNft, setLoadingHasRequiredNft] = useState(true);
@@ -38,6 +39,7 @@ const Community = () => {
 
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [profile, setProfile] = useState<Profile>();
+  const [oldProfile, setOldProfile] = useState<Profile>();
 
   const [isOpen, setIsOpen] = useState(false);
   const [toggleState, setToggleState] = useState<Sections>(Sections.TALENT);
@@ -63,6 +65,12 @@ const Community = () => {
   };
 
   useEffect(() => {
+    if (loadingHasRequiredNft || connectionData!.network === Networks.SOL)
+      return;
+    checkForExistingProfile(connectionData!.address, setOldProfile);
+  }, [loadingHasRequiredNft]);
+
+  useEffect(() => {
     if (!connectionData) return;
     checkUserHasRequiredNft();
   }, [connectionData]);
@@ -74,6 +82,7 @@ const Community = () => {
     } else {
       checkEthMatchForCommunity(
         getNFTBalances,
+        chainId ? chainId : 'eth',
         connectionData!.address,
         communityId,
         updateHasRequiredNft

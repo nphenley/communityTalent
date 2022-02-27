@@ -1,12 +1,17 @@
 import { useRouter } from 'next/router';
-import { checkMatches } from '_firebase/APIRequests';
+import {
+  checkMatches,
+  pinCommunity,
+  unpinCommunity,
+} from '_firebase/APIRequests';
 import { useEffect, useState } from 'react';
 import { getUserNftsSolana, getUserNftsEth } from '_helpers/getUserNfts';
 import { Networks } from '_enums/Networks';
 import { Community } from '_types/Community';
-import { useNFTBalances } from 'react-moralis';
+import { useMoralis, useNFTBalances } from 'react-moralis';
 import LoadingSpinner from '_styled/LoadingSpinner';
 import Image from 'next/image';
+import { validChainIds } from '_constants/validChainIds';
 
 type CommunitiesProps = {
   network: Networks;
@@ -16,12 +21,21 @@ type CommunitiesProps = {
 const Communities = (props: CommunitiesProps) => {
   const router = useRouter();
   const { getNFTBalances } = useNFTBalances();
+  const { chainId } = useMoralis();
 
   const [loadingData, setLoadingData] = useState(true);
-  const [data, setData] = useState<Community[]>([]);
+  const [showAll, setShowAll] = useState(false);
+  const [isPinning, setIsPinning] = useState(false);
 
-  const updateData = (data: Community[]) => {
-    setData(data);
+  const [communities, setCommunities] = useState<Community[]>([]);
+  const [pinnedCommunities, setPinnedCommunities] = useState<Community[]>([]);
+
+  const updateData = (
+    communities: Community[],
+    pinnedCommunities: Community[]
+  ) => {
+    setCommunities(communities);
+    setPinnedCommunities(pinnedCommunities);
     setLoadingData(false);
   };
 
@@ -36,30 +50,123 @@ const Communities = (props: CommunitiesProps) => {
         await getUserNftsEth(
           getNFTBalances,
           props.connectedWalletAddress,
-          updateData
+          updateData,
+          chainId ? chainId : 'eth'
         );
         break;
     }
   };
 
   useEffect(() => {
-    findUserCommunities();
-  }, []);
+    console.log(chainId);
+  }, [chainId]);
+
+  useEffect(() => {
+    if (!chainId) {
+      setLoadingData(false);
+    } else if (validChainIds.includes(chainId)) {
+      findUserCommunities();
+    }
+  }, [chainId]);
 
   return loadingData ? (
     <LoadingSpinner />
   ) : (
-    <div className='flex flex-col max-w-[90%] pt-12 pb-20 mx-auto w-full gap-12 rounded-lg'>
-      <div className={styles.heading}>Pinned Communities:</div>
-      {data.length ? (
-        <div className={styles.communitiesContainer}>
-          {data.map((elem) => (
-            <CommunityButton key={elem.id} community={elem} router={router} />
-          ))}
-        </div>
-      ) : (
-        <div>You are not eligible to join any communities!</div>
-      )}
+    <div className='flex flex-col max-w-[90%] pt-12 pb-20 mx-auto w-full gap-4 rounded-lg'>
+      <div className='text-2xl font-bold text-center'>Communities</div>
+      <div className='flex flex-row-reverse gap-x-2'>
+        <button
+          onClick={() => setIsPinning(!isPinning)}
+          className={styles.buttonContainer.concat(
+            isPinning
+              ? ' bg-primary text-white'
+              : ' bg-backgroundDark text-backgroundLight'
+          )}
+        >
+          Pin
+        </button>
+        {pinnedCommunities.length && !isPinning ? (
+          <button
+            className={styles.buttonContainer.concat(
+              showAll
+                ? ' bg-primary text-white'
+                : ' bg-backgroundDark text-backgroundLight'
+            )}
+            onClick={() => setShowAll(!showAll)}
+          >
+            Show All
+          </button>
+        ) : null}
+      </div>
+
+      <div className='flex flex-col gap-12'>
+        {pinnedCommunities.length ? (
+          <div>
+            <div className={styles.sectionHeading}>Pinned:</div>
+
+            <div className={styles.communitiesContainer}>
+              {pinnedCommunities.map((pinnedCommunity) => (
+                <div className='relative'>
+                  {isPinning && (
+                    <button
+                      className='absolute top-0 right-0'
+                      onClick={() =>
+                        unpinCommunity(
+                          props.connectedWalletAddress,
+                          pinnedCommunity.id,
+                          findUserCommunities
+                        )
+                      }
+                    >
+                      -
+                    </button>
+                  )}
+                  <CommunityButton
+                    key={pinnedCommunity.id}
+                    community={pinnedCommunity}
+                    router={router}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        {showAll || isPinning || !pinnedCommunities.length ? (
+          <div>
+            <div className={styles.sectionHeading}>All:</div>
+            {communities.length ? (
+              <div className={styles.communitiesContainer}>
+                {communities.map((community) => (
+                  <div className='relative'>
+                    {isPinning && (
+                      <button
+                        className='absolute top-0 right-0'
+                        onClick={() =>
+                          pinCommunity(
+                            props.connectedWalletAddress,
+                            community.id,
+                            findUserCommunities
+                          )
+                        }
+                      >
+                        +
+                      </button>
+                    )}
+                    <CommunityButton
+                      key={community.id}
+                      community={community}
+                      router={router}
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div>You are not eligible to join any communities!</div>
+            )}
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 };
@@ -73,7 +180,7 @@ type CommunityButtonProps = {
 const CommunityButton = (props: CommunityButtonProps) => {
   return (
     <button
-      className='mx-auto space-y-3 flex-col flex items-center'
+      className='flex flex-col items-center mx-auto space-y-3'
       key={props.community.id}
       onClick={() => {
         props.router.push(`community/${props.community.id}`);
@@ -95,7 +202,8 @@ const CommunityButton = (props: CommunityButtonProps) => {
 };
 
 const styles = {
-  heading: 'text-xl font-bold text-center',
+  sectionHeading: 'text-xl font-bold',
   communitiesContainer:
     'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 3xl:grid-cols-8 4xl:grid-cols-9 gap-x-0 gap-y-12',
+  buttonContainer: 'rounded-lg px-3 py-2 font-bold ',
 };
