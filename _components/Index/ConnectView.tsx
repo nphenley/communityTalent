@@ -9,9 +9,10 @@ const ConnectView = () => {
 
   const connect = (chain: string) => {
     setShowOptions(false);
+    const signingMessage = 'Please authenticate with web3Talent.';
     chain == 'sol'
-      ? authenticate({ type: 'sol' })
-      : authenticate({ signingMessage: 'Please connect to 3Talent' });
+      ? authenticate({ type: 'sol', signingMessage: signingMessage })
+      : authenticate({ type: 'evm', signingMessage: signingMessage });
   };
 
   const connectOptions = (

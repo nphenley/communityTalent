@@ -33,7 +33,7 @@ const Talent = () => {
   return loadingProfiles ? (
     <LoadingSpinner />
   ) : (
-    <div className='flex flex-col gap-2'>
+    <div className='flex flex-col gap-2 lg:gap-4'>
       <div className='flex justify-center lg:justify-end'>
         <StyledInput
           onChange={(e: any) => setSearchQuery(e.target.value)}

@@ -5,11 +5,7 @@ import MobileSideBar from '_components/Community/SideBar/MobileSideBar';
 import { useState, useEffect } from 'react';
 import { ConnectionData } from '_types/ConnectionData';
 import { ConnectionContext } from '_contexts/ConnectionContext';
-import {
-  checkForExistingProfile,
-  checkMatchForCommunity,
-  subscribeToProfile,
-} from '_firebase/APIRequests';
+import { subscribeToProfile } from '_firebase/APIRequests';
 import { useMoralis } from 'react-moralis';
 import { useRouter } from 'next/router';
 import CreateProfile from '_components/Community/CreateProfile';
@@ -18,10 +14,7 @@ import Head from 'next/head';
 import { Profile } from '_types/Profile';
 import { Networks } from '_enums/Networks';
 import { ProfileContext } from '_contexts/ProfileContext';
-import {
-  checkEthMatchForCommunity,
-  getUserNftsSolana,
-} from '_helpers/getUserNfts';
+import { checkEthNftInWallet, checkSolNftInWallet } from '_helpers/getUserNfts';
 import { useNFTBalances } from 'react-moralis';
 import { Sections } from '_enums/Sections';
 
@@ -39,9 +32,8 @@ const Community = () => {
 
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [profile, setProfile] = useState<Profile>();
-  const [oldProfile, setOldProfile] = useState<Profile>();
 
-  const [isOpen, setIsOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [toggleState, setToggleState] = useState<Sections>(Sections.TALENT);
 
   useEffect(() => {
@@ -65,22 +57,19 @@ const Community = () => {
   };
 
   useEffect(() => {
-    if (loadingHasRequiredNft || connectionData!.network === Networks.SOL)
-      return;
-    checkForExistingProfile(connectionData!.address, setOldProfile);
-  }, [loadingHasRequiredNft]);
-
-  useEffect(() => {
     if (!connectionData) return;
     checkUserHasRequiredNft();
   }, [connectionData]);
 
   const checkUserHasRequiredNft = async () => {
     if (connectionData!.network === Networks.SOL) {
-      const userNfts = await getUserNftsSolana(connectionData!.address!);
-      checkMatchForCommunity(userNfts, communityId, updateHasRequiredNft);
+      checkSolNftInWallet(
+        connectionData!.address,
+        communityId,
+        updateHasRequiredNft
+      );
     } else {
-      checkEthMatchForCommunity(
+      checkEthNftInWallet(
         getNFTBalances,
         chainId ? chainId : 'eth',
         connectionData!.address,
@@ -91,11 +80,7 @@ const Community = () => {
   };
 
   const updateHasRequiredNft = (hasRequiredNft: boolean) => {
-    if (!hasRequiredNft) {
-      router.push('/');
-    } else {
-      setLoadingHasRequiredNft(false);
-    }
+    hasRequiredNft ? setLoadingHasRequiredNft(false) : router.push('/');
   };
 
   useEffect(() => {
@@ -103,6 +88,7 @@ const Community = () => {
       setLoadingProfile(false);
       return;
     }
+    setLoadingProfile(true);
     const unsubscribe = subscribeToProfile(
       communityId,
       connectionData?.address,
@@ -136,9 +122,9 @@ const Community = () => {
           ) : !profile ? (
             <div className='flex flex-col w-full'>
               <TopBar
-                isOpen={false}
+                isSidebarOpen={isSidebarOpen}
+                setIsSidebarOpen={undefined}
                 hideHamburgerMenu={true}
-                setIsOpen={undefined}
               />
               <CreateProfile communityId={communityId} />
             </div>
@@ -152,21 +138,19 @@ const Community = () => {
               </div>
               <div className='block md:hidden'>
                 <MobileSideBar
-                  isOpen={isOpen}
-                  setIsOpen={setIsOpen}
+                  isOpen={isSidebarOpen}
+                  setIsOpen={setIsSidebarOpen}
                   toggleState={toggleState}
                   setToggleState={setToggleState}
                 />
               </div>
 
               <div className='flex flex-col grow'>
-                <TopBar isOpen={isOpen} setIsOpen={setIsOpen} />
-
-                <Content
-                  isOpen={isOpen}
-                  setIsOpen={setIsOpen}
-                  toggleState={toggleState}
+                <TopBar
+                  isSidebarOpen={isSidebarOpen}
+                  setIsSidebarOpen={setIsSidebarOpen}
                 />
+                <Content toggleState={toggleState} />
               </div>
             </>
           )}

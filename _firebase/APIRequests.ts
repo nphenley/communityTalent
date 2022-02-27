@@ -17,7 +17,6 @@ import {
 } from 'firebase/firestore';
 import { Project } from '_types/Project';
 import { Profile } from '_types/Profile';
-import { Community } from '_types/Community';
 
 const projectsCollectionRef = collection(firestore, 'projects');
 const pinsCollectionRef = collection(firestore, 'pins');
@@ -25,10 +24,6 @@ const profileCollectionRef = collection(firestore, 'profiles');
 const solNftTokenAddressesCollectionRef = collection(
   firestore,
   'solNftTokenAddresses'
-);
-const solNftCommunitiesCollectionRef = collection(
-  firestore,
-  'solNftCommunities'
 );
 const pinnedCommunitiesCollectionRef = collection(
   firestore,
@@ -105,7 +100,6 @@ export const checkForExistingProfile = async (
   const profile = userProfiles.docs.length
     ? { ...userProfiles.docs[0].data() }
     : undefined;
-  console.log(profile);
   setExistingProfile(profile);
 };
 
@@ -113,7 +107,6 @@ export const importProfile = (
   communityId: string,
   existingProfile: Profile
 ) => {
-  console.log(existingProfile);
   addDoc(profileCollectionRef, {
     ...existingProfile,
     communityId: communityId,
@@ -166,49 +159,16 @@ export const togglePinned = async (projectId: string) => {
 
 // ==================== SOLANA NFTS ====================
 
-export const checkMatches = async (
-  userNfts: { tokenAddress: string; image: string }[],
-  updateData: any
-) => {
-  let list: Community[] = [];
-
-  await Promise.all(
-    userNfts.map(async (nft) => {
-      const match = await getDoc(
-        doc(solNftTokenAddressesCollectionRef, nft.tokenAddress)
-      );
-      if (!match.exists()) return;
-      const communityId = match.data()!.communityId;
-      const community = await getDoc(
-        doc(solNftCommunitiesCollectionRef, communityId)
-      );
-      list.push({
-        id: communityId,
-        name: community.data()!.name,
-        image: nft.image,
-      });
-    })
+export const getSolNftCommunity = async (tokenAddress: string) => {
+  const document = await getDoc(
+    doc(solNftTokenAddressesCollectionRef, tokenAddress)
   );
-  updateData(list);
-};
-
-export const checkMatchForCommunity = async (
-  userNfts: { tokenAddress: string; image: string }[],
-  communityId: string,
-  updateHasRequiredNft: any
-) => {
-  let hasRequiredNft = false;
-  await Promise.all(
-    userNfts.map(async (nft) => {
-      const match = await getDoc(
-        doc(solNftTokenAddressesCollectionRef, nft.tokenAddress)
-      );
-      if (match.exists() && match.data().communityId === communityId) {
-        hasRequiredNft = true;
+  return document.exists()
+    ? {
+        id: document.data().communityId,
+        name: document.data().communityName,
       }
-    })
-  );
-  updateHasRequiredNft(hasRequiredNft);
+    : undefined;
 };
 
 // ==================== COMMUNITY PINS ====================

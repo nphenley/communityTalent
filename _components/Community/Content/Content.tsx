@@ -5,8 +5,6 @@ import { Sections } from '_enums/Sections';
 
 type ContentProps = {
   toggleState: Sections;
-  isOpen: boolean;
-  setIsOpen: any;
 };
 
 const Content = (props: ContentProps) => {

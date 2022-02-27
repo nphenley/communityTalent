@@ -111,7 +111,7 @@ const EditProfileView = (props: EditProfileViewProps) => {
   });
 
   return (
-    <div className='flex flex-col items-center w-full pt-12 pb-16 overflow-y-auto grow bg-background'>
+    <div className='flex flex-col items-center w-full pt-12 pb-16 overflow-y-scroll grow bg-background'>
       <form
         className='flex flex-col w-full max-w-screen-sm gap-8 px-10 sm:px-0'
         onSubmit={handleSubmit(onSubmit)}

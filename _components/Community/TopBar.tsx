@@ -2,8 +2,8 @@ import { FaBars } from 'react-icons/fa';
 import { useMoralis } from 'react-moralis';
 
 type TopBarProps = {
-  isOpen: boolean;
-  setIsOpen: any;
+  isSidebarOpen: boolean;
+  setIsSidebarOpen: any;
   hideHamburgerMenu?: boolean;
 };
 
@@ -15,7 +15,7 @@ const TopBar = (props: TopBarProps) => {
   const hamburgerButton = (
     <div className={styles.hamburgerButtonContainer}>
       <button
-        onClick={() => props.setIsOpen(true)}
+        onClick={() => props.setIsSidebarOpen(true)}
         className={styles.hamburgerButton}
       >
         <FaBars size='20' />
@@ -33,7 +33,7 @@ const TopBar = (props: TopBarProps) => {
 
   return (
     <div className={styles.container}>
-      {props.hideHamburgerMenu || props.isOpen ? null : hamburgerButton}
+      {props.hideHamburgerMenu || props.isSidebarOpen ? null : hamburgerButton}
       {title}
       {disconnectButton}
     </div>
