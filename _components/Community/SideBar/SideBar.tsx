@@ -22,7 +22,7 @@ const SideBar = (props: SideBarProps) => {
       >
         <SideBarIcon
           icon={
-            <div className='rounded-full overflow-hidden flex justify-center mb-4'>
+            <div className='flex justify-center mb-4 overflow-hidden rounded-full'>
               <Image src={profileNFTImages[3]} height={150} width={150} />
             </div>
           }
@@ -32,14 +32,13 @@ const SideBar = (props: SideBarProps) => {
       </button>
 
       <div className='flex flex-col grow gap-y-6'>
-        <div>
+        <button onClick={() => props.setToggleState(Sections.PROJECTS)}>
           <SideBarIcon
             icon={<FaBriefcase size='20' />}
             text={'PROJECTS'}
-            active={false}
-            wip={true}
+            active={props.toggleState === Sections.PROJECTS}
           />
-        </div>
+        </button>
 
         <button onClick={() => props.setToggleState(Sections.TALENT)}>
           <SideBarIcon

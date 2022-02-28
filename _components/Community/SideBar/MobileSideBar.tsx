@@ -37,7 +37,7 @@ const MobileSideBar = (props: SideBarProps) => {
       </button>
 
       <button
-        className='w-full mb-8 mt-4 flex justify-center'
+        className='flex justify-center w-full mt-4 mb-8'
         onClick={() => toggleState(Sections.PROFILE)}
       >
         <SideBarIcon
@@ -51,15 +51,17 @@ const MobileSideBar = (props: SideBarProps) => {
         />
       </button>
 
-      <div className='flex flex-col w-full grow gap-y-6 items-center'>
-        <div className='w-full'>
+      <div className='flex flex-col items-center w-full grow gap-y-6'>
+        <button
+          onClick={() => toggleState(Sections.PROJECTS)}
+          className='w-full'
+        >
           <SideBarIcon
             icon={<FaBriefcase size='20' />}
             text={'Projects'}
             active={props.toggleState === Sections.PROJECTS}
-            wip={true}
           />
-        </div>
+        </button>
 
         <button onClick={() => toggleState(Sections.TALENT)} className='w-full'>
           <SideBarIcon

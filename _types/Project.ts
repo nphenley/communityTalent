@@ -5,7 +5,9 @@ export type Project = {
   description: string;
   tags: string[];
   title: string;
-  authors: string[];
+  authorAddresses: string[];
+  authorDisplayNames: string[];
   dateCreated: Timestamp;
   numberOfPins: number;
+  numberOfSkulls: number;
 };

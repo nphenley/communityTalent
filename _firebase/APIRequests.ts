@@ -29,6 +29,7 @@ const pinnedCommunitiesCollectionRef = collection(
   firestore,
   'pinnedCommunities'
 );
+const projectCollectionRef = collection(firestore, 'projects');
 
 // ============== PROFILE ==============
 
@@ -118,11 +119,22 @@ export const importProfile = (
 // ============== PROJECTS ==============
 
 export const createProject = (project: Project) => {
-  addDoc(collection(firestore, 'projects'), {
+  addDoc(projectCollectionRef, {
     ...project,
     dateCreated: Timestamp.now(),
     dateLastUpdated: Timestamp.now(),
   });
+};
+
+export const updateProject = async (
+  projectId: string,
+  data: Partial<Project>
+) => {
+  const docRef = await updateDoc(doc(projectCollectionRef, projectId), {
+    ...data,
+    dateLastUpdated: Timestamp.now(),
+  });
+  return docRef;
 };
 
 export const getProjects = async (setProjects: any) => {

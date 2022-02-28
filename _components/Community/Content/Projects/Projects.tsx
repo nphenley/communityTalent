@@ -10,13 +10,14 @@ const Projects = () => {
   const [addProject, setAddProject] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
   const [pins, setPins] = useState<string[]>([]);
+  const [editProject, setEditProject] = useState(false);
 
   const connectionData = useContext(ConnectionContext);
 
   useEffect(() => {
     getPins(connectionData!.address, setPins);
     getProjects(setProjects);
-  }, [connectionData]);
+  }, [connectionData, editProject, addProject]);
 
   return (
     <div className={styles.container}>
@@ -24,12 +25,16 @@ const Projects = () => {
         <ProjectCard
           key={project.id}
           project={project}
+          editProject={editProject}
+          setEditProject={setEditProject}
+          walletAddress={connectionData!.address}
           isUserPinned={pins.includes(project.id)}
           togglePinned={() => togglePinned(project.id)}
         />
       ))}
 
-      {addProject ? <ProjectForm /> : null}
+      {addProject ? <ProjectForm setAddProject={setAddProject} /> : null}
+
       <PlusButton onClick={() => setAddProject(!addProject)} />
     </div>
   );
@@ -39,5 +44,5 @@ export default Projects;
 
 const styles = {
   container:
-    'relative grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4',
+    'relative grid grid-cols-2 gap-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3',
 };

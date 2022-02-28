@@ -19,7 +19,7 @@ const ProfileCard = (props: ProfileCardProps) => {
 
   const expandButton = (
     <button
-      className='absolute top-1 right-4 text-backgroundLight font-bold text-2xl'
+      className='absolute text-2xl font-bold top-1 right-4 text-backgroundLight'
       onClick={() => setIsExpanded(!isExpanded)}
     >
       {isExpanded ? '-' : '+'}
@@ -27,7 +27,7 @@ const ProfileCard = (props: ProfileCardProps) => {
   );
 
   const lookingForProjectBadge = (
-    <div className='flex justify-center items-center -mt-4 -mb-2'>
+    <div className='flex items-center justify-center -mt-4 -mb-2'>
       <div className='rounded-md flex text-sm bg-primaryDark px-2 py-1 gap-1.5 items-center'>
         <div>Looking For Project</div>
         <div className='-mt-0.5'>
@@ -50,7 +50,7 @@ const ProfileCard = (props: ProfileCardProps) => {
     <div className={containerClassName}>
       {!props.alwaysExpanded && expandButton}
 
-      <div className='grid grid-cols-2 items-center gap-8 mb-4 px-12'>
+      <div className='grid items-center grid-cols-2 gap-8 px-12 mb-4'>
         <div className='flex justify-end'>
           <div className='flex'>
             <div className={styles.imageContainer}>
@@ -63,17 +63,17 @@ const ProfileCard = (props: ProfileCardProps) => {
           </div>
         </div>
 
-        <div className='flex flex-col h-full justify-center gap-1 break-words mt-2'>
+        <div className='flex flex-col justify-center h-full gap-1 mt-2 break-words'>
           <div className='font-bold break-words'>
             {props.profile.displayName}
           </div>
           {props.profile.twitterHandle && (
-            <div className='text-grey break-words'>
+            <div className='break-words text-grey'>
               {props.profile.twitterHandle}
             </div>
           )}
           {props.profile.discordUsername && (
-            <div className='text-grey break-words'>
+            <div className='break-words text-grey'>
               {props.profile.discordUsername}
             </div>
           )}
@@ -82,7 +82,7 @@ const ProfileCard = (props: ProfileCardProps) => {
 
       {props.profile.lookingForProject === true && lookingForProjectBadge}
 
-      <div className='w-9/12 mx-auto flex flex-col gap-6'>
+      <div className='flex flex-col w-9/12 gap-6 mx-auto'>
         {ruler}
 
         <div className={styles.sectionContainer}>
@@ -98,7 +98,7 @@ const ProfileCard = (props: ProfileCardProps) => {
 
             <div className={styles.sectionContainer}>
               <div className={styles.sectionHeading}>Tags</div>
-              <div className='gap-2 flex flex-wrap'>
+              <div className='flex flex-wrap gap-2'>
                 {props.profile.tags &&
                   props.profile.tags.map((tag) => (
                     <div key={tag} className={styles.sectionTags}>
@@ -162,7 +162,7 @@ const ProfileCard = (props: ProfileCardProps) => {
 
             <div className={styles.sectionContainer}>
               <div className={styles.sectionHeading}>Languages</div>
-              <div className='gap-2 flex flex-wrap'>
+              <div className='flex flex-wrap gap-2'>
                 {props.profile.languages.map((language) => (
                   <div key={language} className={styles.sectionTags}>
                     {language}
