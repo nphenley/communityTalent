@@ -17,6 +17,7 @@ import { ProfileContext } from '_contexts/ProfileContext';
 import { checkEthNftInWallet, checkSolNftInWallet } from '_helpers/getUserNfts';
 import { useNFTBalances } from 'react-moralis';
 import { Sections } from '_enums/Sections';
+import { CommunityContext } from '_contexts/CommunityContext';
 
 const Community = () => {
   const router = useRouter();
@@ -104,58 +105,60 @@ const Community = () => {
 
   return (
     <ConnectionContext.Provider value={connectionData}>
-      <ProfileContext.Provider value={profile}>
-        <Head>
-          <title>community/{communityId}</title>
-          <meta
-            name='viewport'
-            content='initial-scale=1.0, width=device-width'
-          />
-        </Head>
+      <CommunityContext.Provider value={communityId}>
+        <ProfileContext.Provider value={profile}>
+          <Head>
+            <title>community/{communityId}</title>
+            <meta
+              name='viewport'
+              content='initial-scale=1.0, width=device-width'
+            />
+          </Head>
 
-        <div className='flex h-screen text-white break-words bg-background'>
-          {isAuthUndefined ||
-          loadingConnectionData ||
-          loadingHasRequiredNft ||
-          loadingProfile ? (
-            <LoadingSpinner />
-          ) : !profile ? (
-            <div className='flex flex-col w-full'>
-              <TopBar
-                isSidebarOpen={isSidebarOpen}
-                setIsSidebarOpen={undefined}
-                hideHamburgerMenu={true}
-              />
-              <CreateProfile communityId={communityId} />
-            </div>
-          ) : (
-            <>
-              <div className='hidden md:block'>
-                <SideBar
-                  toggleState={toggleState}
-                  setToggleState={setToggleState}
-                />
-              </div>
-              <div className='block md:hidden'>
-                <MobileSideBar
-                  isOpen={isSidebarOpen}
-                  setIsOpen={setIsSidebarOpen}
-                  toggleState={toggleState}
-                  setToggleState={setToggleState}
-                />
-              </div>
-
-              <div className='flex flex-col grow'>
+          <div className='flex h-screen text-white break-words bg-background'>
+            {isAuthUndefined ||
+            loadingConnectionData ||
+            loadingHasRequiredNft ||
+            loadingProfile ? (
+              <LoadingSpinner />
+            ) : !profile ? (
+              <div className='flex flex-col w-full'>
                 <TopBar
                   isSidebarOpen={isSidebarOpen}
-                  setIsSidebarOpen={setIsSidebarOpen}
+                  setIsSidebarOpen={undefined}
+                  hideHamburgerMenu={true}
                 />
-                <Content toggleState={toggleState} />
+                <CreateProfile />
               </div>
-            </>
-          )}
-        </div>
-      </ProfileContext.Provider>
+            ) : (
+              <>
+                <div className='hidden md:block'>
+                  <SideBar
+                    toggleState={toggleState}
+                    setToggleState={setToggleState}
+                  />
+                </div>
+                <div className='block md:hidden'>
+                  <MobileSideBar
+                    isOpen={isSidebarOpen}
+                    setIsOpen={setIsSidebarOpen}
+                    toggleState={toggleState}
+                    setToggleState={setToggleState}
+                  />
+                </div>
+
+                <div className='flex flex-col grow'>
+                  <TopBar
+                    isSidebarOpen={isSidebarOpen}
+                    setIsSidebarOpen={setIsSidebarOpen}
+                  />
+                  <Content toggleState={toggleState} />
+                </div>
+              </>
+            )}
+          </div>
+        </ProfileContext.Provider>
+      </CommunityContext.Provider>
     </ConnectionContext.Provider>
   );
 };

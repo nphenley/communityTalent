@@ -16,19 +16,15 @@ import StyledToggleField from '_styled/StyledToggleField';
 import Select from 'react-select';
 import { Tags } from '_enums/Tags';
 import { Languages } from '_enums/Languages';
-
-type CreateProfileViewProps = {
-  communityId: string;
-};
-
-// TODO:
-// \n in strings not saved to database correctly.
+import { CommunityContext } from '_contexts/CommunityContext';
 
 // Note:
 // useFieldArray() is for arrays of objects, not arrays of primitive types.
 // Bit weird and strange and kind of shitty, seems to work fine though.
-const CreateProfileView = (props: CreateProfileViewProps) => {
+const CreateProfileView = () => {
   const connectionData = useContext(ConnectionContext);
+  const communityId = useContext(CommunityContext);
+
   const [existingProfile, setExistingProfile] = useState<Profile>();
   const { control, register, unregister, handleSubmit } = useForm();
 
@@ -50,12 +46,11 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
     name: 'relevantLinks',
   });
 
-  const onSubmit: SubmitHandler<Partial<Profile>> = async (data: any) => {
-    createProfile({
+  const onSubmit = async (data: any) => {
+    createProfile(communityId, {
       ...data,
-      communityId: props.communityId,
       walletAddress: connectionData!.address,
-    } as Partial<Profile>);
+    } as Profile);
   };
 
   const title = (
@@ -67,7 +62,7 @@ const CreateProfileView = (props: CreateProfileViewProps) => {
   const description = existingProfile ? (
     <div className='flex flex-row-reverse items-center gap-4 mb-4 text-center'>
       <button
-        onClick={() => importProfile(props.communityId, existingProfile)}
+        onClick={() => importProfile(communityId, existingProfile)}
         className='px-3 py-2 font-bold text-white rounded-lg bg-primary'
       >
         Import

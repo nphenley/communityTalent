@@ -1,7 +1,7 @@
 import { getParsedNftAccountsByOwner } from '@nfteyez/sol-rayz';
 import { Connection } from '@solana/web3.js';
 import { mainNetUrl } from '_constants/solanaConstants';
-import { getSolNftCommunity, isCommunityPinned } from '_firebase/APIRequests';
+import { getSolNftCommunity } from '_firebase/APIRequests';
 import { Community } from '_types/Community';
 
 export const getUserNftsSolana = async (
@@ -135,17 +135,15 @@ const filterDuplicateCommunities = (nonUniqueCommunities: Community[]) => {
   return uniqueCommunities;
 };
 
+// TODO:
+// Figure out Pinned Communities system
+// When you first connect, if no wallet doc exists create it
+// when you pin a community, if no pinnedCommunities array create it
 const getPinnedCommunities = async (
   walletAddress: string,
   communities: Community[]
 ) => {
   let pinnedCommunities: Community[] = [];
-  await Promise.all(
-    communities.map(async (community) => {
-      const isPinned = await isCommunityPinned(walletAddress, community.id);
-      if (isPinned) pinnedCommunities.push(community);
-    })
-  );
   return pinnedCommunities;
 };
 

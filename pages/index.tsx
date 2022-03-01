@@ -20,7 +20,7 @@ export default function Home() {
   return (
     <div className='flex flex-col h-screen bg-background text-primary'>
       <Head>
-        <title>Web 3 Talent</title>
+        <title>web3Talent</title>
         <meta name='viewport' content='initial-scale=1.0, width=device-width' />
       </Head>
       <NavBar />
@@ -44,7 +44,7 @@ export default function Home() {
 const NavBar = () => {
   return (
     <div className='w-full p-8 text-xl font-bold text-center uppercase'>
-      Web 3 Talent
+      web3Talent
     </div>
   );
 };

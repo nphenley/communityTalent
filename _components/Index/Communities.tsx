@@ -34,7 +34,7 @@ const Communities = (props: CommunitiesProps) => {
     setLoadingData(false);
   };
 
-  const findUserCommunities = async () => {
+  const getCommunities = async () => {
     switch (props.network) {
       case Networks.SOL:
         await getUserNftsSolana(props.connectedWalletAddress, updateData);
@@ -55,7 +55,7 @@ const Communities = (props: CommunitiesProps) => {
       props.network === Networks.SOL ||
       (chainId && validChainIds.includes(chainId))
     ) {
-      findUserCommunities();
+      getCommunities();
     } else {
       setLoadingData(false);
     }
@@ -111,7 +111,7 @@ const Communities = (props: CommunitiesProps) => {
                         unpinCommunity(
                           props.connectedWalletAddress,
                           pinnedCommunity.id,
-                          findUserCommunities
+                          getCommunities
                         )
                       }
                     >
@@ -139,7 +139,7 @@ const Communities = (props: CommunitiesProps) => {
                           pinCommunity(
                             props.connectedWalletAddress,
                             community.id,
-                            findUserCommunities
+                            getCommunities
                           )
                         }
                       >

@@ -4,9 +4,8 @@ import { Languages } from '_enums/Languages';
 
 export type Profile = {
   id: string;
-  dateCreated?: Timestamp;
-  dateLastUpdated?: Timestamp;
-  communityId: string;
+  dateCreated: Timestamp;
+  dateLastUpdated: Timestamp;
   walletAddress: string;
   displayName: string;
   twitterHandle?: string;
@@ -19,4 +18,5 @@ export type Profile = {
   languages?: Languages[];
   contacts?: string;
   relevantLinks?: string[];
+  votes?: [{ walletAddress: string; type: 'up' | 'down' }];
 };

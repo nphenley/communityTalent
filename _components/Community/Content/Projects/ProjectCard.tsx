@@ -7,26 +7,34 @@ import moment from 'moment';
 type ProjectCardProps = {
   project: Project;
   walletAddress: string;
-  isUserPinned: boolean;
-  togglePinned: any;
 };
 
 const ProjectCard = (props: ProjectCardProps) => {
   const [editProject, setEditProject] = useState(false);
 
+  const isUserPinned =
+    props.project.votes &&
+    props.project.votes.find(
+      (obj) => obj.walletAddress === props.walletAddress && obj.type === 'up'
+    )
+      ? true
+      : false;
+
+  // Note:
+  // Technically shouldn't use toLowerCase() here, instead use checksum converter or whatever.
   const postedByUser =
-    props.project.authorAddresses[0].toLowerCase() ===
+    props.project.walletAddress.toLowerCase() ===
     props.walletAddress.toLowerCase();
 
   return (
-    <div className={containerClassName}>
+    <div className={styles.container}>
       <div className='grid w-full grid-cols-10 grid-rows-2 px-4 '>
         <div className='flex flex-row col-span-10 row-span-1 '>
           <div className='col-span-2'>
             <EmoteIcon
-              onClick={() => props.togglePinned(props.project.id)}
-              active={props.isUserPinned}
-              number={props.project.numberOfPins}
+              onClick={() => console.log('pin project')}
+              active={isUserPinned}
+              number={props.project.votes ? props.project.votes.length : 0}
               icon={<FaThumbtack size={12} />}
             />
           </div>
@@ -34,7 +42,7 @@ const ProjectCard = (props: ProjectCardProps) => {
             <div className='col-span-6 '>{props.project.title}</div>
             <div className='flex flex-row '>
               <div className='text-sm text-grey'>
-                {props.project.authorDisplayNames}
+                {props.project.walletAddress}
               </div>
               <div className='ml-auto mr-0 text-sm text-grey'>
                 {moment(props.project.dateCreated.toDate()).fromNow()}
@@ -91,33 +99,9 @@ const ProjectCard = (props: ProjectCardProps) => {
 
 export default ProjectCard;
 
-let containerClassName =
-  'relative bg-backgroundDark rounded-lg shadow-lg w-full py-4 flex gap-3 overflow-y-scroll mx-auto';
-
-const ruler = <hr className='border-primary'></hr>;
-
 const styles = {
-  imageContainer: 'rounded-full overflow-hidden flex justify-center',
+  container:
+    'relative bg-backgroundDark rounded-lg shadow-lg w-full py-4 flex gap-3 overflow-y-scroll mx-auto',
   sectionContainer: 'px-5 pb-1 gap-2 flex flex-col',
-  sectionHeading: 'text-primary font-bold',
-  sectionParagraph: 'whitespace-pre-wrap',
-  sectionBulletpoints: 'gap-1 flex flex-col px-2 break-words',
   sectionTags: 'bg-primaryDark py-1.5 px-3 rounded-lg',
 };
-
-{
-  /* <div className='flex flex-col w-9/12 gap-4 mx-auto '>
-        {ruler}
-        <div className={styles.sectionContainer}>
-          <div className={styles.sectionParagraph}>
-            {props.project.description.replace('<br/>', '\n')}
-          </div>
-        </div>
-
-        
-      </div> */
-}
-
-{
-  /*  */
-}

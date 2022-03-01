@@ -6,21 +6,23 @@ import { ProfileContext } from '_contexts/ProfileContext';
 import Select from 'react-select';
 
 import { Tags } from '_enums/Tags';
+import { CommunityContext } from '_contexts/CommunityContext';
 
 type ProjectFormProps = {
   setAddProject: any;
 };
 
 const ProjectForm = (props: ProjectFormProps) => {
+  const communityId = useContext(CommunityContext);
+
   const { control, register, handleSubmit } = useForm();
 
   const profile = useContext(ProfileContext);
 
   const onSubmit = (data: any) => {
-    createProject({
+    createProject(communityId, {
       ...data,
-      authorDisplayNames: [profile!.displayName],
-      authorAddresses: [profile!.walletAddress],
+      walletAddress: profile!.walletAddress,
     } as Project);
     props.setAddProject(false);
   };

@@ -14,27 +14,27 @@ import {
   onSnapshot,
   deleteDoc,
   setDoc,
+  arrayRemove,
+  arrayUnion,
 } from 'firebase/firestore';
 import { Project } from '_types/Project';
 import { Profile } from '_types/Profile';
 
-const projectsCollectionRef = collection(firestore, 'projects');
-const pinsCollectionRef = collection(firestore, 'pins');
-const profileCollectionRef = collection(firestore, 'profiles');
-const solNftTokenAddressesCollectionRef = collection(
-  firestore,
-  'solNftTokenAddresses'
-);
-const pinnedCommunitiesCollectionRef = collection(
-  firestore,
-  'pinnedCommunities'
-);
-const projectCollectionRef = collection(firestore, 'projects');
+// ============== WALLET ==============
+
+export const getWallet = async (walletAddress: string) => {
+  const wallet = await getDoc(doc(firestore, 'wallets', walletAddress));
+  if (!wallet.exists()) setDoc(doc(firestore, 'wallets', walletAddress), {});
+  return wallet.data();
+};
 
 // ============== PROFILE ==============
 
-export const createProfile = async (profileData: Partial<Profile>) => {
-  addDoc(profileCollectionRef, {
+export const createProfile = async (
+  communityId: string,
+  profileData: Profile
+) => {
+  addDoc(collection(firestore, 'communities', communityId, 'profiles'), {
     ...profileData,
     dateCreated: Timestamp.now(),
     dateLastUpdated: Timestamp.now(),
@@ -42,13 +42,14 @@ export const createProfile = async (profileData: Partial<Profile>) => {
 };
 
 export const updateProfile = async (
+  communityId: string,
   profileId: string,
   data: Partial<Profile>
 ) => {
-  const docRef = await updateDoc(doc(profileCollectionRef, profileId), {
-    ...data,
-    dateLastUpdated: Timestamp.now(),
-  });
+  const docRef = await updateDoc(
+    doc(firestore, 'communities', communityId, 'profiles', profileId),
+    { ...data, dateLastUpdated: Timestamp.now() }
+  );
   return docRef;
 };
 
@@ -59,9 +60,8 @@ export const subscribeToProfile = (
 ) => {
   return onSnapshot(
     query(
-      profileCollectionRef,
-      where('walletAddress', '==', walletAddress),
-      where('communityId', '==', communityId)
+      collection(firestore, 'communities', communityId, 'profiles'),
+      where('walletAddress', '==', walletAddress)
     ),
     (snapshot) =>
       updateProfile(
@@ -74,7 +74,7 @@ export const subscribeToProfile = (
 
 export const getProfiles = async (communityId: string, updateProfiles: any) => {
   const data = await getDocs(
-    query(profileCollectionRef, where('communityId', '==', communityId))
+    collection(firestore, 'communities', communityId, 'profiles')
   );
   updateProfiles(
     data.docs.map(
@@ -87,30 +87,32 @@ export const getProfiles = async (communityId: string, updateProfiles: any) => {
   );
 };
 
+// TODO:
+// Existing Profile requires a main profile to be made outside a community.
 export const checkForExistingProfile = async (
   walletAddress: string,
   setExistingProfile: any
 ) => {
-  const userProfiles = await getDocs(
-    query(
-      profileCollectionRef,
-      where('walletAddress', '==', walletAddress),
-      orderBy('dateLastUpdated', 'desc')
-    )
-  );
-  const profile = userProfiles.docs.length
-    ? { ...userProfiles.docs[0].data() }
-    : undefined;
-  setExistingProfile(profile);
+  // const userProfiles = await getDocs(
+  //   query(
+  //     collection(firestore, 'communities', communityId, 'profiles')
+  //     where('walletAddress', '==', walletAddress),
+  //     orderBy('dateLastUpdated', 'desc')
+  //   )
+  // );
+  // const profile = userProfiles.docs.length
+  //   ? { ...userProfiles.docs[0].data() }
+  //   : undefined;
+  // setExistingProfile(profile);
+  setExistingProfile(undefined);
 };
 
-export const importProfile = (
+export const importProfile = async (
   communityId: string,
   existingProfile: Profile
 ) => {
-  addDoc(profileCollectionRef, {
+  return addDoc(collection(firestore, 'communities', communityId, 'profiles'), {
     ...existingProfile,
-    communityId: communityId,
     dateCreated: Timestamp.now(),
     dateLastUpdated: Timestamp.now(),
   });
@@ -118,8 +120,8 @@ export const importProfile = (
 
 // ============== PROJECTS ==============
 
-export const createProject = (project: Project) => {
-  addDoc(projectCollectionRef, {
+export const createProject = async (communityId: string, project: Project) => {
+  return addDoc(collection(firestore, 'communities', communityId, 'projects'), {
     ...project,
     dateCreated: Timestamp.now(),
     dateLastUpdated: Timestamp.now(),
@@ -127,54 +129,35 @@ export const createProject = (project: Project) => {
 };
 
 export const updateProject = async (
+  communityId: string,
   projectId: string,
   data: Partial<Project>
 ) => {
-  const docRef = await updateDoc(doc(projectCollectionRef, projectId), {
-    ...data,
-    dateLastUpdated: Timestamp.now(),
-  });
-  return docRef;
+  return updateDoc(
+    doc(
+      collection(firestore, 'communities', communityId, 'projects'),
+      projectId
+    ),
+    { ...data, dateLastUpdated: Timestamp.now() }
+  );
 };
 
-export const getProjects = async (setProjects: any) => {
+export const getProjects = async (communityId: string, setProjects: any) => {
   const data = await getDocs(
-    query(projectsCollectionRef, orderBy('dateCreated', 'desc'))
-  );
-  setProjects(
-    data.docs.map(
-      (doc) =>
-        ({
-          ...doc.data(),
-          id: doc.id,
-        } as Project)
+    query(
+      collection(firestore, 'communities', communityId, 'projects'),
+      orderBy('dateCreated', 'desc')
     )
   );
-};
-
-export const getPins = async (walletAddress: string, setPins: any) => {
-  const userPins = await getDocs(
-    query(pinsCollectionRef, where('user', '==', walletAddress))
+  setProjects(
+    data.docs.map((doc) => ({ ...doc.data(), id: doc.id } as Project))
   );
-  let pins: string[] = [];
-  userPins.docs.map((doc) => pins.push(doc.data().project));
-  setPins(pins);
-};
-
-// TODO:
-// Atm only increments, otherwise toggle pinned
-export const togglePinned = async (projectId: string) => {
-  updateDoc(doc(projectsCollectionRef, projectId), {
-    numberOfPins: increment(1),
-  });
 };
 
 // ==================== SOLANA NFTS ====================
 
 export const getSolNftCommunity = async (tokenAddress: string) => {
-  const document = await getDoc(
-    doc(solNftTokenAddressesCollectionRef, tokenAddress)
-  );
+  const document = await getDoc(doc(firestore, 'tokenAddresses', tokenAddress));
   return document.exists()
     ? {
         id: document.data().communityId,
@@ -185,33 +168,24 @@ export const getSolNftCommunity = async (tokenAddress: string) => {
 
 // ==================== COMMUNITY PINS ====================
 
-export const isCommunityPinned = async (
-  walletAddress: string,
-  communityId: string
-) => {
-  const concatString = walletAddress + '_' + communityId;
-  const community = await getDoc(
-    doc(pinnedCommunitiesCollectionRef, concatString)
-  );
-  return community.exists();
-};
-
 export const unpinCommunity = async (
   walletAddress: string,
   communityId: string,
-  findUserCommunities: any
+  getCommunities: any
 ) => {
-  const concatString = walletAddress + '_' + communityId;
-  await deleteDoc(doc(pinnedCommunitiesCollectionRef, concatString));
-  findUserCommunities();
+  await updateDoc(doc(firestore, 'wallets', walletAddress), {
+    pinnedCommunities: arrayRemove(communityId),
+  });
+  getCommunities();
 };
 
 export const pinCommunity = async (
   walletAddress: string,
   communityId: string,
-  findUserCommunities: any
+  getCommunities: any
 ) => {
-  const concatString = walletAddress + '_' + communityId;
-  await setDoc(doc(pinnedCommunitiesCollectionRef, concatString), {});
-  findUserCommunities();
+  await updateDoc(doc(firestore, 'wallets', walletAddress), {
+    pinnedCommunities: arrayUnion(communityId),
+  });
+  getCommunities();
 };

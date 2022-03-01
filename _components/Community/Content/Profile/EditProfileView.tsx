@@ -5,13 +5,14 @@ import {
   useForm,
   useFormState,
 } from 'react-hook-form';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { updateProfile } from '_firebase/APIRequests';
 import { Profile } from '_types/Profile';
 import StyledToggleField from '_styled/StyledToggleField';
 import Select from 'react-select';
 import { Tags } from '_enums/Tags';
 import { Languages } from '_enums/Languages';
+import { CommunityContext } from '_contexts/CommunityContext';
 
 type EditProfileViewProps = {
   profile: Profile;
@@ -21,6 +22,8 @@ type EditProfileViewProps = {
 // TODO:
 // Currently just copied from CreateProfile, should actually make this it's own file.
 const EditProfileView = (props: EditProfileViewProps) => {
+  const communityId = useContext(CommunityContext);
+
   const { control, register, handleSubmit } = useForm<any>({
     defaultValues: {
       skills: props.profile.skills ? props.profile.skills : [],
@@ -86,7 +89,7 @@ const EditProfileView = (props: EditProfileViewProps) => {
     if (!showContacts) data.contacts = '';
     if (!showLinks) data.relevantLinks = [];
 
-    updateProfile(props.profile.id, data);
+    updateProfile(communityId, props.profile.id!, data);
     props.setEdit(false);
   };
 

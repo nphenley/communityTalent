@@ -1,13 +1,12 @@
 import { Timestamp } from 'firebase/firestore';
+import { Tags } from '_enums/Tags';
 
 export type Project = {
   id: string;
-  description: string;
-  tags: string[];
-  title: string;
-  authorAddresses: string[];
-  authorDisplayNames: string[];
   dateCreated: Timestamp;
-  numberOfPins: number;
-  numberOfSkulls: number;
+  title: string;
+  description: string;
+  tags: Tags[];
+  walletAddress: string;
+  votes?: [{ walletAddress: string; type: 'up' | 'down' }];
 };

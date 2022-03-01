@@ -9,6 +9,8 @@ import { Project } from '_types/Project';
 import Select from 'react-select';
 
 import { Tags } from '_enums/Tags';
+import { useContext } from 'react';
+import { CommunityContext } from '_contexts/CommunityContext';
 
 type EditProjectFormProps = {
   project: Project;
@@ -17,6 +19,8 @@ type EditProjectFormProps = {
 };
 
 const EditProjectForm = (props: EditProjectFormProps) => {
+  const communityId = useContext(CommunityContext);
+
   const { control, register, handleSubmit } = useForm();
   const { dirtyFields } = useFormState({
     control,
@@ -24,8 +28,7 @@ const EditProjectForm = (props: EditProjectFormProps) => {
   const onSubmit: SubmitHandler<Partial<Project>> = async (data: any) => {
     for (const property in data)
       if (!dirtyFields[property]) delete data[property];
-
-    updateProject(props.project.id, data);
+    await updateProject(communityId, props.project.id!, data);
     props.setEditProject(false);
   };
 
@@ -75,7 +78,6 @@ const EditProjectForm = (props: EditProjectFormProps) => {
           />
 
           <input
-            onClick={() => props.setEditProject(false)}
             className='p-4 rounded-lg bg-primary hover:bg-primaryLight hover:cursor-pointer'
             type='submit'
           />
