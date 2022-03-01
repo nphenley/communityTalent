@@ -74,6 +74,7 @@ const EditProjectForm = (props: EditProjectFormProps) => {
           />
 
           <input
+            onClick={() => props.setEditProject(false)}
             className='p-4 rounded-lg bg-primary hover:bg-primaryLight hover:cursor-pointer'
             type='submit'
           />
