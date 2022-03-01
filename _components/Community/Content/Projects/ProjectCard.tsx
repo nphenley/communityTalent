@@ -9,11 +9,11 @@ type ProjectCardProps = {
   walletAddress: string;
   isUserPinned: boolean;
   togglePinned: any;
-  editProject: boolean;
-  setEditProject: any;
 };
 
 const ProjectCard = (props: ProjectCardProps) => {
+  const [editProject, setEditProject] = useState(false);
+
   const postedByUser =
     props.project.authorAddresses[0].toLowerCase() ===
     props.walletAddress.toLowerCase();
@@ -70,7 +70,7 @@ const ProjectCard = (props: ProjectCardProps) => {
       {postedByUser ? (
         <button
           onClick={() => {
-            props.setEditProject(!props.editProject);
+            setEditProject(!editProject);
           }}
           className='absolute top-2 right-0 p-0.5'
         >
@@ -78,10 +78,11 @@ const ProjectCard = (props: ProjectCardProps) => {
         </button>
       ) : null}
 
-      {props.editProject ? (
+      {editProject ? (
         <EditProjectForm
+          editProject={editProject}
           project={props.project}
-          setEditProject={props.setEditProject}
+          setEditProject={setEditProject}
         />
       ) : null}
     </div>

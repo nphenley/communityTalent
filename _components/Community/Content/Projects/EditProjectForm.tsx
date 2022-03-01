@@ -1,4 +1,4 @@
-import { createProject, updateProject } from '_firebase/APIRequests';
+import { updateProject } from '_firebase/APIRequests';
 import {
   Controller,
   SubmitHandler,
@@ -13,6 +13,7 @@ import { Tags } from '_enums/Tags';
 type EditProjectFormProps = {
   project: Project;
   setEditProject: any;
+  editProject: boolean;
 };
 
 const EditProjectForm = (props: EditProjectFormProps) => {
@@ -35,7 +36,7 @@ const EditProjectForm = (props: EditProjectFormProps) => {
   );
 
   return (
-    <div className='fixed w-2/3 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 '>
+    <div className='fixed z-50 w-2/3 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 '>
       <div className='flex flex-col items-center pt-12 pb-16 overflow-y-scroll border-4 rounded-lg shadow-lg border-backgroundDark grow bg-background'>
         <button
           type='button'

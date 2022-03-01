@@ -10,14 +10,13 @@ const Projects = () => {
   const [addProject, setAddProject] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
   const [pins, setPins] = useState<string[]>([]);
-  const [editProject, setEditProject] = useState(false);
 
   const connectionData = useContext(ConnectionContext);
 
   useEffect(() => {
     getPins(connectionData!.address, setPins);
     getProjects(setProjects);
-  }, [connectionData, editProject, addProject]);
+  }, [connectionData, addProject]);
 
   return (
     <div className={styles.container}>
@@ -25,8 +24,6 @@ const Projects = () => {
         <ProjectCard
           key={project.id}
           project={project}
-          editProject={editProject}
-          setEditProject={setEditProject}
           walletAddress={connectionData!.address}
           isUserPinned={pins.includes(project.id)}
           togglePinned={() => togglePinned(project.id)}

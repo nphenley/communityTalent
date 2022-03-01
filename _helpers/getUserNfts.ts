@@ -60,36 +60,43 @@ export const getUserNftsEth = async (
   updateData: any,
   chainId: string
 ) => {
-  const nftsInWallet = await getNFTBalances({
-    params: {
-      chain: chainId,
-      address: walletAddress,
-    },
-  });
   let communities: Community[] = [];
-  await Promise.all(
-    nftsInWallet.result.map(async (nft: any) => {
-      if (!nft.metadata) return;
-      const jsonMetadata = JSON.parse(nft.metadata);
-      if (!jsonMetadata.image && jsonMetadata.image_url) {
-        jsonMetadata.image = jsonMetadata.image_url;
-      }
-      if (jsonMetadata.image.startsWith('ipfs')) {
-        jsonMetadata.image =
-          'https://ipfs.io/ipfs/' + jsonMetadata.image.replace('ipfs://', '');
-      }
-      if (jsonMetadata.image.endsWith('.mp4')) {
-        jsonMetadata.image =
-          'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png';
-      }
-      const community = {
-        name: jsonMetadata.collection ? jsonMetadata.collection : nft.name,
-        image: jsonMetadata.image,
-        id: nft.token_address,
-      };
-      communities.push(community);
-    })
-  );
+
+  if (chainId === '0x1') {
+    communities = await getEthNftsOpensea(walletAddress);
+  } else {
+    const nftsInWallet = await getNFTBalances({
+      params: {
+        chain: chainId,
+        address: walletAddress,
+      },
+    });
+    if (!nftsInWallet) return;
+    await Promise.all(
+      nftsInWallet.result.map(async (nft: any) => {
+        if (!nft.metadata) return;
+        const jsonMetadata = JSON.parse(nft.metadata);
+        if (!jsonMetadata.image && jsonMetadata.image_url) {
+          jsonMetadata.image = jsonMetadata.image_url;
+        }
+        if (jsonMetadata.image.startsWith('ipfs')) {
+          jsonMetadata.image =
+            'https://ipfs.io/ipfs/' + jsonMetadata.image.replace('ipfs://', '');
+        }
+        if (jsonMetadata.image.endsWith('.mp4')) {
+          jsonMetadata.image =
+            'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png';
+        }
+        const community = {
+          name: jsonMetadata.collection ? jsonMetadata.collection : nft.name,
+          image: jsonMetadata.image,
+          id: nft.token_address,
+        };
+        communities.push(community);
+      })
+    );
+  }
+
   const pinnedCommunities = await getPinnedCommunities(
     walletAddress,
     communities
@@ -140,4 +147,50 @@ const getPinnedCommunities = async (
     })
   );
   return pinnedCommunities;
+};
+
+const getEthNftsOpensea = async (walletAddress: string) => {
+  let communities: Community[] = [];
+
+  await openseaApiCall(walletAddress, communities);
+  return communities;
+};
+
+const openseaApiCall = async (
+  walletAddress: string,
+  communities: Community[],
+  next?: string
+) => {
+  const options = {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      'X-API-KEY': '7d5d2f9f7391463dadb8c3fca6b2662d',
+    },
+  };
+  var apiUrl =
+    'https://api.opensea.io/api/v1/assets?owner=' +
+    walletAddress +
+    '&owner=' +
+    walletAddress +
+    '&order_by=pk&order_direction=desc&limit=50';
+
+  if (next) {
+    apiUrl += '&cursor=' + next;
+  }
+
+  const response = await fetch(apiUrl, options);
+  const nftsInWallet = await response.json();
+
+  nftsInWallet.assets.map((nft: any) => {
+    const community = {
+      name: nft.collection.name,
+      image: nft.image_url,
+      id: nft.asset_contract.address,
+    };
+    communities.push(community);
+  });
+  if (nftsInWallet.next) {
+    await openseaApiCall(walletAddress, communities, nftsInWallet.next);
+  }
 };
