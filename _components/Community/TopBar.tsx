@@ -10,7 +10,7 @@ type TopBarProps = {
 const TopBar = (props: TopBarProps) => {
   const { logout } = useMoralis();
 
-  const title = <h1 className='text-xl'>web3Talent</h1>;
+  const title = <h1 className='text-xl font-bold'>communityTalent</h1>;
 
   const hamburgerButton = (
     <div className={styles.hamburgerButtonContainer}>

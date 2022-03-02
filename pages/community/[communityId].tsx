@@ -8,7 +8,7 @@ import { ConnectionContext } from '_contexts/ConnectionContext';
 import { subscribeToProfile } from '_firebase/APIRequests';
 import { useMoralis } from 'react-moralis';
 import { useRouter } from 'next/router';
-import CreateProfile from '_components/Community/CreateProfile';
+import CreateProfileForm from '_components/Community/CreateProfileForm';
 import LoadingSpinner from '_styled/LoadingSpinner';
 import Head from 'next/head';
 import { Profile } from '_types/Profile';
@@ -128,7 +128,7 @@ const Community = () => {
                   setIsSidebarOpen={undefined}
                   hideHamburgerMenu={true}
                 />
-                <CreateProfile />
+                <CreateProfileForm />
               </div>
             ) : (
               <>

@@ -24,7 +24,7 @@ export default function Home() {
   return (
     <div className='flex flex-col h-screen bg-background text-primary'>
       <Head>
-        <title>Community Talent</title>
+        <title>communityTalent</title>
         <meta name='viewport' content='initial-scale=1.0, width=device-width' />
       </Head>
 

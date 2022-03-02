@@ -5,7 +5,7 @@ import { useContext } from 'react';
 import { ProfileContext } from '_contexts/ProfileContext';
 import { Tags } from '_enums/Tags';
 import { CommunityContext } from '_contexts/CommunityContext';
-import SelectField from '_styled/SelectField';
+import SelectField from '_styled/Forms/SelectField';
 
 type ProjectFormProps = {
   setAddProject: any;

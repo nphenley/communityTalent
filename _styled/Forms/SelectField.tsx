@@ -31,24 +31,20 @@ const SelectField = (props: SelectFieldProps) => {
     : [];
 
   return (
-    <div className='flex flex-col items-center gap-4 px-2 sm:gap-0 sm:flex-row'>
-      <label className='text-center sm:w-1/3 text-primary'>{props.label}</label>
-
-      <Controller
-        control={props.control}
-        name={props.name}
-        render={({ field: { onChange } }) => (
-          <Select
-            className='grow'
-            classNamePrefix='select-field'
-            onChange={(e) => onValueChange(e, onChange)}
-            options={props.options}
-            isMulti
-            defaultValue={defaultValues}
-          />
-        )}
-      />
-    </div>
+    <Controller
+      control={props.control}
+      name={props.name}
+      render={({ field: { onChange } }) => (
+        <Select
+          className='grow'
+          classNamePrefix='select-field'
+          onChange={(e) => onValueChange(e, onChange)}
+          options={props.options}
+          isMulti
+          defaultValue={defaultValues}
+        />
+      )}
+    />
   );
 };
 

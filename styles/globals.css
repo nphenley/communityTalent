@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* LOADING SPINNER  */
+/* ======================== LOADING SPINNER ========================  */
 
 .loadingSpinner {
   border: 8px solid rgba(255, 255, 255, 0.2);
@@ -33,7 +33,7 @@
   }
 }
 
-/* REACT-SELECT  */
+/* ======================== REACT-SELECT ========================  */
 
 .select-field__control {
   border: 0px !important;
@@ -86,7 +86,7 @@
   color: white !important;
 }
 
-/* SCROLLBAR  */
+/* ======================== SCROLLBAR ======================== */
 
 /* width */
 ::-webkit-scrollbar {

@@ -33,9 +33,7 @@ const NavBar = (props: NavBarProps) => {
   );
 
   const title = (
-    <div className='flex justify-center text-xl font-bold uppercase'>
-      Community Talent
-    </div>
+    <div className='flex justify-center text-xl font-bold'>communityTalent</div>
   );
 
   const disconnectButton = (

@@ -10,7 +10,7 @@ import { Project } from '_types/Project';
 import { Tags } from '_enums/Tags';
 import { useContext } from 'react';
 import { CommunityContext } from '_contexts/CommunityContext';
-import SelectField from '_styled/SelectField';
+import SelectField from '_styled/Forms/SelectField';
 
 type EditProjectFormProps = {
   project: Project;

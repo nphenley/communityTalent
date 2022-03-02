@@ -1,0 +1,334 @@
+import {
+  SubmitHandler,
+  useFieldArray,
+  useForm,
+  useFormState,
+} from 'react-hook-form';
+import { useContext, useState } from 'react';
+import { updateProfile } from '_firebase/APIRequests';
+import { Profile } from '_types/Profile';
+import ToggleField from '_styled/Forms/ToggleField';
+import { Tags } from '_enums/Tags';
+import { Languages } from '_enums/Languages';
+import { CommunityContext } from '_contexts/CommunityContext';
+import SelectField from '_styled/Forms/SelectField';
+import InputField from '_styled/Forms/InputField';
+import FormField from '_styled/Forms/FormField';
+import LargeInputField from '_styled/Forms/LargeInputField';
+import OptionalFormFieldWrapper from '_styled/Forms/OptionalFormFieldWrapper';
+import OptionalArrayInputField from '_styled/Forms/OptionalArrayInputField';
+import FormSubmit from '_styled/Forms/FormSubmit';
+
+type EditProfileFormProps = {
+  profile: Profile;
+  setEdit: any;
+};
+
+const EditProfileForm = (props: EditProfileFormProps) => {
+  const communityId = useContext(CommunityContext);
+
+  const { control, register, handleSubmit } = useForm<any>({
+    defaultValues: {
+      skills: props.profile.skills ? props.profile.skills : [],
+      relevantLinks: props.profile.relevantLinks
+        ? props.profile.relevantLinks
+        : [],
+    },
+  });
+
+  const {
+    fields: skillsFields,
+    append: skillsAppend,
+    remove: skillsRemove,
+  } = useFieldArray({
+    control: control,
+    name: 'skills',
+  });
+
+  const {
+    fields: relevantLinksFields,
+    append: relevantLinksAppend,
+    remove: relevantLinksRemove,
+  } = useFieldArray({
+    control: control,
+    name: 'relevantLinks',
+  });
+
+  const { dirtyFields } = useFormState({
+    control,
+  });
+
+  const [showDiscord, setShowDiscord] = useState(
+    props.profile.discordUsername ? true : false
+  );
+  const [showTwitter, setShowTwitter] = useState(
+    props.profile.twitterHandle ? true : false
+  );
+  const [showSkills, setShowSkills] = useState(
+    props.profile.skills && props.profile.skills.length ? true : false
+  );
+  const [showExperience, setShowExperience] = useState(
+    props.profile.experience ? true : false
+  );
+  const [showLanguages, setShowLanguages] = useState(
+    props.profile.languages && props.profile.languages.length ? true : false
+  );
+  const [showContacts, setShowContacts] = useState(
+    props.profile.contacts ? true : false
+  );
+  const [showLinks, setShowLinks] = useState(
+    props.profile.relevantLinks && props.profile.relevantLinks.length
+      ? true
+      : false
+  );
+
+  const onSubmit: SubmitHandler<Partial<Profile>> = async (data: any) => {
+    for (const property in data)
+      if (!dirtyFields[property]) delete data[property];
+
+    if (!showSkills) data.skills = [];
+    if (!showExperience) data.experience = '';
+    if (!showLanguages) data.languages = [];
+    if (!showContacts) data.contacts = '';
+    if (!showLinks) data.relevantLinks = [];
+
+    updateProfile(communityId, props.profile.id!, data);
+    props.setEdit(false);
+  };
+
+  const title = (
+    <h1 className='mb-4 text-3xl font-bold text-center text-primary'>
+      Update Profile
+    </h1>
+  );
+
+  const tagsOptions = Object.keys(Tags).map((key) => {
+    return {
+      value: (Tags as any)[key],
+      label: (Tags as any)[key],
+    };
+  });
+
+  const languagesOptions = Object.keys(Languages).map((key) => {
+    return {
+      value: (Languages as any)[key],
+      label: (Languages as any)[key],
+    };
+  });
+
+  return (
+    <div className='flex flex-col items-center w-full pt-12 pb-16 overflow-y-scroll grow bg-background'>
+      <form
+        className='flex flex-col w-full max-w-screen-sm gap-8 px-10 sm:px-0'
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        {title}
+        <FormField
+          label='Display Name'
+          formField={
+            <InputField
+              register={register}
+              placeholder='Display Name'
+              name='displayName'
+              defaultValue={props.profile.displayName}
+              required={true}
+              maxLength={34}
+            />
+          }
+        />
+        <FormField
+          label='Bio'
+          formField={
+            <LargeInputField
+              register={register}
+              placeholder='Bio'
+              name='bio'
+              defaultValue={props.profile.bio}
+              required={true}
+              maxLength={160}
+            />
+          }
+        />
+        <FormField
+          label='Looking For Project'
+          formField={
+            <ToggleField
+              register={register}
+              label='Looking for Project'
+              name='lookingForProject'
+              defaultChecked={props.profile.lookingForProject}
+            />
+          }
+        />
+        <FormField
+          label='Tags'
+          formField={
+            <SelectField
+              control={control}
+              label='Tags'
+              options={tagsOptions}
+              name='tags'
+              defaultValues={props.profile.tags ? props.profile.tags : []}
+            />
+          }
+        />
+        <OptionalFormFieldWrapper
+          label='Discord Username'
+          formField={
+            <FormField
+              label='Discord Username'
+              formField={
+                <InputField
+                  register={register}
+                  placeholder='Discord Username'
+                  name='discordUsername'
+                  defaultValue={props.profile.discordUsername}
+                  required={true}
+                  maxLength={37}
+                />
+              }
+            />
+          }
+          isFieldShown={showDiscord}
+          setIsFieldShown={setShowDiscord}
+        />
+        <OptionalFormFieldWrapper
+          label='Twitter Handle'
+          formField={
+            <FormField
+              label='Twitter Handle'
+              formField={
+                <InputField
+                  register={register}
+                  placeholder='Twitter Handle'
+                  name='twitterHandle'
+                  defaultValue={props.profile.twitterHandle}
+                  required={true}
+                  maxLength={16}
+                />
+              }
+            />
+          }
+          isFieldShown={showTwitter}
+          setIsFieldShown={setShowTwitter}
+        />
+        <OptionalArrayInputField
+          label='Skills'
+          fieldName='Skill'
+          fields={skillsFields}
+          append={skillsAppend}
+          remove={skillsRemove}
+          isFieldShown={showSkills}
+          setIsFieldShown={setShowSkills}
+          fieldComponents={skillsFields.map((field, index) => (
+            <FormField
+              key={field.id}
+              label={index === 0 ? 'Skills' : ''}
+              formField={
+                <InputField
+                  register={register}
+                  placeholder={'Skill'}
+                  name={`skills.${index}`}
+                  required={false}
+                  maxLength={50}
+                />
+              }
+            />
+          ))}
+        />
+        <OptionalFormFieldWrapper
+          label='Experience'
+          formField={
+            <FormField
+              label='Experience'
+              formField={
+                <LargeInputField
+                  register={register}
+                  placeholder='Experience'
+                  name='experience'
+                  defaultValue={
+                    props.profile.experience ? props.profile.experience : ''
+                  }
+                  required={false}
+                  maxLength={500}
+                />
+              }
+            />
+          }
+          isFieldShown={showExperience}
+          setIsFieldShown={setShowExperience}
+        />
+        <OptionalFormFieldWrapper
+          label='Languages'
+          formField={
+            <FormField
+              label='Languages'
+              formField={
+                <SelectField
+                  control={control}
+                  label='Languages'
+                  options={languagesOptions}
+                  name='languages'
+                  defaultValues={
+                    props.profile.languages ? props.profile.languages : []
+                  }
+                />
+              }
+            />
+          }
+          isFieldShown={showLanguages}
+          setIsFieldShown={setShowLanguages}
+        />
+        <OptionalFormFieldWrapper
+          label='Contacts'
+          formField={
+            <FormField
+              label='Contacts'
+              formField={
+                <LargeInputField
+                  register={register}
+                  placeholder='Contacts'
+                  name='contacts'
+                  defaultValue={
+                    props.profile.contacts ? props.profile.contacts : ''
+                  }
+                  required={false}
+                  maxLength={500}
+                />
+              }
+            />
+          }
+          isFieldShown={showContacts}
+          setIsFieldShown={setShowContacts}
+        />
+        <OptionalArrayInputField
+          label='Relevant Links'
+          fieldName='Link'
+          fields={relevantLinksFields}
+          append={relevantLinksAppend}
+          remove={relevantLinksRemove}
+          fieldComponents={relevantLinksFields.map((field, index) => (
+            <FormField
+              key={field.id}
+              label={index === 0 ? 'Relevant Links' : ''}
+              formField={
+                <InputField
+                  register={register}
+                  placeholder={'Relevant Link'}
+                  name={`relevantLinks.${index}`}
+                  required={false}
+                  maxLength={50}
+                />
+              }
+            />
+          ))}
+          isFieldShown={showLinks}
+          setIsFieldShown={setShowLinks}
+        />
+        <FormSubmit />
+      </form>
+    </div>
+  );
+};
+
+export default EditProfileForm;
