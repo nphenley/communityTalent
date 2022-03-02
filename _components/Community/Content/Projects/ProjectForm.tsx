@@ -1,12 +1,11 @@
 import { createProject } from '_firebase/APIRequests';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { Project } from '_types/Project';
 import { useContext } from 'react';
 import { ProfileContext } from '_contexts/ProfileContext';
-import Select from 'react-select';
-
 import { Tags } from '_enums/Tags';
 import { CommunityContext } from '_contexts/CommunityContext';
+import SelectField from '_styled/SelectField';
 
 type ProjectFormProps = {
   setAddProject: any;
@@ -14,10 +13,9 @@ type ProjectFormProps = {
 
 const ProjectForm = (props: ProjectFormProps) => {
   const communityId = useContext(CommunityContext);
+  const profile = useContext(ProfileContext);
 
   const { control, register, handleSubmit } = useForm();
-
-  const profile = useContext(ProfileContext);
 
   const onSubmit = (data: any) => {
     createProject(communityId, {
@@ -34,8 +32,8 @@ const ProjectForm = (props: ProjectFormProps) => {
   );
 
   return (
-    <div className='fixed w-2/3 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 '>
-      <div className='flex flex-col items-center pt-12 pb-16 overflow-y-scroll border-4 rounded-lg shadow-lg border-backgroundDark grow bg-background'>
+    <div className='fixed'>
+      <div className='flex flex-col items-center pt-12 pb-16 px-4 overflow-y-scroll border-4 rounded-lg shadow-lg border-backgroundDark grow bg-background'>
         <form
           className='flex flex-col w-full max-w-screen-sm gap-8 px-10 sm:px-0'
           onSubmit={handleSubmit(onSubmit)}
@@ -111,39 +109,6 @@ const LargeInputField = (props: LargeInputFieldProps) => {
         placeholder={props.label}
         maxLength={props.maxLength ? props.maxLength : 300}
         {...props.register(props.name)}
-      />
-    </div>
-  );
-};
-
-type SelectFieldProps = {
-  control: any;
-  name: string;
-  label: string;
-  options: any;
-};
-const SelectField = (props: SelectFieldProps) => {
-  const onValueChange = (e: any, onChange: any) => {
-    let values = [];
-    for (const obj of e) values.push(obj.value);
-    return onChange(values);
-  };
-  return (
-    <div className='flex flex-col items-center gap-4 px-2 sm:gap-0 sm:flex-row'>
-      <label className='text-center sm:w-1/3 text-primary'>{props.label}</label>
-
-      <Controller
-        control={props.control}
-        name={props.name}
-        render={({ field: { onChange } }) => (
-          <Select
-            className='grow'
-            classNamePrefix='profile-form'
-            onChange={(e) => onValueChange(e, onChange)}
-            options={props.options}
-            isMulti
-          />
-        )}
       />
     </div>
   );

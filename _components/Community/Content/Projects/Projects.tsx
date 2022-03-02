@@ -19,19 +19,23 @@ const Projects = () => {
     getProjects(communityId, setProjects);
   }, [connectionData, addProject]);
 
+  const navBar = (
+    <div className='flex gap-2 justify-center mb-2'>
+      <button className={styles.tabButton.concat(' text-white')}>
+        Looking for Projects
+      </button>
+      <button className={styles.tabButton.concat(' text-grey')}>
+        Looking to Hire
+      </button>
+      <button className={styles.tabButton.concat(' text-grey')}>
+        Your Projects
+      </button>
+    </div>
+  );
+
   return (
     <div className={styles.container}>
-      <div className='flex gap-2 justify-center'>
-        <button className={styles.tabButton.concat(' text-white')}>
-          Looking for Projects
-        </button>
-        <button className={styles.tabButton.concat(' text-grey')}>
-          Looking to Hire
-        </button>
-        <button className={styles.tabButton.concat(' text-grey')}>
-          Your Projects
-        </button>
-      </div>
+      {navBar}
       {projects.map((project) => (
         <ProjectCard
           key={project.id}
@@ -50,6 +54,6 @@ const Projects = () => {
 export default Projects;
 
 const styles = {
-  container: 'relative grid gap-2 grid-cols-1',
+  container: 'relative grid gap-1 grid-cols-1',
   tabButton: 'font-medium bg-backgroundDark px-5 py-4 rounded-lg',
 };

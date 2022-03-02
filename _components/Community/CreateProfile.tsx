@@ -1,9 +1,4 @@
-import {
-  Controller,
-  SubmitHandler,
-  useFieldArray,
-  useForm,
-} from 'react-hook-form';
+import { useFieldArray, useForm } from 'react-hook-form';
 import { useContext, useEffect, useState } from 'react';
 import { ConnectionContext } from '_contexts/ConnectionContext';
 import {
@@ -13,10 +8,10 @@ import {
 } from '_firebase/APIRequests';
 import { Profile } from '_types/Profile';
 import StyledToggleField from '_styled/StyledToggleField';
-import Select from 'react-select';
 import { Tags } from '_enums/Tags';
 import { Languages } from '_enums/Languages';
 import { CommunityContext } from '_contexts/CommunityContext';
+import SelectField from '_styled/SelectField';
 
 // Note:
 // useFieldArray() is for arrays of objects, not arrays of primitive types.
@@ -374,40 +369,5 @@ const ArrayInput = (props: ArrayInputProps) => {
       onShowField={() => props.append(`${props.fieldName} 1`)}
       fieldComponent={fieldComponent}
     />
-  );
-};
-
-// Using react-select, so can only style <Select /> without tailwind, in globals.css
-type SelectFieldProps = {
-  control: any;
-  name: string;
-  label: string;
-  options: any;
-};
-const SelectField = (props: SelectFieldProps) => {
-  const onValueChange = (e: any, onChange: any) => {
-    let values = [];
-    for (const obj of e) values.push(obj.value);
-    return onChange(values);
-  };
-
-  return (
-    <div className='flex flex-col items-center gap-4 px-2 sm:gap-0 sm:flex-row'>
-      <label className='text-center sm:w-1/3 text-primary'>{props.label}</label>
-
-      <Controller
-        control={props.control}
-        name={props.name}
-        render={({ field: { onChange } }) => (
-          <Select
-            className='grow'
-            classNamePrefix='profile-form'
-            onChange={(e) => onValueChange(e, onChange)}
-            options={props.options}
-            isMulti
-          />
-        )}
-      />
-    </div>
   );
 };
