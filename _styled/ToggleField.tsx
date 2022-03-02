@@ -5,7 +5,7 @@ type StyledToggleFieldProps = {
   defaultChecked?: boolean;
 };
 
-const StyledToggleField = (props: StyledToggleFieldProps) => {
+const ToggleField = (props: StyledToggleFieldProps) => {
   return (
     <label className='relative flex justify-center sm:justify-start w-full items-center px-2 text-primary my-2 sm:my-0'>
       <div className='sm:w-1/3 text-center mr-4 sm:mr-1'>{props.label}</div>
@@ -20,4 +20,4 @@ const StyledToggleField = (props: StyledToggleFieldProps) => {
   );
 };
 
-export default StyledToggleField;
+export default ToggleField;

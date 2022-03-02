@@ -7,7 +7,7 @@ import {
   importProfile,
 } from '_firebase/APIRequests';
 import { Profile } from '_types/Profile';
-import StyledToggleField from '_styled/StyledToggleField';
+import ToggleField from '_styled/ToggleField';
 import { Tags } from '_enums/Tags';
 import { Languages } from '_enums/Languages';
 import { CommunityContext } from '_contexts/CommunityContext';
@@ -113,7 +113,7 @@ const CreateProfileView = () => {
           required={true}
           maxLength={160}
         />
-        <StyledToggleField
+        <ToggleField
           register={register}
           label='Looking for Project'
           name='lookingForProject'

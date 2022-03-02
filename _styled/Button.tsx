@@ -1,9 +1,9 @@
-type StyledButtonProps = {
+type ButtonProps = {
   text: string;
   onClick: any;
 };
 
-const StyledButton = (props: StyledButtonProps) => {
+const Button = (props: ButtonProps) => {
   return (
     <button onClick={props.onClick} className={styles.container}>
       {props.text}
@@ -11,7 +11,7 @@ const StyledButton = (props: StyledButtonProps) => {
   );
 };
 
-export default StyledButton;
+export default Button;
 
 const styles = {
   container:

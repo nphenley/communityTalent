@@ -1,6 +1,6 @@
 import { useMoralis } from 'react-moralis';
 import { useState } from 'react';
-import StyledButton from '_styled/StyledButton';
+import Button from '_styled/Button';
 
 const ConnectView = () => {
   const { authenticate } = useMoralis();
@@ -36,10 +36,7 @@ const ConnectView = () => {
 
   return (
     <div className='flex items-center justify-center w-full h-full'>
-      <StyledButton
-        text={'Connect Wallet'}
-        onClick={() => setShowOptions(true)}
-      />
+      <Button text={'Connect Wallet'} onClick={() => setShowOptions(true)} />
       {showOptions ? connectOptions : null}
     </div>
   );

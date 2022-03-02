@@ -106,7 +106,7 @@ type InputFieldProps = {
 
 const InputField = (props: InputFieldProps) => {
   return (
-    <div className='flex flex-col items-center gap-4 px-2 focus:outline-none sm:gap-0 sm:flex-row'>
+    <div className='flex flex-col items-center gap-4 px-2 sm:gap-0 sm:flex-row'>
       <label className='text-center sm:w-1/3 text-primary'>{props.label}</label>
       <input
         className='w-full p-3 rounded-lg sm:w-fit grow bg-backgroundDark'
