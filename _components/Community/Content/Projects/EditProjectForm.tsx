@@ -6,11 +6,11 @@ import {
   useFormState,
 } from 'react-hook-form';
 import { Project } from '_types/Project';
-import Select from 'react-select';
 
 import { Tags } from '_enums/Tags';
 import { useContext } from 'react';
 import { CommunityContext } from '_contexts/CommunityContext';
+import SelectField from '_styled/SelectField';
 
 type EditProjectFormProps = {
   project: Project;
@@ -37,6 +37,13 @@ const EditProjectForm = (props: EditProjectFormProps) => {
       Edit Project Posting
     </h1>
   );
+
+  const tagsOptions = Object.keys(Tags).map((key) => {
+    return {
+      value: (Tags as any)[key],
+      label: (Tags as any)[key],
+    };
+  });
 
   return (
     <div className='fixed z-50 w-2/3 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 '>
@@ -135,52 +142,3 @@ const LargeInputField = (props: LargeInputFieldProps) => {
     </div>
   );
 };
-
-type SelectFieldProps = {
-  control: any;
-  name: string;
-  label: string;
-  defaultValues: string[];
-  options: any;
-};
-
-const SelectField = (props: SelectFieldProps) => {
-  const onValueChange = (e: any, onChange: any) => {
-    let values = [];
-    for (const obj of e) values.push(obj.value);
-    return onChange(values);
-  };
-  const defaultValues = props.defaultValues.map((val) => {
-    return {
-      value: val,
-      label: val,
-    };
-  });
-  return (
-    <div className='flex flex-col items-center gap-4 px-2 sm:gap-0 sm:flex-row'>
-      <label className='text-center sm:w-1/3 text-primary'>{props.label}</label>
-
-      <Controller
-        control={props.control}
-        name={props.name}
-        render={({ field: { onChange } }) => (
-          <Select
-            className='grow'
-            classNamePrefix='profile-form'
-            onChange={(e) => onValueChange(e, onChange)}
-            options={props.options}
-            defaultValue={defaultValues}
-            isMulti
-          />
-        )}
-      />
-    </div>
-  );
-};
-
-const tagsOptions = Object.keys(Tags).map((key) => {
-  return {
-    value: (Tags as any)[key],
-    label: (Tags as any)[key],
-  };
-});

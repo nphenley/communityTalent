@@ -9,10 +9,10 @@ import { useContext, useState } from 'react';
 import { updateProfile } from '_firebase/APIRequests';
 import { Profile } from '_types/Profile';
 import StyledToggleField from '_styled/StyledToggleField';
-import Select from 'react-select';
 import { Tags } from '_enums/Tags';
 import { Languages } from '_enums/Languages';
 import { CommunityContext } from '_contexts/CommunityContext';
+import SelectField from '_styled/SelectField';
 
 type EditProfileViewProps = {
   profile: Profile;
@@ -427,51 +427,5 @@ const ArrayInput = (props: ArrayInputProps) => {
       isFieldShown={props.isFieldShown}
       setIsFieldShown={props.setIsFieldShown}
     />
-  );
-};
-
-// Using react-select, so can only style <Select /> without tailwind, in globals.css
-// Getting default values is sus here too, should be using the enums.
-type SelectFieldProps = {
-  control: any;
-  name: string;
-  label: string;
-  options: any;
-  defaultValues: string[];
-};
-const SelectField = (props: SelectFieldProps) => {
-  const onValueChange = (e: any, onChange: any) => {
-    let values = [];
-    for (const obj of e) values.push(obj.value);
-    return onChange(values);
-  };
-
-  const defaultValues = props.defaultValues.map((val) => {
-    return {
-      value: val,
-      label: val,
-    };
-  });
-
-  return (
-    <div className='grid grid-cols-1 items-center sm:grid-cols-3 px-2 space-y-2 -mt-1'>
-      <label className='text-center text-primary'>{props.label}</label>
-      <div className='col-span-2'>
-        <Controller
-          control={props.control}
-          name={props.name}
-          render={({ field: { onChange } }) => (
-            <Select
-              className='grow'
-              classNamePrefix='profile-form'
-              onChange={(e) => onValueChange(e, onChange)}
-              options={props.options}
-              defaultValue={defaultValues}
-              isMulti
-            />
-          )}
-        />
-      </div>
-    </div>
   );
 };
