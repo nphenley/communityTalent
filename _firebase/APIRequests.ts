@@ -19,6 +19,7 @@ import {
 } from 'firebase/firestore';
 import { Project } from '_types/Project';
 import { Profile } from '_types/Profile';
+import { Community } from '_types/Community';
 
 // ============== WALLET ==============
 
@@ -188,4 +189,14 @@ export const pinCommunity = async (
     pinnedCommunities: arrayUnion(communityId),
   });
   getCommunities();
+};
+
+// TODO:
+// Figure out Pinned Communities system
+// When you first connect, if no wallet doc exists create it
+// when you pin a community, if no pinnedCommunities array create it
+export const getPinnedCommunities = async (walletAddress: string) => {
+  let pinnedCommunities: Community[] = [];
+
+  return pinnedCommunities;
 };

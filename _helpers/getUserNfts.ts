@@ -1,7 +1,10 @@
 import { getParsedNftAccountsByOwner } from '@nfteyez/sol-rayz';
 import { Connection } from '@solana/web3.js';
 import { mainNetUrl } from '_constants/solanaConstants';
-import { getSolNftCommunity } from '_firebase/APIRequests';
+import {
+  getSolNftCommunity,
+  getPinnedCommunities,
+} from '_firebase/APIRequests';
 import { Community } from '_types/Community';
 
 export const getUserNftsSolana = async (
@@ -23,10 +26,7 @@ export const getUserNftsSolana = async (
       communities.push(community);
     })
   );
-  const pinnedCommunities = await getPinnedCommunities(
-    walletAddress,
-    communities
-  );
+  const pinnedCommunities = await getPinnedCommunities(walletAddress);
   updateData(
     filterDuplicateCommunities(communities),
     filterDuplicateCommunities(pinnedCommunities)
@@ -97,10 +97,8 @@ export const getUserNftsEth = async (
     );
   }
 
-  const pinnedCommunities = await getPinnedCommunities(
-    walletAddress,
-    communities
-  );
+  const pinnedCommunities = await getPinnedCommunities(walletAddress);
+
   updateData(
     filterDuplicateCommunities(communities),
     filterDuplicateCommunities(pinnedCommunities)
@@ -127,24 +125,13 @@ export const checkEthNftInWallet = async (
 const filterDuplicateCommunities = (nonUniqueCommunities: Community[]) => {
   let tokenAddressSet = new Set<string>();
   let uniqueCommunities: Community[] = [];
+  if (!nonUniqueCommunities.length) return nonUniqueCommunities;
   nonUniqueCommunities.forEach((community) => {
     if (tokenAddressSet.has(community.id)) return;
     uniqueCommunities.push(community);
     tokenAddressSet.add(community.id);
   });
   return uniqueCommunities;
-};
-
-// TODO:
-// Figure out Pinned Communities system
-// When you first connect, if no wallet doc exists create it
-// when you pin a community, if no pinnedCommunities array create it
-const getPinnedCommunities = async (
-  walletAddress: string,
-  communities: Community[]
-) => {
-  let pinnedCommunities: Community[] = [];
-  return pinnedCommunities;
 };
 
 const getEthNftsOpensea = async (walletAddress: string) => {

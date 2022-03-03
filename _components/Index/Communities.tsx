@@ -1,4 +1,4 @@
-import { pinCommunity, unpinCommunity } from '_firebase/APIRequests';
+import { getWallet, pinCommunity, unpinCommunity } from '_firebase/APIRequests';
 import { useEffect, useState } from 'react';
 import { getUserNftsSolana, getUserNftsEth } from '_helpers/getUserNfts';
 import { Networks } from '_enums/Networks';
@@ -8,6 +8,8 @@ import LoadingSpinner from '_styled/LoadingSpinner';
 import Image from 'next/image';
 import { validChainIds } from '_constants/validChainIds';
 import Link from 'next/link';
+import SearchBar from '_styled/SearchBar';
+import { filterCommunities } from '_helpers/filterCommunities';
 
 type CommunitiesProps = {
   network: Networks;
@@ -21,18 +23,28 @@ const Communities = (props: CommunitiesProps) => {
   const [loadingData, setLoadingData] = useState(true);
   const [showAll, setShowAll] = useState(false);
   const [isPinning, setIsPinning] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const [communities, setCommunities] = useState<Community[]>([]);
   const [pinnedCommunities, setPinnedCommunities] = useState<Community[]>([]);
+  const [filteredCommunities, setFilteredCommunities] = useState<Community[]>(
+    []
+  );
 
   const updateData = (
     communities: Community[],
     pinnedCommunities: Community[]
   ) => {
     setCommunities(communities);
+    setFilteredCommunities(communities);
     setPinnedCommunities(pinnedCommunities);
     setLoadingData(false);
   };
+
+  useEffect(() => {
+    const filteredCommunities = filterCommunities(communities, searchQuery);
+    setFilteredCommunities(filteredCommunities);
+  }, [searchQuery]);
 
   const getCommunities = async () => {
     switch (props.network) {
@@ -46,6 +58,7 @@ const Communities = (props: CommunitiesProps) => {
           updateData,
           chainId ? chainId : 'eth'
         );
+
         break;
     }
   };
@@ -97,6 +110,11 @@ const Communities = (props: CommunitiesProps) => {
         {pinnedCommunities.length && !isPinning ? showAllButton : null}
       </div>
 
+      <SearchBar
+        onChange={(e: any) => setSearchQuery(e.target.value)}
+        placeholder='Search'
+      />
+
       <div className='flex flex-col gap-12'>
         {pinnedCommunities.length ? (
           <div>
@@ -128,9 +146,9 @@ const Communities = (props: CommunitiesProps) => {
         {showAll || isPinning || !pinnedCommunities.length ? (
           <div>
             <div className={styles.sectionHeading}>All:</div>
-            {communities.length ? (
+            {filteredCommunities.length ? (
               <div className={styles.communitiesContainer}>
-                {communities.map((community) => (
+                {filteredCommunities.map((community) => (
                   <div className='relative' key={community.id}>
                     {isPinning && (
                       <button

@@ -1,3 +1,5 @@
+import CreateProfileForm from '_components/Community/CreateProfileForm';
+
 type DefaultProfileProps = {
   connectedWalletAddress: string;
 };
@@ -5,7 +7,7 @@ type DefaultProfileProps = {
 const DefaultProfile = (props: DefaultProfileProps) => {
   return (
     <div className={styles.container}>
-      your wallet is {props.connectedWalletAddress}
+      <CreateProfileForm />
     </div>
   );
 };
