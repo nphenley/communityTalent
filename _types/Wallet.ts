@@ -1,3 +1,3 @@
-export type WalletData = {
+export type Wallet = {
   pinnedCommunities: string[];
 };

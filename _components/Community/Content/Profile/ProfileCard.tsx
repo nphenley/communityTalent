@@ -41,7 +41,7 @@ const ProfileCard = (props: ProfileCardProps) => {
     'relative bg-backgroundDark rounded-lg shadow-lg w-full py-11 flex flex-col gap-6 overflow-y-scroll mx-auto';
 
   containerClassName += props.alwaysExpanded
-    ? ' h-full'
+    ? ''
     : isExpanded
     ? ' max-h-[1000px] min-h-[600px]'
     : ' h-[600px]';

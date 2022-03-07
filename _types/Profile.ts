@@ -13,7 +13,7 @@ export type Profile = {
   bio: string;
   lookingForProject: boolean;
   tags?: Tags[];
-  skills?: [];
+  skills?: string[];
   experience?: string;
   languages?: Languages[];
   contacts?: string;

@@ -108,12 +108,11 @@ const Communities = (props: CommunitiesProps) => {
       <div className='flex flex-row-reverse gap-x-2'>
         {pinButton}
         {pinnedCommunities.length && !isPinning ? showAllButton : null}
+        <SearchBar
+          onChange={(e: any) => setSearchQuery(e.target.value)}
+          placeholder='Search'
+        />
       </div>
-
-      <SearchBar
-        onChange={(e: any) => setSearchQuery(e.target.value)}
-        placeholder='Search'
-      />
 
       <div className='flex flex-col gap-12'>
         {pinnedCommunities.length ? (
@@ -169,7 +168,7 @@ const Communities = (props: CommunitiesProps) => {
                 ))}
               </div>
             ) : (
-              <div>You are not eligible to join any communities!</div>
+              <div>No communities available.</div>
             )}
           </div>
         ) : null}
@@ -210,5 +209,5 @@ const styles = {
   sectionHeading: 'text-xl font-bold',
   communitiesContainer:
     'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 3xl:grid-cols-8 4xl:grid-cols-9 gap-x-0 gap-y-12',
-  buttonContainer: 'rounded-lg px-3 py-2 font-bold ',
+  buttonContainer: 'rounded-lg px-5 font-bold ',
 };
