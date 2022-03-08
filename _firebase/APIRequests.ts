@@ -19,23 +19,21 @@ import {
 } from 'firebase/firestore';
 import { Project } from '_types/Project';
 import { Profile } from '_types/Profile';
-import { Wallet } from '_types/Wallet';
 
 // ============== WALLET ==============
 
-export const subscribeToWallet = async (
+export const subscribeToWallet = (
   walletAddress: string,
   setWalletContext: any
 ) => {
-  const wallet = await getDoc(doc(firestore, 'wallets', walletAddress));
-  if (!wallet.exists()) setDoc(doc(firestore, 'wallets', walletAddress), {});
-  return onSnapshot(doc(firestore, 'wallets', walletAddress), (snapshot) =>
-    setWalletContext(snapshot.data())
-  );
-};
-
-export const initWallet = (walletAddress: string, setWalletContext: any) => {
-  subscribeToWallet(walletAddress, setWalletContext);
+  return onSnapshot(doc(firestore, 'wallets', walletAddress), (snapshot) => {
+    if (!snapshot.exists()) {
+      setDoc(snapshot.ref, {});
+      setWalletContext({});
+    } else {
+      setWalletContext(snapshot.data());
+    }
+  });
 };
 
 // ============== PROFILE ==============

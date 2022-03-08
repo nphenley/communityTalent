@@ -16,12 +16,16 @@ export const getCommunities = async (
   pinnedCommunityIds: string[],
   network: string
 ) => {
-  let communities: Community[] = [];
+  let communities: Community[];
+
   if (network === Networks.ETH) {
     communities = await getUserNftsEVM(chainId, walletAddress, getNFTBalances);
   } else {
     communities = await getUserNftsSolana(walletAddress);
   }
+
+  communities = filterDuplicateCommunities(communities);
+
   let pinnedCommunities: Community[] = [];
   if (pinnedCommunityIds) {
     communities.forEach((community) => {
@@ -29,10 +33,8 @@ export const getCommunities = async (
         pinnedCommunities.push(community);
     });
   }
-  updateData(
-    filterDuplicateCommunities(communities),
-    filterDuplicateCommunities(pinnedCommunities)
-  );
+
+  updateData(communities, pinnedCommunities);
 };
 
 export const getUserNftsSolana = async (walletAddress: string) => {
@@ -72,7 +74,6 @@ const getUserNftsEVM = async (
       address: walletAddress,
     },
   });
-
   if (!nftsInWallet) return [];
   await Promise.all(
     nftsInWallet.result.map(async (nft: any) => {
@@ -80,7 +81,6 @@ const getUserNftsEVM = async (
         nft.token_address
       );
       if (!communitiesWithoutImage.length) return;
-
       if (chainId === '0x1') {
         const nftImage = await openseaApiCall(walletAddress, nft.token_address);
         communitiesWithoutImage.forEach((communityWithoutImage) => {
@@ -120,7 +120,7 @@ export const checkNftIsInWallet = async (
   communityId: string,
   updateHasRequiredNft: (hasRequiredNft: boolean) => void,
   network: string,
-  chainId?: string
+  chainId: string | null
 ) => {
   let tokenAddressesInWallet: string[] = [];
   if (network === Networks.ETH) {

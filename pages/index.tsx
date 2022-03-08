@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import NavBar from '_components/Index/Navbar';
 import { WalletContext } from '_contexts/WalletContext';
 import { Wallet } from '_types/Wallet';
-import { initWallet, subscribeToWallet } from '_firebase/APIRequests';
+import { subscribeToWallet } from '_firebase/APIRequests';
 
 export default function Home() {
   const { isAuthenticated, user } = useMoralis();
@@ -26,8 +26,8 @@ export default function Home() {
 
   useEffect(() => {
     if (!walletAddress) return;
-    const unsubscribe = initWallet(walletAddress, setWalletContext);
-    return unsubscribe;
+    const unsubscribe = subscribeToWallet(walletAddress, setWalletContext);
+    return () => unsubscribe();
   }, [walletAddress]);
 
   return (
@@ -48,14 +48,12 @@ export default function Home() {
         />
 
         <div className='overflow-y-scroll grow'>
-          {isAuthenticated ? (
-            isShowingProfile ? (
-              <DefaultProfile connectedWalletAddress={walletAddress} />
-            ) : (
-              <Communities network={network} walletAddress={walletAddress} />
-            )
-          ) : (
+          {!isAuthenticated ? (
             <ConnectView />
+          ) : isShowingProfile ? (
+            <DefaultProfile walletAddress={walletAddress} />
+          ) : (
+            <Communities network={network} walletAddress={walletAddress} />
           )}
         </div>
       </div>

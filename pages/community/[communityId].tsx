@@ -60,27 +60,19 @@ const Community = () => {
   useEffect(() => {
     if (!connectionData) return;
 
-    chainId
-      ? checkNftIsInWallet(
-          getNFTBalances,
-          connectionData.address,
-          communityId,
-          updateHasRequiredNft,
-          connectionData.network,
-          chainId
-        )
-      : checkNftIsInWallet(
-          getNFTBalances,
-          connectionData.address,
-          communityId,
-          updateHasRequiredNft,
-          connectionData.network
-        );
-  }, [connectionData]);
+    const updateHasRequiredNft = (hasRequiredNft: boolean) => {
+      hasRequiredNft ? setLoadingHasRequiredNft(false) : router.push('/');
+    };
 
-  const updateHasRequiredNft = (hasRequiredNft: boolean) => {
-    hasRequiredNft ? setLoadingHasRequiredNft(false) : router.push('/');
-  };
+    checkNftIsInWallet(
+      getNFTBalances,
+      connectionData.address,
+      communityId,
+      updateHasRequiredNft,
+      connectionData.network,
+      chainId
+    );
+  }, [connectionData]);
 
   useEffect(() => {
     if (!connectionData) {
@@ -90,7 +82,7 @@ const Community = () => {
     setLoadingProfile(true);
     const unsubscribe = subscribeToProfile(
       communityId,
-      connectionData?.address,
+      connectionData.address,
       updateProfile
     );
     return unsubscribe;

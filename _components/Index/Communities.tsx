@@ -49,6 +49,7 @@ const Communities = (props: CommunitiesProps) => {
   }, [searchQuery]);
 
   useEffect(() => {
+    if (!walletContext) return;
     if (
       props.network === Networks.SOL ||
       (chainId && validChainIds.includes(chainId))
@@ -58,13 +59,13 @@ const Communities = (props: CommunitiesProps) => {
         props.walletAddress,
         updateData,
         chainId!,
-        walletContext?.pinnedCommunities!,
+        walletContext.pinnedCommunities,
         props.network
       );
     } else {
       setLoadingData(false);
     }
-  }, [chainId, walletContext?.pinnedCommunities]);
+  }, [chainId, walletContext]);
 
   const showAllButton = (
     <button
