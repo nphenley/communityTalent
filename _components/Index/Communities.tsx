@@ -1,6 +1,6 @@
-import { getWallet, pinCommunity, unpinCommunity } from '_firebase/APIRequests';
-import { useEffect, useState } from 'react';
-import { getUserNftsSolana, getUserNftsEth } from '_helpers/getUserNfts';
+import { pinCommunity, unpinCommunity } from '_firebase/APIRequests';
+import { useContext, useEffect, useState } from 'react';
+import { getCommunities } from '_helpers/getUserNfts';
 import { Networks } from '_enums/Networks';
 import { Community } from '_types/Community';
 import { useMoralis, useNFTBalances } from 'react-moralis';
@@ -10,13 +10,15 @@ import { validChainIds } from '_constants/validChainIds';
 import Link from 'next/link';
 import SearchBar from '_styled/SearchBar';
 import { filterCommunities } from '_helpers/filterCommunities';
+import { WalletContext } from '_contexts/WalletContext';
 
 type CommunitiesProps = {
   network: Networks;
-  connectedWalletAddress: string;
+  walletAddress: string;
 };
 
 const Communities = (props: CommunitiesProps) => {
+  const walletContext = useContext(WalletContext);
   const { getNFTBalances } = useNFTBalances();
   const { chainId } = useMoralis();
 
@@ -46,33 +48,23 @@ const Communities = (props: CommunitiesProps) => {
     setFilteredCommunities(filteredCommunities);
   }, [searchQuery]);
 
-  const getCommunities = async () => {
-    switch (props.network) {
-      case Networks.SOL:
-        await getUserNftsSolana(props.connectedWalletAddress, updateData);
-        break;
-      case Networks.ETH:
-        await getUserNftsEth(
-          getNFTBalances,
-          props.connectedWalletAddress,
-          updateData,
-          chainId ? chainId : 'eth'
-        );
-
-        break;
-    }
-  };
-
   useEffect(() => {
     if (
       props.network === Networks.SOL ||
       (chainId && validChainIds.includes(chainId))
     ) {
-      getCommunities();
+      getCommunities(
+        getNFTBalances,
+        props.walletAddress,
+        updateData,
+        chainId!,
+        walletContext?.pinnedCommunities!,
+        props.network
+      );
     } else {
       setLoadingData(false);
     }
-  }, [chainId]);
+  }, [chainId, walletContext?.pinnedCommunities]);
 
   const showAllButton = (
     <button
@@ -125,11 +117,7 @@ const Communities = (props: CommunitiesProps) => {
                     <button
                       className='absolute top-0 right-0'
                       onClick={() =>
-                        unpinCommunity(
-                          props.connectedWalletAddress,
-                          pinnedCommunity.id,
-                          getCommunities
-                        )
+                        unpinCommunity(props.walletAddress, pinnedCommunity.id)
                       }
                     >
                       -
@@ -153,11 +141,7 @@ const Communities = (props: CommunitiesProps) => {
                       <button
                         className='absolute top-0 right-0'
                         onClick={() =>
-                          pinCommunity(
-                            props.connectedWalletAddress,
-                            community.id,
-                            getCommunities
-                          )
+                          pinCommunity(props.walletAddress, community.id)
                         }
                       >
                         +

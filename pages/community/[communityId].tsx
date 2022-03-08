@@ -14,7 +14,7 @@ import Head from 'next/head';
 import { Profile } from '_types/Profile';
 import { Networks } from '_enums/Networks';
 import { ProfileContext } from '_contexts/ProfileContext';
-import { checkEthNftInWallet, checkSolNftInWallet } from '_helpers/getUserNfts';
+import { checkNftIsInWallet } from '_helpers/getUserNfts';
 import { useNFTBalances } from 'react-moralis';
 import { Sections } from '_enums/Sections';
 import { CommunityContext } from '_contexts/CommunityContext';
@@ -59,26 +59,24 @@ const Community = () => {
 
   useEffect(() => {
     if (!connectionData) return;
-    checkUserHasRequiredNft();
-  }, [connectionData]);
 
-  const checkUserHasRequiredNft = async () => {
-    if (connectionData!.network === Networks.SOL) {
-      checkSolNftInWallet(
-        connectionData!.address,
-        communityId,
-        updateHasRequiredNft
-      );
-    } else {
-      checkEthNftInWallet(
-        getNFTBalances,
-        chainId ? chainId : 'eth',
-        connectionData!.address,
-        communityId,
-        updateHasRequiredNft
-      );
-    }
-  };
+    chainId
+      ? checkNftIsInWallet(
+          getNFTBalances,
+          connectionData.address,
+          communityId,
+          updateHasRequiredNft,
+          connectionData.network,
+          chainId
+        )
+      : checkNftIsInWallet(
+          getNFTBalances,
+          connectionData.address,
+          communityId,
+          updateHasRequiredNft,
+          connectionData.network
+        );
+  }, [connectionData]);
 
   const updateHasRequiredNft = (hasRequiredNft: boolean) => {
     hasRequiredNft ? setLoadingHasRequiredNft(false) : router.push('/');

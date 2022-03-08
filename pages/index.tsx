@@ -4,50 +4,61 @@ import DefaultProfile from '_components/Index/DefaultProfile';
 import Communities from '_components/Index/Communities';
 import ConnectView from '_components/Index/ConnectView';
 import { Networks } from '_enums/Networks';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import NavBar from '_components/Index/Navbar';
+import { WalletContext } from '_contexts/WalletContext';
+import { Wallet } from '_types/Wallet';
+import { initWallet, subscribeToWallet } from '_firebase/APIRequests';
 
 export default function Home() {
   const { isAuthenticated, user } = useMoralis();
-
+  const [walletContext, setWalletContext] = useState<Wallet>();
   const [isShowingProfile, setIsShowingProfile] = useState(false);
 
   const network: Networks = user?.attributes.ethAddress
     ? Networks.ETH
     : Networks.SOL;
 
-  const connectedWalletAddress =
+  const walletAddress =
     network === Networks.ETH
       ? user?.attributes.ethAddress
       : user?.attributes.solAddress;
 
+  useEffect(() => {
+    if (!walletAddress) return;
+    const unsubscribe = initWallet(walletAddress, setWalletContext);
+    return unsubscribe;
+  }, [walletAddress]);
+
   return (
-    <div className='flex flex-col h-screen bg-background text-primary'>
-      <Head>
-        <title>communityTalent</title>
-        <meta name='viewport' content='initial-scale=1.0, width=device-width' />
-      </Head>
+    <WalletContext.Provider value={walletContext}>
+      <div className='flex flex-col h-screen bg-background text-primary'>
+        <Head>
+          <title>communityTalent</title>
+          <meta
+            name='viewport'
+            content='initial-scale=1.0, width=device-width'
+          />
+        </Head>
 
-      <NavBar
-        isAuthenticated={isAuthenticated}
-        isShowingProfile={isShowingProfile}
-        setIsShowingProfile={setIsShowingProfile}
-      />
+        <NavBar
+          isAuthenticated={isAuthenticated}
+          isShowingProfile={isShowingProfile}
+          setIsShowingProfile={setIsShowingProfile}
+        />
 
-      <div className='overflow-y-scroll grow'>
-        {isAuthenticated ? (
-          isShowingProfile ? (
-            <DefaultProfile connectedWalletAddress={connectedWalletAddress} />
+        <div className='overflow-y-scroll grow'>
+          {isAuthenticated ? (
+            isShowingProfile ? (
+              <DefaultProfile connectedWalletAddress={walletAddress} />
+            ) : (
+              <Communities network={network} walletAddress={walletAddress} />
+            )
           ) : (
-            <Communities
-              network={network}
-              connectedWalletAddress={connectedWalletAddress}
-            />
-          )
-        ) : (
-          <ConnectView />
-        )}
+            <ConnectView />
+          )}
+        </div>
       </div>
-    </div>
+    </WalletContext.Provider>
   );
 }

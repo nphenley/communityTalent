@@ -19,14 +19,23 @@ import {
 } from 'firebase/firestore';
 import { Project } from '_types/Project';
 import { Profile } from '_types/Profile';
-import { Community } from '_types/Community';
+import { Wallet } from '_types/Wallet';
 
 // ============== WALLET ==============
 
-export const getWallet = async (walletAddress: string) => {
+export const subscribeToWallet = async (
+  walletAddress: string,
+  setWalletContext: any
+) => {
   const wallet = await getDoc(doc(firestore, 'wallets', walletAddress));
   if (!wallet.exists()) setDoc(doc(firestore, 'wallets', walletAddress), {});
-  return wallet.data();
+  return onSnapshot(doc(firestore, 'wallets', walletAddress), (snapshot) =>
+    setWalletContext(snapshot.data())
+  );
+};
+
+export const initWallet = (walletAddress: string, setWalletContext: any) => {
+  subscribeToWallet(walletAddress, setWalletContext);
 };
 
 // ============== PROFILE ==============
@@ -155,48 +164,50 @@ export const getProjects = async (communityId: string, setProjects: any) => {
   );
 };
 
-// ==================== SOLANA NFTS ====================
+// ==================== CHECK COMMUNITY EXISTS FOR NFT ====================
 
-export const getSolNftCommunity = async (tokenAddress: string) => {
-  const document = await getDoc(doc(firestore, 'tokenAddresses', tokenAddress));
-  return document.exists()
-    ? {
-        id: document.data().communityId,
-        name: document.data().communityName,
-      }
-    : undefined;
+export const getCommunitiesForAddress = async (tokenAddress: string) => {
+  const communities = await getDocs(
+    collection(firestore, 'tokenAddresses', tokenAddress, 'communities')
+  );
+  let communitiesWithoutImage: { id: string; name: string }[] = [];
+  communities.forEach((doc) => {
+    communitiesWithoutImage.push({
+      id: doc.id,
+      name: doc.data().name,
+    });
+  });
+  return communitiesWithoutImage;
 };
 
 // ==================== COMMUNITY PINS ====================
 
 export const unpinCommunity = async (
   walletAddress: string,
-  communityId: string,
-  getCommunities: any
+  communityId: string
 ) => {
   await updateDoc(doc(firestore, 'wallets', walletAddress), {
     pinnedCommunities: arrayRemove(communityId),
   });
-  getCommunities();
 };
 
 export const pinCommunity = async (
   walletAddress: string,
-  communityId: string,
-  getCommunities: any
+  communityId: string
 ) => {
   await updateDoc(doc(firestore, 'wallets', walletAddress), {
     pinnedCommunities: arrayUnion(communityId),
   });
-  getCommunities();
 };
 
-// TODO:
-// Figure out Pinned Communities system
-// When you first connect, if no wallet doc exists create it
-// when you pin a community, if no pinnedCommunities array create it
-export const getPinnedCommunities = async (walletAddress: string) => {
-  let pinnedCommunities: Community[] = [];
+// ==================== FIND COMMUNITY TOKEN ADDRESS ====================
 
-  return pinnedCommunities;
+export const checkCommunityIdMatchesAddress = async (
+  communityId: string,
+  tokenAddress: string
+) => {
+  const community = await getDoc(
+    doc(firestore, 'tokenAddresses', tokenAddress, 'communities', communityId)
+  );
+  return community.exists();
 };
