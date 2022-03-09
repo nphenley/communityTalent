@@ -8,12 +8,18 @@ import { useEffect, useState } from 'react';
 import NavBar from '_components/Index/Navbar';
 import { WalletContext } from '_contexts/WalletContext';
 import { Wallet } from '_types/Wallet';
-import { subscribeToWallet } from '_firebase/APIRequests';
+import {
+  checkForExistingDefaultProfile,
+  subscribeToWallet,
+} from '_firebase/APIRequests';
+import { Profile } from '_types/Profile';
 
 export default function Home() {
   const { isAuthenticated, user } = useMoralis();
   const [walletContext, setWalletContext] = useState<Wallet>();
   const [isShowingProfile, setIsShowingProfile] = useState(false);
+  const [existingDefaultProfile, setExistingDefaultProfile] =
+    useState<Profile>();
 
   const network: Networks = user?.attributes.ethAddress
     ? Networks.ETH
@@ -29,6 +35,11 @@ export default function Home() {
     const unsubscribe = subscribeToWallet(walletAddress, setWalletContext);
     return () => unsubscribe();
   }, [walletAddress]);
+
+  useEffect(() => {
+    if (!walletContext) return;
+    checkForExistingDefaultProfile(walletAddress, setExistingDefaultProfile);
+  }, [walletContext]);
 
   return (
     <WalletContext.Provider value={walletContext}>
@@ -51,7 +62,11 @@ export default function Home() {
           {!isAuthenticated ? (
             <ConnectView />
           ) : isShowingProfile ? (
-            <DefaultProfile walletAddress={walletAddress} />
+            <DefaultProfile
+              walletAddress={walletAddress}
+              setIsShowingProfile={setIsShowingProfile}
+              existingDefaultProfile={existingDefaultProfile}
+            />
           ) : (
             <Communities network={network} walletAddress={walletAddress} />
           )}

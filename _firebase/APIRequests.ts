@@ -49,7 +49,7 @@ export const createProfile = async (
   });
 };
 
-export const updateProfile = async (
+export const updateCommunityProfile = async (
   communityId: string,
   profileId: string,
   data: Partial<Profile>
@@ -115,12 +115,39 @@ export const checkForExistingProfile = async (
   setExistingProfile(undefined);
 };
 
-export const importProfile = async (
+export const checkForExistingDefaultProfile = async (
+  walletAddress: string,
+  setExistingDefaultProfile: any
+) => {
+  const wallet = await getDoc(doc(firestore, 'wallets', walletAddress));
+  if (!wallet.data()) return;
+
+  const defaultProfile = wallet.data()!.defaultProfile
+    ? wallet.data()!.defaultProfile
+    : undefined;
+  setExistingDefaultProfile(defaultProfile);
+};
+
+export const updateDefaultProfile = async (
+  walletAddress: string,
+  defaultProfile: Partial<Profile>
+) => {
+  const docRef = await updateDoc(doc(firestore, 'wallets', walletAddress!), {
+    defaultProfile: {
+      ...defaultProfile,
+      dateLastUpdated: Timestamp.now(),
+      walletAddress: walletAddress,
+    },
+  });
+  return docRef;
+};
+
+export const importDefaultProfileToCommunity = async (
   communityId: string,
-  existingProfile: Profile
+  defaultProfile: Profile
 ) => {
   return addDoc(collection(firestore, 'communities', communityId, 'profiles'), {
-    ...existingProfile,
+    ...defaultProfile,
     dateCreated: Timestamp.now(),
     dateLastUpdated: Timestamp.now(),
   });

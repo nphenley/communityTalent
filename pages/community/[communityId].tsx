@@ -5,10 +5,13 @@ import MobileSideBar from '_components/Community/SideBar/MobileSideBar';
 import { useState, useEffect } from 'react';
 import { ConnectionData } from '_types/ConnectionData';
 import { ConnectionContext } from '_contexts/ConnectionContext';
-import { subscribeToProfile } from '_firebase/APIRequests';
+import {
+  checkForExistingDefaultProfile,
+  subscribeToProfile,
+} from '_firebase/APIRequests';
 import { useMoralis } from 'react-moralis';
 import { useRouter } from 'next/router';
-import CreateProfileForm from '_components/Community/CreateProfileForm';
+import CreateProfileForm from '_components/ProfileForms/CreateProfileForm';
 import LoadingSpinner from '_styled/LoadingSpinner';
 import Head from 'next/head';
 import { Profile } from '_types/Profile';
@@ -18,6 +21,7 @@ import { checkNftIsInWallet } from '_helpers/getUserNfts';
 import { useNFTBalances } from 'react-moralis';
 import { Sections } from '_enums/Sections';
 import { CommunityContext } from '_contexts/CommunityContext';
+import { ProfileType } from '_enums/ProfileType';
 
 const Community = () => {
   const router = useRouter();
@@ -31,8 +35,11 @@ const Community = () => {
   const [loadingConnectionData, setLoadingConnectionData] = useState(true);
   const [connectionData, setConnectionData] = useState<ConnectionData>();
 
-  const [loadingProfile, setLoadingProfile] = useState(true);
   const [profile, setProfile] = useState<Profile>();
+  const [loadingProfile, setLoadingProfile] = useState(true);
+  const [existingDefaultProfile, setExistingDefaultProfile] =
+    useState<Profile>();
+  const [loadingDefaultProfile, setLoadingDefaultProfile] = useState(true);
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [toggleState, setToggleState] = useState<Sections>(Sections.TALENT);
@@ -79,12 +86,17 @@ const Community = () => {
       setLoadingProfile(false);
       return;
     }
-    setLoadingProfile(true);
+    setLoadingProfile(true); //whats the point of this?
     const unsubscribe = subscribeToProfile(
       communityId,
       connectionData.address,
       updateProfile
     );
+    checkForExistingDefaultProfile(
+      connectionData.address,
+      setExistingDefaultProfile
+    );
+
     return unsubscribe;
   }, [connectionData]);
 
@@ -92,6 +104,10 @@ const Community = () => {
     setProfile(profile);
     setLoadingProfile(false);
   };
+
+  useEffect(() => {
+    setLoadingDefaultProfile(false);
+  }, [existingDefaultProfile]);
 
   return (
     <ConnectionContext.Provider value={connectionData}>
@@ -109,7 +125,8 @@ const Community = () => {
             {isAuthUndefined ||
             loadingConnectionData ||
             loadingHasRequiredNft ||
-            loadingProfile ? (
+            loadingProfile ||
+            loadingDefaultProfile ? (
               <LoadingSpinner />
             ) : !profile ? (
               <div className='flex flex-col w-full'>
@@ -118,7 +135,10 @@ const Community = () => {
                   setIsSidebarOpen={undefined}
                   hideHamburgerMenu={true}
                 />
-                <CreateProfileForm />
+                <CreateProfileForm
+                  type={ProfileType.Community}
+                  existingDefaultProfile={existingDefaultProfile}
+                />
               </div>
             ) : (
               <>

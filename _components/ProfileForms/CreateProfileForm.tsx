@@ -1,40 +1,37 @@
-import {
-  SubmitHandler,
-  useFieldArray,
-  useForm,
-  useFormState,
-} from 'react-hook-form';
+import { useFieldArray, useForm } from 'react-hook-form';
 import { useContext, useState } from 'react';
-import { updateProfile } from '_firebase/APIRequests';
+import { ConnectionContext } from '_contexts/ConnectionContext';
+import {
+  createProfile,
+  importDefaultProfileToCommunity,
+  updateDefaultProfile,
+} from '_firebase/APIRequests';
 import { Profile } from '_types/Profile';
 import ToggleField from '_styled/Forms/ToggleField';
 import { Tags } from '_enums/Tags';
 import { Languages } from '_enums/Languages';
 import { CommunityContext } from '_contexts/CommunityContext';
 import SelectField from '_styled/Forms/SelectField';
-import InputField from '_styled/Forms/InputField';
 import FormField from '_styled/Forms/FormField';
+import InputField from '_styled/Forms/InputField';
 import LargeInputField from '_styled/Forms/LargeInputField';
 import OptionalFormFieldWrapper from '_styled/Forms/OptionalFormFieldWrapper';
 import OptionalArrayInputField from '_styled/Forms/OptionalArrayInputField';
 import FormSubmit from '_styled/Forms/FormSubmit';
+import { ProfileType } from '_enums/ProfileType';
 
-type EditProfileFormProps = {
-  profile: Profile;
-  setEdit: any;
+type CreateProfileFormProps = {
+  type: ProfileType;
+  existingDefaultProfile?: Profile;
+  walletAddress?: string;
+  setIsShowingProfile?: any;
 };
 
-const EditProfileForm = (props: EditProfileFormProps) => {
+const CreateProfileForm = (props: CreateProfileFormProps) => {
+  const connectionData = useContext(ConnectionContext);
   const communityId = useContext(CommunityContext);
 
-  const { control, register, handleSubmit } = useForm<any>({
-    defaultValues: {
-      skills: props.profile.skills ? props.profile.skills : [],
-      relevantLinks: props.profile.relevantLinks
-        ? props.profile.relevantLinks
-        : [],
-    },
-  });
+  const { control, register, unregister, handleSubmit } = useForm();
 
   const {
     fields: skillsFields,
@@ -54,51 +51,91 @@ const EditProfileForm = (props: EditProfileFormProps) => {
     name: 'relevantLinks',
   });
 
-  const { dirtyFields } = useFormState({
-    control,
-  });
+  const [showDiscord, setShowDiscord] = useState(false);
+  const [showTwitter, setShowTwitter] = useState(false);
+  const [showSkills, setShowSkills] = useState(false);
+  const [showExperience, setShowExperience] = useState(false);
+  const [showLanguages, setShowLanguages] = useState(false);
+  const [showContacts, setShowContacts] = useState(false);
+  const [showLinks, setShowLinks] = useState(false);
 
-  const [showDiscord, setShowDiscord] = useState(
-    props.profile.discordUsername ? true : false
-  );
-  const [showTwitter, setShowTwitter] = useState(
-    props.profile.twitterHandle ? true : false
-  );
-  const [showSkills, setShowSkills] = useState(
-    props.profile.skills && props.profile.skills.length ? true : false
-  );
-  const [showExperience, setShowExperience] = useState(
-    props.profile.experience ? true : false
-  );
-  const [showLanguages, setShowLanguages] = useState(
-    props.profile.languages && props.profile.languages.length ? true : false
-  );
-  const [showContacts, setShowContacts] = useState(
-    props.profile.contacts ? true : false
-  );
-  const [showLinks, setShowLinks] = useState(
-    props.profile.relevantLinks && props.profile.relevantLinks.length
-      ? true
-      : false
-  );
+  let onSubmit: any;
+  let title: any;
+  let description: any;
 
-  const onSubmit: SubmitHandler<Partial<Profile>> = async (data: any) => {
-    for (const property in data)
-      if (!dirtyFields[property]) delete data[property];
+  switch (props.type) {
+    case ProfileType.Community:
+      console.log(props.existingDefaultProfile);
+      onSubmit = async (data: any) => {
+        for (const property in data)
+          if (
+            data[property] === undefined ||
+            data[property] === '' ||
+            (Array.isArray(data[property]) && !data[property].length)
+          )
+            delete data[property];
+        createProfile(communityId, {
+          ...data,
+          walletAddress: connectionData!.address,
+        } as Profile);
+      };
+      description = props.existingDefaultProfile ? (
+        <div className='flex flex-row-reverse items-center gap-4 mb-4 text-center'>
+          <button
+            onClick={() =>
+              importDefaultProfileToCommunity(
+                communityId,
+                props.existingDefaultProfile!
+              )
+            }
+            className='px-3 py-2 font-bold text-white rounded-lg bg-primary'
+          >
+            Import
+          </button>
+          Would you like to import your default profile?
+        </div>
+      ) : (
+        <p className='mb-4 text-center'>
+          This is your first time connecting with this wallet, please create a
+          profile.
+        </p>
+      );
+      title = (
+        <h1 className='mb-4 text-3xl font-bold text-center text-primary'>
+          Create Community Profile
+        </h1>
+      );
+      break;
+    case ProfileType.Default:
+      onSubmit = async (data: any) => {
+        for (const property in data)
+          if (
+            data[property] === undefined ||
+            data[property] === '' ||
+            (Array.isArray(data[property]) && !data[property].length)
+          )
+            delete data[property];
+        updateDefaultProfile(props.walletAddress!, { ...data } as Profile);
+        props.setIsShowingProfile(false);
+      };
 
-    if (!showSkills) data.skills = [];
-    if (!showExperience) data.experience = '';
-    if (!showLanguages) data.languages = [];
-    if (!showContacts) data.contacts = '';
-    if (!showLinks) data.relevantLinks = [];
+      description = (
+        <p className='mb-4 text-center'>
+          This is your default profile. When joining a new community, you will
+          be able to easily import it.
+        </p>
+      );
+      title = (
+        <h1 className='mb-4 text-3xl font-bold text-center text-primary'>
+          Create Default Profile
+        </h1>
+      );
+      break;
+  }
 
-    updateProfile(communityId, props.profile.id!, data);
-    props.setEdit(false);
-  };
-
-  const title = (
+  title = (
     <h1 className='mb-4 text-3xl font-bold text-center text-primary'>
-      Update Profile
+      Create Profile
     </h1>
   );
 
@@ -117,12 +154,13 @@ const EditProfileForm = (props: EditProfileFormProps) => {
   });
 
   return (
-    <div className='flex flex-col items-center w-full pt-12 pb-16 overflow-y-scroll grow bg-background'>
+    <div className='flex flex-col items-center pt-12 pb-16 overflow-y-scroll grow bg-background'>
       <form
         className='flex flex-col w-full max-w-screen-sm gap-8 px-10 sm:px-0'
         onSubmit={handleSubmit(onSubmit)}
       >
         {title}
+        {description}
         <FormField
           label='Display Name'
           formField={
@@ -130,7 +168,6 @@ const EditProfileForm = (props: EditProfileFormProps) => {
               register={register}
               placeholder='Display Name'
               name='displayName'
-              defaultValue={props.profile.displayName}
               required={true}
               maxLength={34}
             />
@@ -143,7 +180,6 @@ const EditProfileForm = (props: EditProfileFormProps) => {
               register={register}
               placeholder='Bio'
               name='bio'
-              defaultValue={props.profile.bio}
               required={true}
               maxLength={160}
             />
@@ -156,7 +192,6 @@ const EditProfileForm = (props: EditProfileFormProps) => {
               register={register}
               label='Looking for Project'
               name='lookingForProject'
-              defaultChecked={props.profile.lookingForProject}
             />
           }
         />
@@ -168,7 +203,6 @@ const EditProfileForm = (props: EditProfileFormProps) => {
               label='Tags'
               options={tagsOptions}
               name='tags'
-              defaultValues={props.profile.tags ? props.profile.tags : []}
             />
           }
         />
@@ -182,13 +216,12 @@ const EditProfileForm = (props: EditProfileFormProps) => {
                   register={register}
                   placeholder='Discord Username'
                   name='discordUsername'
-                  defaultValue={props.profile.discordUsername}
-                  required={true}
                   maxLength={37}
                 />
               }
             />
           }
+          onHideField={() => unregister('discordUsername')}
           isFieldShown={showDiscord}
           setIsFieldShown={setShowDiscord}
         />
@@ -202,13 +235,12 @@ const EditProfileForm = (props: EditProfileFormProps) => {
                   register={register}
                   placeholder='Twitter Handle'
                   name='twitterHandle'
-                  defaultValue={props.profile.twitterHandle}
-                  required={true}
                   maxLength={16}
                 />
               }
             />
           }
+          onHideField={() => unregister('twitterHandle')}
           isFieldShown={showTwitter}
           setIsFieldShown={setShowTwitter}
         />
@@ -229,7 +261,6 @@ const EditProfileForm = (props: EditProfileFormProps) => {
                   register={register}
                   placeholder={'Skill'}
                   name={`skills.${index}`}
-                  required={false}
                   maxLength={50}
                 />
               }
@@ -246,15 +277,12 @@ const EditProfileForm = (props: EditProfileFormProps) => {
                   register={register}
                   placeholder='Experience'
                   name='experience'
-                  defaultValue={
-                    props.profile.experience ? props.profile.experience : ''
-                  }
-                  required={false}
                   maxLength={500}
                 />
               }
             />
           }
+          onHideField={() => unregister('experience')}
           isFieldShown={showExperience}
           setIsFieldShown={setShowExperience}
         />
@@ -269,13 +297,11 @@ const EditProfileForm = (props: EditProfileFormProps) => {
                   label='Languages'
                   options={languagesOptions}
                   name='languages'
-                  defaultValues={
-                    props.profile.languages ? props.profile.languages : []
-                  }
                 />
               }
             />
           }
+          onHideField={() => unregister('languages')}
           isFieldShown={showLanguages}
           setIsFieldShown={setShowLanguages}
         />
@@ -289,15 +315,12 @@ const EditProfileForm = (props: EditProfileFormProps) => {
                   register={register}
                   placeholder='Contacts'
                   name='contacts'
-                  defaultValue={
-                    props.profile.contacts ? props.profile.contacts : ''
-                  }
-                  required={false}
                   maxLength={500}
                 />
               }
             />
           }
+          onHideField={() => unregister('contacts')}
           isFieldShown={showContacts}
           setIsFieldShown={setShowContacts}
         />
@@ -316,7 +339,6 @@ const EditProfileForm = (props: EditProfileFormProps) => {
                   register={register}
                   placeholder={'Relevant Link'}
                   name={`relevantLinks.${index}`}
-                  required={false}
                   maxLength={50}
                 />
               }
@@ -331,4 +353,4 @@ const EditProfileForm = (props: EditProfileFormProps) => {
   );
 };
 
-export default EditProfileForm;
+export default CreateProfileForm;
