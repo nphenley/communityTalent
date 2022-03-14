@@ -16,7 +16,7 @@ import Link from 'next/link';
 import SearchBar from '_styled/SearchBar';
 import { filterCommunities } from '_helpers/filterCommunities';
 
-import StakedNftsForm from './StakedNftsForm';
+import StakedNftsForm from '_components/Index/StakedNftsForm';
 
 type CommunitiesProps = {
   network: Networks;
@@ -154,8 +154,8 @@ const Communities = (props: CommunitiesProps) => {
     loadingStakedCommunityIds ? (
     <LoadingSpinner />
   ) : (
-    <div className='flex flex-col max-w-[90%] pt-12 pb-20 mx-auto w-full gap-4 rounded-lg'>
-      <div className='text-2xl font-bold text-center'>Communities</div>
+    <div className='mx-auto flex w-full max-w-[90%] flex-col gap-4 rounded-lg pt-12 pb-20'>
+      <div className='text-center text-2xl font-bold'>Communities</div>
       <div className='flex flex-row-reverse gap-x-2'>
         {pinButton}
         {pinnedCommunities.length && !isPinning ? showAllButton : null}
@@ -238,7 +238,7 @@ const CommunityButton = (props: CommunityButtonProps) => {
   return (
     <Link href={`community/${props.community.id}`}>
       <button
-        className='flex flex-col items-center mx-auto space-y-3'
+        className='mx-auto flex flex-col items-center space-y-3'
         key={props.community.id}
       >
         <div className='flex justify-center overflow-hidden rounded-full'>
@@ -251,7 +251,7 @@ const CommunityButton = (props: CommunityButtonProps) => {
             unoptimized={true}
           />
         </div>
-        <div className='font-medium break-all'>{props.community.name}</div>
+        <div className='break-all font-medium'>{props.community.name}</div>
       </button>
     </Link>
   );
