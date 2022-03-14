@@ -1,15 +1,14 @@
 import { useFieldArray, useForm } from 'react-hook-form';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { ConnectionContext } from '_contexts/ConnectionContext';
 import {
   createProfile,
+  getFormOptions,
   importDefaultProfileToCommunity,
   updateDefaultProfile,
-} from '_firebase/APIRequests';
+} from '_api/profiles';
 import { Profile } from '_types/Profile';
 import ToggleField from '_styled/Forms/ToggleField';
-import { Tags } from '_enums/Tags';
-import { Languages } from '_enums/Languages';
 import { CommunityContext } from '_contexts/CommunityContext';
 import SelectField from '_styled/Forms/SelectField';
 import FormField from '_styled/Forms/FormField';
@@ -32,6 +31,12 @@ const CreateProfileForm = (props: CreateProfileFormProps) => {
   const communityId = useContext(CommunityContext);
 
   const { control, register, unregister, handleSubmit } = useForm();
+  const [selectFieldOptions, setSelectFieldOptions] = useState<any>();
+
+  useEffect(() => {
+    if (selectFieldOptions) return;
+    getFormOptions(setSelectFieldOptions);
+  }, []);
 
   const {
     fields: skillsFields,
@@ -139,20 +144,6 @@ const CreateProfileForm = (props: CreateProfileFormProps) => {
     </h1>
   );
 
-  const tagsOptions = Object.keys(Tags).map((key) => {
-    return {
-      value: (Tags as any)[key],
-      label: (Tags as any)[key],
-    };
-  });
-
-  const languagesOptions = Object.keys(Languages).map((key) => {
-    return {
-      value: (Languages as any)[key],
-      label: (Languages as any)[key],
-    };
-  });
-
   return (
     <div className='flex flex-col items-center pt-12 pb-16 overflow-y-scroll grow bg-background'>
       <form
@@ -201,7 +192,7 @@ const CreateProfileForm = (props: CreateProfileFormProps) => {
             <SelectField
               control={control}
               label='Tags'
-              options={tagsOptions}
+              options={selectFieldOptions?.tags}
               name='tags'
             />
           }
@@ -295,7 +286,7 @@ const CreateProfileForm = (props: CreateProfileFormProps) => {
                 <SelectField
                   control={control}
                   label='Languages'
-                  options={languagesOptions}
+                  options={selectFieldOptions?.languages}
                   name='languages'
                 />
               }

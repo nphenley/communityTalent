@@ -1,13 +1,12 @@
 import { useFieldArray, useForm, useFormState } from 'react-hook-form';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import {
+  getFormOptions,
   updateCommunityProfile,
   updateDefaultProfile,
-} from '_firebase/APIRequests';
+} from '_api/profiles';
 import { Profile } from '_types/Profile';
 import ToggleField from '_styled/Forms/ToggleField';
-import { Tags } from '_enums/Tags';
-import { Languages } from '_enums/Languages';
 import { CommunityContext } from '_contexts/CommunityContext';
 import SelectField from '_styled/Forms/SelectField';
 import InputField from '_styled/Forms/InputField';
@@ -27,7 +26,7 @@ type EditProfileFormProps = {
 
 const EditProfileForm = (props: EditProfileFormProps) => {
   const communityId = useContext(CommunityContext);
-
+  const [selectFieldOptions, setSelectFieldOptions] = useState<any>();
   const { control, register, handleSubmit } = useForm<any>({
     defaultValues: {
       tags: props.profile.tags ? props.profile.tags : [],
@@ -37,7 +36,10 @@ const EditProfileForm = (props: EditProfileFormProps) => {
         : [],
     },
   });
-
+  useEffect(() => {
+    if (selectFieldOptions) return;
+    getFormOptions(setSelectFieldOptions);
+  }, []);
   const {
     fields: skillsFields,
     append: skillsAppend,
@@ -130,20 +132,6 @@ const EditProfileForm = (props: EditProfileFormProps) => {
       break;
   }
 
-  const tagsOptions = Object.keys(Tags).map((key) => {
-    return {
-      value: (Tags as any)[key],
-      label: (Tags as any)[key],
-    };
-  });
-
-  const languagesOptions = Object.keys(Languages).map((key) => {
-    return {
-      value: (Languages as any)[key],
-      label: (Languages as any)[key],
-    };
-  });
-
   return (
     <div className='flex flex-col items-center w-full pt-12 pb-16 overflow-y-scroll grow bg-background'>
       <form
@@ -194,7 +182,7 @@ const EditProfileForm = (props: EditProfileFormProps) => {
             <SelectField
               control={control}
               label='Tags'
-              options={tagsOptions}
+              options={selectFieldOptions?.tags}
               name='tags'
               defaultValues={props.profile.tags ? props.profile.tags : []}
             />
@@ -295,7 +283,7 @@ const EditProfileForm = (props: EditProfileFormProps) => {
                 <SelectField
                   control={control}
                   label='Languages'
-                  options={languagesOptions}
+                  options={selectFieldOptions?.languages}
                   name='languages'
                   defaultValues={
                     props.profile.languages ? props.profile.languages : []

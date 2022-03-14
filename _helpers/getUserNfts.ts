@@ -4,15 +4,22 @@ import { mainNetUrl } from '_constants/solanaConstants';
 import { Networks } from '_enums/Networks';
 import {
   checkCommunityIdMatchesAddress,
-  getCommunitiesForAddress,
-} from '_firebase/APIRequests';
+  getCommunityById,
+  getUserCommunitiesByTokenAddresses,
+  checkForStakingAddresses,
+} from '_api/communities';
 import { Community } from '_types/Community';
+import {
+  checkIfUserStillHasStakedNft,
+  getImageForStakingCommunity,
+} from '_helpers/getStakedNfts';
 
 export const getCommunities = async (
   getNFTBalances: any,
   walletAddress: string,
   updateData: any,
   chainId: string,
+  userStakedCommunityIds: string[],
   pinnedCommunityIds: string[],
   network: string
 ) => {
@@ -23,11 +30,26 @@ export const getCommunities = async (
   } else {
     communities = await getUserNftsSolana(walletAddress);
   }
-
+  console.log(userStakedCommunityIds);
+  if (userStakedCommunityIds.length) {
+    await Promise.all(
+      userStakedCommunityIds.map(async (stakedCommunityId) => {
+        const stakedCommunity = await getCommunityById(stakedCommunityId);
+        const image = await getImageForStakingCommunity(
+          stakedCommunity.tokenAddress[0]
+        );
+        communities.push({
+          id: stakedCommunity.id,
+          name: stakedCommunity.name,
+          image: image,
+        });
+      })
+    );
+  }
   communities = filterDuplicateCommunities(communities);
 
   let pinnedCommunities: Community[] = [];
-  if (pinnedCommunityIds) {
+  if (pinnedCommunityIds.length) {
     communities.forEach((community) => {
       if (pinnedCommunityIds.includes(community.id))
         pinnedCommunities.push(community);
@@ -43,20 +65,21 @@ export const getUserNftsSolana = async (walletAddress: string) => {
     connection: new Connection(mainNetUrl),
   });
   if (!nftsInWallet) return [];
+  let communitiesWithoutImage = await getUserCommunitiesByTokenAddresses(
+    nftsInWallet.map((nft: any) => nft.mint),
+    nftsInWallet.map((nft: any) => nft.data.uri)
+  );
   let communities: Community[] = [];
   await Promise.all(
-    nftsInWallet.map(async (nft: any) => {
-      let communitiesWithoutImage = await getCommunitiesForAddress(nft.mint);
-      if (!communitiesWithoutImage.length) return;
-
-      await Promise.all(
-        communitiesWithoutImage.map(async (communityWithoutImage) => {
-          const metadata = await fetch(nft.data.uri);
-          const data = await metadata.json();
-          const community = { ...communityWithoutImage, image: data.image };
-          communities.push(community);
-        })
-      );
+    communitiesWithoutImage.map(async (communityWithoutImage: any) => {
+      const metadata = await fetch(communityWithoutImage.metadata);
+      const data = await metadata.json();
+      const community = {
+        id: communityWithoutImage.id,
+        name: communityWithoutImage.name,
+        image: data.image,
+      };
+      communities.push(community);
     })
   );
   return communities;
@@ -75,21 +98,25 @@ const getUserNftsEVM = async (
     },
   });
   if (!nftsInWallet) return [];
+  const communitiesWithoutImages = await getUserCommunitiesByTokenAddresses(
+    nftsInWallet.result.map((nft: any) => nft.token_address),
+    nftsInWallet.result.map((nft: any) => nft.metadata)
+  );
   await Promise.all(
-    nftsInWallet.result.map(async (nft: any) => {
-      let communitiesWithoutImage = await getCommunitiesForAddress(
-        nft.token_address
-      );
-      if (!communitiesWithoutImage.length) return;
+    communitiesWithoutImages.map(async (communityWithoutImage: any) => {
       if (chainId === '0x1') {
-        const nftImage = await openseaApiCall(walletAddress, nft.token_address);
-        communitiesWithoutImage.forEach((communityWithoutImage) => {
-          const community = { ...communityWithoutImage, image: nftImage };
-          communities.push(community);
+        const nftImage = await openseaApiCall(
+          walletAddress,
+          communityWithoutImage.tokenAddress
+        );
+        communities.push({
+          id: communityWithoutImage.id,
+          name: communityWithoutImage.name,
+          image: nftImage,
         });
       } else {
-        if (!nft.metadata) return;
-        const jsonMetadata = JSON.parse(nft.metadata);
+        if (communityWithoutImage.metadata) return;
+        const jsonMetadata = JSON.parse(communityWithoutImage.metadata);
         if (!jsonMetadata.image && jsonMetadata.image_url) {
           jsonMetadata.image = jsonMetadata.image_url;
         }
@@ -101,12 +128,11 @@ const getUserNftsEVM = async (
           jsonMetadata.image =
             'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png';
         }
-        communitiesWithoutImage.forEach((communityWithoutImage) => {
-          const community = {
-            ...communityWithoutImage,
-            image: jsonMetadata.image,
-          };
-          communities.push(community);
+
+        communities.push({
+          id: communityWithoutImage.id,
+          name: communityWithoutImage.name,
+          image: jsonMetadata.image,
         });
       }
     })
@@ -130,36 +156,54 @@ export const checkNftIsInWallet = async (
         address: walletAddress,
       },
     });
-    nftsInWalletResponse.result.forEach((nft: any) => {
-      tokenAddressesInWallet.push(nft.token_address);
-    });
+
+    tokenAddressesInWallet = nftsInWalletResponse.result.map(
+      (nft: any) => nft.token_address
+    );
   } else {
     const nftsInWallet = await getParsedNftAccountsByOwner({
       publicAddress: walletAddress,
       connection: new Connection(mainNetUrl),
     });
-    nftsInWallet.forEach((nft: any) => {
-      tokenAddressesInWallet.push(nft.mint);
-    });
+    tokenAddressesInWallet = nftsInWallet.map((nft: any) => nft.mint);
   }
+  //filter tokenAddresses for dupes
+  let hasRequiredNft = false;
+  await Promise.all(
+    tokenAddressesInWallet.map(async (tokenAddress: any) => {
+      if (await checkCommunityIdMatchesAddress(communityId, tokenAddress)) {
+        hasRequiredNft = true;
+      }
+    })
+  );
+  if (network === Networks.ETH && !hasRequiredNft) {
+    const stakingCommunityInfo = await checkForStakingAddresses(communityId);
 
-  tokenAddressesInWallet.forEach(async (tokenAddress: any) => {
-    const hasRequiredNft = await checkCommunityIdMatchesAddress(
-      communityId,
-      tokenAddress
+    await Promise.all(
+      stakingCommunityInfo.map(async (stakingCommunity) => {
+        if (
+          await checkIfUserStillHasStakedNft(
+            walletAddress,
+            stakingCommunity.tokenAddress,
+            stakingCommunity.stakingAddress
+          )
+        ) {
+          hasRequiredNft = true;
+        }
+      })
     );
-    if (hasRequiredNft) updateHasRequiredNft(hasRequiredNft);
-  });
+  }
+  updateHasRequiredNft(hasRequiredNft);
 };
 
 const filterDuplicateCommunities = (nonUniqueCommunities: Community[]) => {
-  let tokenAddressSet = new Set<string>();
+  let communityIdSet = new Set<string>();
   let uniqueCommunities: Community[] = [];
   if (!nonUniqueCommunities.length) return nonUniqueCommunities;
   nonUniqueCommunities.forEach((community) => {
-    if (tokenAddressSet.has(community.id)) return;
+    if (communityIdSet.has(community.id)) return;
     uniqueCommunities.push(community);
-    tokenAddressSet.add(community.id);
+    communityIdSet.add(community.id);
   });
   return uniqueCommunities;
 };

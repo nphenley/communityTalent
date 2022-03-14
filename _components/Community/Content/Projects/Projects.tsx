@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from 'react';
 import { Project } from '_types/Project';
 import { ConnectionContext } from '_contexts/ConnectionContext';
-import { getProjects } from '_firebase/APIRequests';
+import { getProjects } from '_api/projects';
 import ProjectCard from '_components/Community/Content/Projects/ProjectCard';
 import CreateProjectButton from '_components/Community/Content/Projects/CreateProjectButton';
 import ProjectForm from '_components/Community/Content/Projects/ProjectForm';
@@ -20,7 +20,7 @@ const Projects = () => {
   }, [connectionData, addProject]);
 
   const navBar = (
-    <div className='flex gap-2 justify-center mb-2'>
+    <div className='flex justify-center gap-2 mb-2'>
       <button className={styles.tabButton.concat(' text-white')}>
         Looking for Projects
       </button>

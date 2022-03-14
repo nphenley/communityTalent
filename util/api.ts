@@ -1,4 +1,4 @@
-export const openseaApiCall = async (
+export const getUserNftImageByAddress = async (
   walletAddress: string,
   tokenAddress: string
 ) => {

@@ -8,7 +8,7 @@ import { ConnectionContext } from '_contexts/ConnectionContext';
 import {
   checkForExistingDefaultProfile,
   subscribeToProfile,
-} from '_firebase/APIRequests';
+} from '_api/profiles';
 import { useMoralis } from 'react-moralis';
 import { useRouter } from 'next/router';
 import CreateProfileForm from '_components/ProfileForms/CreateProfileForm';
@@ -63,13 +63,12 @@ const Community = () => {
     });
     setLoadingConnectionData(false);
   };
+  const updateHasRequiredNft = (hasRequiredNft: boolean) => {
+    hasRequiredNft ? setLoadingHasRequiredNft(false) : router.push('/');
+  };
 
   useEffect(() => {
     if (!connectionData) return;
-
-    const updateHasRequiredNft = (hasRequiredNft: boolean) => {
-      hasRequiredNft ? setLoadingHasRequiredNft(false) : router.push('/');
-    };
 
     checkNftIsInWallet(
       getNFTBalances,
@@ -86,7 +85,7 @@ const Community = () => {
       setLoadingProfile(false);
       return;
     }
-    setLoadingProfile(true); //whats the point of this?
+    setLoadingProfile(true);
     const unsubscribe = subscribeToProfile(
       communityId,
       connectionData.address,

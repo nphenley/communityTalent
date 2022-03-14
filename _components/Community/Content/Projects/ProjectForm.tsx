@@ -1,11 +1,11 @@
-import { createProject } from '_firebase/APIRequests';
+import { createProject } from '_api/projects';
 import { useForm } from 'react-hook-form';
 import { Project } from '_types/Project';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { ProfileContext } from '_contexts/ProfileContext';
-import { Tags } from '_enums/Tags';
 import { CommunityContext } from '_contexts/CommunityContext';
 import SelectField from '_styled/Forms/SelectField';
+import { getFormOptions } from '_api/profiles';
 
 type ProjectFormProps = {
   setAddProject: any;
@@ -24,6 +24,12 @@ const ProjectForm = (props: ProjectFormProps) => {
     } as Project);
     props.setAddProject(false);
   };
+  const [selectFieldOptions, setSelectFieldOptions] = useState<any>();
+
+  useEffect(() => {
+    if (selectFieldOptions) return;
+    getFormOptions(setSelectFieldOptions);
+  }, []);
 
   const title = (
     <h1 className='mb-4 text-3xl font-bold text-center text-primary'>
@@ -33,7 +39,7 @@ const ProjectForm = (props: ProjectFormProps) => {
 
   return (
     <div className='fixed'>
-      <div className='flex flex-col items-center pt-12 pb-16 px-4 overflow-y-scroll border-4 rounded-lg shadow-lg border-backgroundDark grow bg-background'>
+      <div className='flex flex-col items-center px-4 pt-12 pb-16 overflow-y-scroll border-4 rounded-lg shadow-lg border-backgroundDark grow bg-background'>
         <form
           className='flex flex-col w-full max-w-screen-sm gap-8 px-10 sm:px-0'
           onSubmit={handleSubmit(onSubmit)}
@@ -56,7 +62,7 @@ const ProjectForm = (props: ProjectFormProps) => {
           <SelectField
             control={control}
             label='Tags'
-            options={tagsOptions}
+            options={selectFieldOptions?.tags}
             name='tags'
           />
 
@@ -113,10 +119,3 @@ const LargeInputField = (props: LargeInputFieldProps) => {
     </div>
   );
 };
-
-const tagsOptions = Object.keys(Tags).map((key) => {
-  return {
-    value: (Tags as any)[key],
-    label: (Tags as any)[key],
-  };
-});

@@ -1,4 +1,4 @@
-import { updateProject } from '_firebase/APIRequests';
+import { updateProject } from '_api/projects';
 import {
   Controller,
   SubmitHandler,
@@ -6,11 +6,10 @@ import {
   useFormState,
 } from 'react-hook-form';
 import { Project } from '_types/Project';
-
-import { Tags } from '_enums/Tags';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { CommunityContext } from '_contexts/CommunityContext';
 import SelectField from '_styled/Forms/SelectField';
+import { getFormOptions } from '_api/profiles';
 
 type EditProjectFormProps = {
   project: Project;
@@ -31,19 +30,18 @@ const EditProjectForm = (props: EditProjectFormProps) => {
     await updateProject(communityId, props.project.id!, data);
     props.setEditProject(false);
   };
+  const [selectFieldOptions, setSelectFieldOptions] = useState<any>();
+
+  useEffect(() => {
+    if (selectFieldOptions) return;
+    getFormOptions(setSelectFieldOptions);
+  }, []);
 
   const title = (
     <h1 className='mb-4 text-3xl font-bold text-center text-primary'>
       Edit Project Posting
     </h1>
   );
-
-  const tagsOptions = Object.keys(Tags).map((key) => {
-    return {
-      value: (Tags as any)[key],
-      label: (Tags as any)[key],
-    };
-  });
 
   return (
     <div className='fixed z-50 w-2/3 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 '>
@@ -79,7 +77,7 @@ const EditProjectForm = (props: EditProjectFormProps) => {
           <SelectField
             control={control}
             label='Tags'
-            options={tagsOptions}
+            options={selectFieldOptions?.tags}
             name='tags'
             defaultValues={props.project.tags ? props.project.tags : []}
           />
