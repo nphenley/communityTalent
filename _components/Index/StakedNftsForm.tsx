@@ -16,14 +16,11 @@ type StakedNftsFormProps = {
 };
 
 const StakedNftsForm = (props: StakedNftsFormProps) => {
-  const [stakingCommunities, setStakingCommunities] = useState<
-    { communityId: string; communityName: string }[]
-  >([]);
   const [selectOptions, setSelectOptions] =
     useState<{ label: string; value: string }[]>();
 
   useEffect(() => {
-    getAllStakingCommunities(setStakingCommunities);
+    getAllStakingCommunities(setSelectOptions);
   }, []);
 
   const { control, handleSubmit } = useForm();
@@ -35,17 +32,6 @@ const StakedNftsForm = (props: StakedNftsFormProps) => {
       addStakedCommunityId(props.walletAddress, data.communityId);
     }
   };
-
-  useEffect(() => {
-    setSelectOptions(
-      stakingCommunities.map((stakingCommunity) => {
-        return {
-          label: stakingCommunity.communityName,
-          value: stakingCommunity.communityId,
-        };
-      })
-    );
-  }, [stakingCommunities]);
 
   return (
     <form

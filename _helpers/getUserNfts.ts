@@ -30,7 +30,6 @@ export const getCommunities = async (
   } else {
     communities = await getUserNftsSolana(walletAddress);
   }
-  console.log(userStakedCommunityIds);
   if (userStakedCommunityIds.length) {
     await Promise.all(
       userStakedCommunityIds.map(async (stakedCommunityId) => {

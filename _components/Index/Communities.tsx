@@ -60,9 +60,6 @@ const Communities = (props: CommunitiesProps) => {
     setFilteredCommunities(filteredCommunities);
   }, [searchQuery]);
   useEffect(() => {
-    console.log('communities', stakedCommunityIds);
-    // console.log(pinnedCommunityIds);
-
     if (
       (!loadingPinnedCommunityIds &&
         !loadingStakedCommunityIds &&
@@ -152,7 +149,9 @@ const Communities = (props: CommunitiesProps) => {
     </button>
   );
 
-  return loadingData ? (
+  return loadingData ||
+    loadingPinnedCommunityIds ||
+    loadingStakedCommunityIds ? (
     <LoadingSpinner />
   ) : (
     <div className='flex flex-col max-w-[90%] pt-12 pb-20 mx-auto w-full gap-4 rounded-lg'>

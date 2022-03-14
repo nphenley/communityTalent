@@ -16,6 +16,7 @@ import OptionalFormFieldWrapper from '_styled/Forms/OptionalFormFieldWrapper';
 import OptionalArrayInputField from '_styled/Forms/OptionalArrayInputField';
 import FormSubmit from '_styled/Forms/FormSubmit';
 import { ProfileType } from '_enums/ProfileType';
+import SelectFieldSingle from '_styled/Forms/SelectFieldSingle';
 
 type EditProfileFormProps = {
   profile: Profile;
@@ -34,6 +35,7 @@ const EditProfileForm = (props: EditProfileFormProps) => {
       relevantLinks: props.profile.relevantLinks
         ? props.profile.relevantLinks
         : [],
+      timezone: props.profile.timezone ? props.profile.timezone : '',
     },
   });
   useEffect(() => {
@@ -85,6 +87,9 @@ const EditProfileForm = (props: EditProfileFormProps) => {
       ? true
       : false
   );
+  const [showTimezone, setShowTimezone] = useState(
+    props.profile.timezone ? true : false
+  );
 
   let onSubmit: any;
   let title: any;
@@ -100,6 +105,7 @@ const EditProfileForm = (props: EditProfileFormProps) => {
         if (!showLanguages) data.languages = [];
         if (!showContacts) data.contacts = '';
         if (!showLinks) data.relevantLinks = [];
+        if (!showTimezone) data.timezone = '';
 
         updateCommunityProfile(communityId, props.profile.id!, data);
         props.setEdit(false);
@@ -119,6 +125,7 @@ const EditProfileForm = (props: EditProfileFormProps) => {
         if (!showLanguages) data.languages = [];
         if (!showContacts) data.contacts = '';
         if (!showLinks) data.relevantLinks = [];
+        if (!showTimezone) data.timezone = '';
 
         updateDefaultProfile(props.profile.walletAddress, data);
         props.setIsShowingProfile(false);
@@ -227,6 +234,27 @@ const EditProfileForm = (props: EditProfileFormProps) => {
           }
           isFieldShown={showTwitter}
           setIsFieldShown={setShowTwitter}
+        />
+        <OptionalFormFieldWrapper
+          label='Timezone'
+          formField={
+            <FormField
+              label='Timezone'
+              formField={
+                <SelectFieldSingle
+                  control={control}
+                  label='Timezone'
+                  options={selectFieldOptions?.timezones}
+                  defaultValue={
+                    props.profile.timezone ? props.profile.timezone : ''
+                  }
+                  name='timezone'
+                />
+              }
+            />
+          }
+          isFieldShown={showTimezone}
+          setIsFieldShown={setShowTimezone}
         />
         <OptionalArrayInputField
           label='Skills'

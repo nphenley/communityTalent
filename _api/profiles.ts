@@ -6,30 +6,32 @@ import {
   getDocs,
   query,
   getDoc,
-  orderBy,
   where,
   doc,
   updateDoc,
-  increment,
   onSnapshot,
-  deleteDoc,
   setDoc,
-  arrayRemove,
-  arrayUnion,
-  collectionGroup,
 } from 'firebase/firestore';
 import { Profile } from '_types/Profile';
-import { time } from 'console';
 
 export const createProfile = async (
   communityId: string,
   profileData: Profile
 ) => {
-  addDoc(collection(firestore, 'communities', communityId, 'profiles'), {
-    ...profileData,
-    dateCreated: Timestamp.now(),
-    dateLastUpdated: Timestamp.now(),
-  });
+  setDoc(
+    doc(
+      firestore,
+      'communities',
+      communityId,
+      'profiles',
+      profileData.walletAddress
+    ),
+    {
+      ...profileData,
+      dateCreated: Timestamp.now(),
+      dateLastUpdated: Timestamp.now(),
+    }
+  );
 };
 
 export const updateCommunityProfile = async (
@@ -50,15 +52,11 @@ export const subscribeToProfile = (
   updateProfile: any
 ) => {
   return onSnapshot(
-    query(
-      collection(firestore, 'communities', communityId, 'profiles'),
-      where('walletAddress', '==', walletAddress)
-    ),
-    (snapshot) =>
+    doc(firestore, 'communities', communityId, 'profiles', walletAddress),
+
+    (snapshot: any) =>
       updateProfile(
-        snapshot.docs.length
-          ? { ...snapshot.docs[0].data(), id: snapshot.docs[0].id }
-          : undefined
+        snapshot.data() ? { ...snapshot.data(), id: snapshot.id } : undefined
       )
   );
 };
@@ -99,11 +97,20 @@ export const importDefaultProfileToCommunity = async (
   communityId: string,
   defaultProfile: Profile
 ) => {
-  return addDoc(collection(firestore, 'communities', communityId, 'profiles'), {
-    ...defaultProfile,
-    dateCreated: Timestamp.now(),
-    dateLastUpdated: Timestamp.now(),
-  });
+  return setDoc(
+    doc(
+      firestore,
+      'communities',
+      communityId,
+      'profiles',
+      defaultProfile.walletAddress
+    ),
+    {
+      ...defaultProfile,
+      dateCreated: Timestamp.now(),
+      dateLastUpdated: Timestamp.now(),
+    }
+  );
 };
 
 export const checkForExistingDefaultProfile = async (
@@ -119,6 +126,7 @@ export const checkForExistingDefaultProfile = async (
     setExistingDefaultProfile(defaultProfile.data().defaultProfile);
   }
 };
+
 export const subscribeToDefaultProfile = (
   walletAddress: string,
   setExistingDefaultProfile: any

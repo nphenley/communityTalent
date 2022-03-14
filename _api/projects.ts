@@ -5,9 +5,7 @@ import {
   Timestamp,
   getDocs,
   query,
-  getDoc,
   orderBy,
-  where,
   doc,
   updateDoc,
 } from 'firebase/firestore';

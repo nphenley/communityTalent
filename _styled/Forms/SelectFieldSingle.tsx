@@ -6,7 +6,8 @@ type SelectFieldSingleProps = {
   name: string;
   label: string;
   options: any;
-  required: boolean;
+  required?: boolean;
+  defaultValue?: string;
 };
 
 const SelectFieldSingle = (props: SelectFieldSingleProps) => {
@@ -14,6 +15,7 @@ const SelectFieldSingle = (props: SelectFieldSingleProps) => {
     return onChange(e.value);
   };
 
+  const defaultValue = { label: props.defaultValue, value: props.defaultValue };
   return (
     <Controller
       control={props.control}
@@ -24,6 +26,7 @@ const SelectFieldSingle = (props: SelectFieldSingleProps) => {
           classNamePrefix='select-field'
           onChange={(e) => onValueChange(e, onChange)}
           options={props.options}
+          defaultValue={defaultValue}
         />
       )}
     />

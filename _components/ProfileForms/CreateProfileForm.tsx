@@ -18,6 +18,7 @@ import OptionalFormFieldWrapper from '_styled/Forms/OptionalFormFieldWrapper';
 import OptionalArrayInputField from '_styled/Forms/OptionalArrayInputField';
 import FormSubmit from '_styled/Forms/FormSubmit';
 import { ProfileType } from '_enums/ProfileType';
+import SelectFieldSingle from '_styled/Forms/SelectFieldSingle';
 
 type CreateProfileFormProps = {
   type: ProfileType;
@@ -37,7 +38,6 @@ const CreateProfileForm = (props: CreateProfileFormProps) => {
     if (selectFieldOptions) return;
     getFormOptions(setSelectFieldOptions);
   }, []);
-
   const {
     fields: skillsFields,
     append: skillsAppend,
@@ -63,6 +63,7 @@ const CreateProfileForm = (props: CreateProfileFormProps) => {
   const [showLanguages, setShowLanguages] = useState(false);
   const [showContacts, setShowContacts] = useState(false);
   const [showLinks, setShowLinks] = useState(false);
+  const [showTimezone, setShowTimezone] = useState(false);
 
   let onSubmit: any;
   let title: any;
@@ -70,7 +71,6 @@ const CreateProfileForm = (props: CreateProfileFormProps) => {
 
   switch (props.type) {
     case ProfileType.Community:
-      console.log(props.existingDefaultProfile);
       onSubmit = async (data: any) => {
         for (const property in data)
           if (
@@ -234,6 +234,25 @@ const CreateProfileForm = (props: CreateProfileFormProps) => {
           onHideField={() => unregister('twitterHandle')}
           isFieldShown={showTwitter}
           setIsFieldShown={setShowTwitter}
+        />
+        <OptionalFormFieldWrapper
+          label='Timezone'
+          formField={
+            <FormField
+              label='Timezone'
+              formField={
+                <SelectFieldSingle
+                  control={control}
+                  label='Timezone'
+                  options={selectFieldOptions?.timezones}
+                  name='timezone'
+                />
+              }
+            />
+          }
+          onHideField={() => unregister('timezone')}
+          isFieldShown={showTimezone}
+          setIsFieldShown={setShowTimezone}
         />
         <OptionalArrayInputField
           label='Skills'
