@@ -16,16 +16,6 @@ type StakedNftsFormProps = {
 };
 
 const StakedNftsForm = (props: StakedNftsFormProps) => {
-  const [stakingCommunities, setStakingCommunities] = useState<
-    { communityId: string; communityName: string }[]
-  >([]);
-  const [selectOptions, setSelectOptions] =
-    useState<{ label: string; value: string }[]>();
-
-  useEffect(() => {
-    getAllStakingCommunities(setStakingCommunities);
-  }, []);
-
   const { control, handleSubmit } = useForm();
 
   const onSubmit = async (data: any) => {
@@ -36,7 +26,16 @@ const StakedNftsForm = (props: StakedNftsFormProps) => {
     }
   };
 
+  const [selectOptions, setSelectOptions] =
+    useState<{ label: string; value: string }[]>();
+
   useEffect(() => {
+    getAllStakingCommunities(initSelectOptions);
+  }, []);
+
+  const initSelectOptions = (
+    stakingCommunities: { communityId: string; communityName: string }[]
+  ) => {
     setSelectOptions(
       stakingCommunities.map((stakingCommunity) => {
         return {
@@ -45,11 +44,11 @@ const StakedNftsForm = (props: StakedNftsFormProps) => {
         };
       })
     );
-  }, [stakingCommunities]);
+  };
 
   return (
     <form
-      className='flex flex-col w-full max-w-screen-sm gap-4 sm:px-0'
+      className='flex w-full max-w-screen-sm flex-col gap-4 sm:px-0'
       onSubmit={handleSubmit(onSubmit)}
     >
       <FormField

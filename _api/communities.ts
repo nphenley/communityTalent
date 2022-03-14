@@ -19,21 +19,6 @@ import {
   collectionGroup,
 } from 'firebase/firestore';
 
-export const getUserPinnedCommunityIds = async (
-  walletAddress: string,
-  setUserPinnedCommunityIds: any
-) => {
-  let userPinnedCommunities: string[] = [];
-  const communities = await getDoc(
-    doc(firestore, 'pinnedCommunities', walletAddress)
-  );
-  if (!communities.exists()) return [];
-  communities.data()!.communityIds.forEach((community: string) => {
-    userPinnedCommunities.push(community);
-  });
-  setUserPinnedCommunityIds(userPinnedCommunities);
-};
-
 export const unpinCommunity = async (
   walletAddress: string,
   communityId: string
@@ -67,6 +52,7 @@ export const subscribeToPinnedCommunityIds = (
     }
   );
 };
+
 export const subscribeToStakedCommunityIds = (
   walletAddress: string,
   setUserStakedCommunityIds: any
@@ -180,21 +166,6 @@ export const removeStakedCommunityId = async (
   updateDoc(doc(firestore, 'stakedCommunities', walletAddress), {
     communityIds: arrayRemove(communityId),
   });
-};
-
-export const getUserStakedCommunityIds = async (
-  walletAddress: string,
-  setUserStakedCommunityIds: any
-) => {
-  let userStakedCommunityIds: string[] = [];
-  const communities = await getDoc(
-    doc(firestore, 'stakedCommunities', walletAddress)
-  );
-  if (!communities.exists()) return [];
-  communities.data()!.communityIds.forEach((communityId: string) => {
-    userStakedCommunityIds.push(communityId);
-  });
-  setUserStakedCommunityIds(userStakedCommunityIds);
 };
 
 export const getAllStakingCommunities = async (setStakingCommunities: any) => {

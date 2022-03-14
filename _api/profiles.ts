@@ -6,20 +6,13 @@ import {
   getDocs,
   query,
   getDoc,
-  orderBy,
   where,
   doc,
   updateDoc,
-  increment,
   onSnapshot,
-  deleteDoc,
   setDoc,
-  arrayRemove,
-  arrayUnion,
-  collectionGroup,
 } from 'firebase/firestore';
 import { Profile } from '_types/Profile';
-import { time } from 'console';
 
 export const createProfile = async (
   communityId: string,
@@ -119,6 +112,7 @@ export const checkForExistingDefaultProfile = async (
     setExistingDefaultProfile(defaultProfile.data().defaultProfile);
   }
 };
+
 export const subscribeToDefaultProfile = (
   walletAddress: string,
   setExistingDefaultProfile: any
