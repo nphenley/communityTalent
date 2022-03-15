@@ -19,6 +19,7 @@ import OptionalArrayInputField from '_styled/Forms/OptionalArrayInputField';
 import FormSubmit from '_styled/Forms/FormSubmit';
 import { ProfileType } from '_enums/ProfileType';
 import SelectFieldSingle from '_styled/Forms/SelectFieldSingle';
+import { ConnectionData } from '_types/ConnectionData';
 
 type CreateProfileFormProps = {
   type: ProfileType;
@@ -28,8 +29,12 @@ type CreateProfileFormProps = {
 };
 
 const CreateProfileForm = (props: CreateProfileFormProps) => {
-  const connectionData = useContext(ConnectionContext);
-  const communityId = useContext(CommunityContext);
+  let connectionData: ConnectionData | undefined;
+  let communityId: string;
+  if (props.type === ProfileType.Community) {
+    connectionData = useContext(ConnectionContext);
+    communityId = useContext(CommunityContext);
+  }
 
   const { control, register, unregister, handleSubmit } = useForm();
   const [selectFieldOptions, setSelectFieldOptions] = useState<any>();

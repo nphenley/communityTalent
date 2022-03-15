@@ -37,8 +37,8 @@ const Communities = (props: CommunitiesProps) => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const [communities, setCommunities] = useState<Community[]>([]);
-  const [stakedCommunityIds, setStakedCommunityIds] = useState<string[]>([]);
-  const [pinnedCommunityIds, setPinnedCommunityIds] = useState<string[]>([]);
+  const [stakedCommunityIds, setStakedCommunityIds] = useState<string[]>();
+  const [pinnedCommunityIds, setPinnedCommunityIds] = useState<string[]>();
   const [pinnedCommunities, setPinnedCommunities] = useState<Community[]>([]);
   const [filteredCommunities, setFilteredCommunities] = useState<Community[]>(
     []
@@ -59,12 +59,12 @@ const Communities = (props: CommunitiesProps) => {
     const filteredCommunities = filterCommunities(communities, searchQuery);
     setFilteredCommunities(filteredCommunities);
   }, [searchQuery]);
+
   useEffect(() => {
+    if (!stakedCommunityIds || !pinnedCommunityIds) return;
     if (
-      (!loadingPinnedCommunityIds &&
-        !loadingStakedCommunityIds &&
-        props.network === Networks.SOL) ||
-      (chainId && validChainIds.includes(chainId))
+      (chainId && validChainIds.includes(chainId)) ||
+      props.network === Networks.SOL
     ) {
       getCommunities(
         getNFTBalances,
@@ -81,34 +81,22 @@ const Communities = (props: CommunitiesProps) => {
   }, [chainId, pinnedCommunityIds, stakedCommunityIds]);
 
   useEffect(() => {
-    setLoadingPinnedCommunityIds(true);
     const unsubscribePinned = subscribeToPinnedCommunityIds(
       props.walletAddress,
-      updatePinnedCommunityIds
+      setPinnedCommunityIds
     );
 
     return unsubscribePinned;
   }, []);
 
-  const updatePinnedCommunityIds = (pinnedCommunityIds: string[]) => {
-    setPinnedCommunityIds(pinnedCommunityIds);
-    setLoadingPinnedCommunityIds(false);
-  };
-
   useEffect(() => {
-    setLoadingStakedCommunityIds(true);
     const unsubscribeStaked = subscribeToStakedCommunityIds(
       props.walletAddress,
-      updateStakedCommunityIds
+      setStakedCommunityIds
     );
 
     return unsubscribeStaked;
   }, []);
-
-  const updateStakedCommunityIds = (stakedCommunityIds: string[]) => {
-    setStakedCommunityIds(stakedCommunityIds);
-    setLoadingStakedCommunityIds(false);
-  };
 
   const showAllButton = (
     <button
@@ -149,13 +137,11 @@ const Communities = (props: CommunitiesProps) => {
     </button>
   );
 
-  return loadingData ||
-    loadingPinnedCommunityIds ||
-    loadingStakedCommunityIds ? (
+  return loadingData ? (
     <LoadingSpinner />
   ) : (
     <div className='mx-auto flex w-full max-w-[90%] flex-col gap-4 rounded-lg pt-12 pb-20'>
-      <div className='text-center text-2xl font-bold'>Communities</div>
+      <div className='text-2xl font-bold text-center'>Communities</div>
       <div className='flex flex-row-reverse gap-x-2'>
         {pinButton}
         {pinnedCommunities.length && !isPinning ? showAllButton : null}
@@ -170,7 +156,7 @@ const Communities = (props: CommunitiesProps) => {
         <StakedNftsForm
           setUserStakedCommunityIds={setStakedCommunityIds}
           walletAddress={props.walletAddress}
-          userStakedCommunityIds={stakedCommunityIds}
+          userStakedCommunityIds={stakedCommunityIds!}
         />
       )}
 
@@ -238,7 +224,7 @@ const CommunityButton = (props: CommunityButtonProps) => {
   return (
     <Link href={`community/${props.community.id}`}>
       <button
-        className='mx-auto flex flex-col items-center space-y-3'
+        className='flex flex-col items-center mx-auto space-y-3'
         key={props.community.id}
       >
         <div className='flex justify-center overflow-hidden rounded-full'>
@@ -251,7 +237,7 @@ const CommunityButton = (props: CommunityButtonProps) => {
             unoptimized={true}
           />
         </div>
-        <div className='break-all font-medium'>{props.community.name}</div>
+        <div className='font-medium break-all'>{props.community.name}</div>
       </button>
     </Link>
   );

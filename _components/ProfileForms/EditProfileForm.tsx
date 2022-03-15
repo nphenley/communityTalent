@@ -26,7 +26,10 @@ type EditProfileFormProps = {
 };
 
 const EditProfileForm = (props: EditProfileFormProps) => {
-  const communityId = useContext(CommunityContext);
+  let communityId: string;
+  if (props.type === ProfileType.Community) {
+    communityId = useContext(CommunityContext);
+  }
   const [selectFieldOptions, setSelectFieldOptions] = useState<any>();
   const { control, register, handleSubmit } = useForm<any>({
     defaultValues: {

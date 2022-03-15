@@ -47,7 +47,9 @@ export const subscribeToPinnedCommunityIds = (
       if (!snapshot.exists()) {
         setDoc(snapshot.ref, {});
       } else {
-        setUserPinnedCommunityIds(snapshot.data().communityIds);
+        setUserPinnedCommunityIds(
+          snapshot.data().communityIds ? snapshot.data().communityIds : []
+        );
       }
     }
   );
@@ -63,7 +65,9 @@ export const subscribeToStakedCommunityIds = (
       if (!snapshot.exists()) {
         setDoc(snapshot.ref, {});
       } else {
-        setUserStakedCommunityIds(snapshot.data().communityIds);
+        setUserStakedCommunityIds(
+          snapshot.data().communityIds ? snapshot.data().communityIds : []
+        );
       }
     }
   );
