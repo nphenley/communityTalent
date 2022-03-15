@@ -1,10 +1,12 @@
-import { FaUserAlt, FaUsers } from 'react-icons/fa';
+import { FaLink, FaUserAlt, FaUsers } from 'react-icons/fa';
 import { useMoralis } from 'react-moralis';
 
 type NavBarProps = {
   isAuthenticated: boolean;
   isShowingProfile: boolean;
   setIsShowingProfile: any;
+  isShowingLinkWallets: boolean;
+  setIsShowingLinkWallets: any;
 };
 
 const NavBar = (props: NavBarProps) => {
@@ -32,6 +34,28 @@ const NavBar = (props: NavBarProps) => {
     </div>
   );
 
+  const linkWalletsButton = (
+    <div>
+      {props.isShowingLinkWallets ? (
+        <button
+          onClick={() => props.setIsShowingLinkWallets(false)}
+          className={styles.profileSubContainer}
+        >
+          <FaUsers size={20} />
+          Communities
+        </button>
+      ) : (
+        <button
+          onClick={() => props.setIsShowingLinkWallets(true)}
+          className={styles.profileSubContainer}
+        >
+          <FaLink size={14} />
+          Link Wallets
+        </button>
+      )}
+    </div>
+  );
+
   const title = (
     <div className='flex justify-center text-xl font-bold'>communityTalent</div>
   );
@@ -44,7 +68,10 @@ const NavBar = (props: NavBarProps) => {
 
   const connected = (
     <div className='grid grid-cols-3'>
-      {profileButton}
+      <div className='flex gap-4'>
+        {profileButton}
+        {linkWalletsButton}
+      </div>
       {title}
       {disconnectButton}
     </div>

@@ -8,10 +8,12 @@ import { useEffect, useState } from 'react';
 import NavBar from '_components/Index/Navbar';
 import { subscribeToDefaultProfile } from '_api/profiles';
 import { Profile } from '_types/Profile';
+import LinkWallets from '_components/Index/LinkWallets';
 
 export default function Home() {
   const { isAuthenticated, user } = useMoralis();
   const [isShowingProfile, setIsShowingProfile] = useState(false);
+  const [isShowingLinkWallets, setIsShowingLinkWallets] = useState(false);
   const [existingDefaultProfile, setExistingDefaultProfile] =
     useState<Profile>();
   const network: Networks = user?.attributes.ethAddress
@@ -44,6 +46,8 @@ export default function Home() {
         isAuthenticated={isAuthenticated}
         isShowingProfile={isShowingProfile}
         setIsShowingProfile={setIsShowingProfile}
+        isShowingLinkWallets={isShowingLinkWallets}
+        setIsShowingLinkWallets={setIsShowingLinkWallets}
       />
 
       <div className='overflow-y-scroll grow'>
@@ -55,6 +59,8 @@ export default function Home() {
             setIsShowingProfile={setIsShowingProfile}
             existingDefaultProfile={existingDefaultProfile}
           />
+        ) : isShowingLinkWallets ? (
+          <LinkWallets walletAddress={walletAddress} />
         ) : (
           <Communities network={network} walletAddress={walletAddress} />
         )}

@@ -1,6 +1,4 @@
-import { Tags } from '_enums/Tags';
 import { Timestamp } from 'firebase/firestore';
-import { Languages } from '_enums/Languages';
 
 export type Profile = {
   id: string;
@@ -12,10 +10,11 @@ export type Profile = {
   discordUsername?: string;
   bio: string;
   lookingForProject: boolean;
-  tags?: Tags[];
+  tags?: string[];
   skills?: string[];
   experience?: string;
-  languages?: Languages[];
+  languages?: string[];
+  timezone?: string;
   contacts?: string;
   relevantLinks?: string[];
   votes?: [{ walletAddress: string; type: 'up' | 'down' }];

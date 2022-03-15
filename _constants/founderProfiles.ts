@@ -1,5 +1,4 @@
 import { Timestamp } from 'firebase/firestore';
-import { Tags } from '_enums/Tags';
 import { Profile } from '_types/Profile';
 
 export const somProfile: Profile = {
@@ -22,7 +21,6 @@ export const richProfile: Profile = {
   discordUsername: 'richpepsi#0335',
   twitterHandle: 'richpepsi_',
   skills: ['Full-Stack Web Dev'],
-  tags: [Tags.DEV, Tags.BACKEND_DEV, Tags.FRONTEND_DEV],
   id: 'richpepsi',
   walletAddress: 'richpepsi.eth',
   lookingForProject: false,
