@@ -1,18 +1,11 @@
 import { firestore } from '_firebase/config';
 import {
-  addDoc,
   collection,
-  Timestamp,
   getDocs,
-  query,
   getDoc,
-  orderBy,
-  where,
   doc,
   updateDoc,
-  increment,
   onSnapshot,
-  deleteDoc,
   setDoc,
   arrayRemove,
   arrayUnion,
@@ -189,4 +182,48 @@ export const getAllStakingCommunities = async (setStakingCommunities: any) => {
       }
     );
   setStakingCommunities(stakingCommunityInfo);
+};
+
+export const checkForIdsInLinkedWallets = async (
+  walletAddress: string,
+  linkedWallets: string[]
+) => {
+  const walletPinned = await getDoc(
+    doc(firestore, 'pinnedCommunities', walletAddress)
+  );
+  const walletStaked = await getDoc(
+    doc(firestore, 'stakedCommunities', walletAddress)
+  );
+  if (!walletPinned.exists()) {
+    await Promise.all(
+      linkedWallets.map(async (wallet) => {
+        if (wallet !== walletAddress) {
+          const linkedWalletPinned = await getDoc(
+            doc(firestore, 'pinnedCommunities', wallet)
+          );
+          if (linkedWalletPinned.exists()) {
+            await setDoc(walletPinned.ref, {
+              communityIds: linkedWalletPinned.data().communityIds,
+            });
+          }
+        }
+      })
+    );
+  }
+  if (!walletStaked.exists()) {
+    await Promise.all(
+      linkedWallets.map(async (wallet) => {
+        if (wallet !== walletAddress) {
+          const linkedWalletStaked = await getDoc(
+            doc(firestore, 'stakedCommunities', wallet)
+          );
+          if (linkedWalletStaked.exists()) {
+            await setDoc(walletStaked.ref, {
+              communityIds: linkedWalletStaked.data().communityIds,
+            });
+          }
+        }
+      })
+    );
+  }
 };

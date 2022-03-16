@@ -1,7 +1,6 @@
 import { getParsedNftAccountsByOwner } from '@nfteyez/sol-rayz';
-import { Connection } from '@solana/web3.js';
+import { Connection, PublicKey } from '@solana/web3.js';
 import { mainNetUrl } from '_constants/solanaConstants';
-import { Networks } from '_enums/Networks';
 import {
   checkCommunityIdMatchesAddress,
   getCommunityById,
@@ -13,23 +12,37 @@ import {
   checkIfUserStillHasStakedNft,
   getImageForStakingCommunity,
 } from '_helpers/getStakedNfts';
+import Web3 from 'web3';
 
 export const getCommunities = async (
   getNFTBalances: any,
-  walletAddress: string,
+  walletAddresses: string[],
   updateData: any,
   chainId: string,
   userStakedCommunityIds: string[],
-  pinnedCommunityIds: string[],
-  network: string
+  pinnedCommunityIds: string[]
 ) => {
-  let communities: Community[];
+  let communities: Community[] = [];
 
-  if (network === Networks.ETH) {
-    communities = await getUserNftsEVM(chainId, walletAddress, getNFTBalances);
-  } else {
-    communities = await getUserNftsSolana(walletAddress);
-  }
+  await Promise.all(
+    walletAddresses.map(async (walletAddress) => {
+      if (Web3.utils.isAddress(walletAddress)) {
+        await getUserNftsEVM(
+          chainId,
+          walletAddress,
+          getNFTBalances,
+          communities
+        );
+      } else {
+        try {
+          let pubkey = new PublicKey(walletAddress);
+          PublicKey.isOnCurve(pubkey.toBuffer());
+          await getUserNftsSolana(walletAddress, communities);
+        } catch (error) {}
+      }
+    })
+  );
+
   if (userStakedCommunityIds.length) {
     await Promise.all(
       userStakedCommunityIds.map(async (stakedCommunityId) => {
@@ -58,7 +71,10 @@ export const getCommunities = async (
   updateData(communities, pinnedCommunities);
 };
 
-export const getUserNftsSolana = async (walletAddress: string) => {
+export const getUserNftsSolana = async (
+  walletAddress: string,
+  allCommunities: Community[]
+) => {
   const nftsInWallet = await getParsedNftAccountsByOwner({
     publicAddress: walletAddress,
     connection: new Connection(mainNetUrl),
@@ -68,7 +84,6 @@ export const getUserNftsSolana = async (walletAddress: string) => {
     nftsInWallet.map((nft: any) => nft.mint),
     nftsInWallet.map((nft: any) => nft.data.uri)
   );
-  let communities: Community[] = [];
   await Promise.all(
     communitiesWithoutImage.map(async (communityWithoutImage: any) => {
       const metadata = await fetch(communityWithoutImage.metadata);
@@ -78,16 +93,16 @@ export const getUserNftsSolana = async (walletAddress: string) => {
         name: communityWithoutImage.name,
         image: data.image,
       };
-      communities.push(community);
+      allCommunities.push(community);
     })
   );
-  return communities;
 };
 
 const getUserNftsEVM = async (
   chainId: string,
   walletAddress: string,
-  getNFTBalances: any
+  getNFTBalances: any,
+  allCommunities: Community[]
 ) => {
   let communities: Community[] = [];
   const nftsInWallet = await getNFTBalances({
@@ -108,7 +123,7 @@ const getUserNftsEVM = async (
           walletAddress,
           communityWithoutImage.tokenAddress
         );
-        communities.push({
+        allCommunities.push({
           id: communityWithoutImage.id,
           name: communityWithoutImage.name,
           image: nftImage,
@@ -128,7 +143,7 @@ const getUserNftsEVM = async (
             'https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png';
         }
 
-        communities.push({
+        allCommunities.push({
           id: communityWithoutImage.id,
           name: communityWithoutImage.name,
           image: jsonMetadata.image,
@@ -136,58 +151,73 @@ const getUserNftsEVM = async (
       }
     })
   );
-  return communities;
 };
 
 export const checkNftIsInWallet = async (
   getNFTBalances: any,
-  walletAddress: string,
+  walletAddresses: string[],
   communityId: string,
   updateHasRequiredNft: (hasRequiredNft: boolean) => void,
-  network: string,
   chainId: string | null
 ) => {
-  let tokenAddressesInWallet: string[] = [];
-  if (network === Networks.ETH) {
-    const nftsInWalletResponse = await getNFTBalances({
-      params: {
-        chain: chainId,
-        address: walletAddress,
-      },
-    });
+  let tokenAddressesInWallets: string[] = [];
+  await Promise.all(
+    walletAddresses.map(async (walletAddress) => {
+      if (Web3.utils.isAddress(walletAddress)) {
+        const nftsInWalletResponse = await getNFTBalances({
+          params: {
+            chain: chainId,
+            address: walletAddress,
+          },
+        });
 
-    tokenAddressesInWallet = nftsInWalletResponse.result.map(
-      (nft: any) => nft.token_address
-    );
-  } else {
-    const nftsInWallet = await getParsedNftAccountsByOwner({
-      publicAddress: walletAddress,
-      connection: new Connection(mainNetUrl),
-    });
-    tokenAddressesInWallet = nftsInWallet.map((nft: any) => nft.mint);
-  }
-  //filter tokenAddresses for dupes
+        nftsInWalletResponse.result.map((nft: any) =>
+          tokenAddressesInWallets.push(nft.token_address)
+        );
+      } else {
+        try {
+          let pubkey = new PublicKey(walletAddress);
+          PublicKey.isOnCurve(pubkey.toBuffer());
+          const nftsInWallet: any = await getParsedNftAccountsByOwner({
+            publicAddress: walletAddress,
+            connection: new Connection(mainNetUrl),
+          });
+
+          nftsInWallet.map((nft: any) =>
+            tokenAddressesInWallets.push(nft.mint)
+          );
+        } catch (error) {}
+      }
+    })
+  );
+
+  let filteredTokenAddresses = [...new Set(tokenAddressesInWallets)];
   let hasRequiredNft = false;
   await Promise.all(
-    tokenAddressesInWallet.map(async (tokenAddress: any) => {
+    filteredTokenAddresses.map(async (tokenAddress: any) => {
       if (await checkCommunityIdMatchesAddress(communityId, tokenAddress)) {
         hasRequiredNft = true;
       }
     })
   );
-  if (network === Networks.ETH && !hasRequiredNft) {
+  if (!hasRequiredNft) {
     const stakingCommunityInfo = await checkForStakingAddresses(communityId);
-
     await Promise.all(
-      stakingCommunityInfo.map(async (stakingCommunity) => {
-        if (
-          await checkIfUserStillHasStakedNft(
-            walletAddress,
-            stakingCommunity.tokenAddress,
-            stakingCommunity.stakingAddress
-          )
-        ) {
-          hasRequiredNft = true;
+      walletAddresses.map(async (walletAddress) => {
+        if (Web3.utils.isAddress(walletAddress)) {
+          await Promise.all(
+            stakingCommunityInfo.map(async (stakingCommunity) => {
+              if (
+                await checkIfUserStillHasStakedNft(
+                  walletAddress,
+                  stakingCommunity.tokenAddress,
+                  stakingCommunity.stakingAddress
+                )
+              ) {
+                hasRequiredNft = true;
+              }
+            })
+          );
         }
       })
     );

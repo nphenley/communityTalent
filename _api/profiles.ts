@@ -1,17 +1,14 @@
 import { firestore } from '_firebase/config';
 import {
-  addDoc,
   collection,
   Timestamp,
   getDocs,
-  query,
   getDoc,
-  where,
   doc,
   updateDoc,
   onSnapshot,
   setDoc,
-  arrayUnion,
+  addDoc,
   deleteDoc,
 } from 'firebase/firestore';
 import { Profile } from '_types/Profile';
@@ -82,50 +79,57 @@ export const updateDefaultProfile = async (
   walletAddress: string,
   defaultProfile: Partial<Profile>
 ) => {
-  const docRef = await updateDoc(
+  const updated = await updateDoc(
     doc(firestore, 'defaultProfiles', walletAddress),
     {
-      defaultProfile: {
-        ...defaultProfile,
-        dateLastUpdated: Timestamp.now(),
-        walletAddress: walletAddress,
-      },
+      ...defaultProfile,
+      dateLastUpdated: Timestamp.now(),
+      walletAddress: walletAddress,
     }
   );
-  return docRef;
+  return updated;
 };
 
 export const importDefaultProfileToCommunity = async (
+  walletAddress: string,
   communityId: string,
   defaultProfile: Profile
 ) => {
   return setDoc(
-    doc(
-      firestore,
-      'communities',
-      communityId,
-      'profiles',
-      defaultProfile.walletAddress
-    ),
+    doc(firestore, 'communities', communityId, 'profiles', walletAddress),
     {
       ...defaultProfile,
       dateCreated: Timestamp.now(),
       dateLastUpdated: Timestamp.now(),
+      walletAddress: walletAddress,
     }
   );
 };
 
 export const checkForExistingDefaultProfile = async (
   walletAddress: string,
-  setExistingDefaultProfile: any
+  linkedWallets: string[]
 ) => {
   const defaultProfile = await getDoc(
     doc(firestore, 'defaultProfiles', walletAddress)
   );
+  let isExistingLinkedDefaultProfile = false;
   if (!defaultProfile.exists()) {
-    setDoc(defaultProfile.ref, {});
-  } else {
-    setExistingDefaultProfile(defaultProfile.data().defaultProfile);
+    await Promise.all(
+      linkedWallets.map(async (wallet) => {
+        if (wallet !== walletAddress) {
+          const linkedDefaultProfile = await getDoc(
+            doc(firestore, 'defaultProfiles', wallet)
+          );
+          if (linkedDefaultProfile.exists() && linkedDefaultProfile.data()) {
+            isExistingLinkedDefaultProfile = true;
+            await setDoc(defaultProfile.ref, linkedDefaultProfile.data());
+            //if there are several existing ones they get overwritten.
+            //guess we could decide which ones has priority based on Timestamp
+          }
+        }
+      })
+    );
   }
 };
 
@@ -139,7 +143,7 @@ export const subscribeToDefaultProfile = (
       if (!snapshot.exists()) {
         setDoc(snapshot.ref, {});
       } else {
-        setExistingDefaultProfile(snapshot.data().defaultProfile);
+        setExistingDefaultProfile(snapshot.data());
       }
     }
   );
@@ -175,93 +179,30 @@ export const getFormOptions = async (setSelectOptions: any) => {
   });
 };
 
-export const sendLinkRequest = async (
+export const checkForCommunityProfileInLinkedWallets = async (
   walletAddress: string,
-  requestedWalletAddresses: string[]
+  linkedWallets: string[],
+  communityId: string
 ) => {
-  requestedWalletAddresses.forEach(async (requestedWalletAddress) => {
-    if (requestedWalletAddress.startsWith('0x'))
-      requestedWalletAddress = requestedWalletAddress.toLowerCase();
-    const checkIfRequestAlreadyExists = await getDocs(
-      query(
-        collection(firestore, 'linkWalletRequests'),
-        where('sender', '==', walletAddress),
-        where('receiver', '==', requestedWalletAddress)
-      )
-    );
-    if (checkIfRequestAlreadyExists.empty) {
-      addDoc(collection(firestore, 'linkWalletRequests'), {
-        sender: walletAddress,
-        receiver: requestedWalletAddress,
-      });
-    }
-  });
-};
-
-export const getLinkRequestsForWallet = async (
-  walletAddress: string,
-  setReceivedRequests: any
-) => {
-  const requests = await getDocs(
-    query(
-      collection(firestore, 'linkWalletRequests'),
-      where('receiver', '==', walletAddress)
-    )
+  const walletProfileInCommunity = await getDoc(
+    doc(firestore, 'communities', communityId, 'profiles', walletAddress)
   );
-  let received: string[] = [];
-  requests.forEach((request) => {
-    received.push(request.data().sender);
-  });
-  setReceivedRequests(received);
-};
-
-export const linkWallets = async (
-  userAddress: string,
-  walletUserIsLinkingTo: string,
-  setReceivedRequests: any
-) => {
-  const userLinkedWalletsDoc = await getDocs(
-    query(
-      collection(firestore, 'linkedWallets'),
-      where('wallets', 'array-contains-any', [
-        userAddress,
-        walletUserIsLinkingTo,
-      ])
-    )
-  );
-  if (userLinkedWalletsDoc.empty) {
-    addDoc(collection(firestore, 'linkedWallets'), {
-      wallets: [userAddress, walletUserIsLinkingTo],
-    });
-  } else {
-    const userLinkedWalletsArray = userLinkedWalletsDoc.docs[0].data().wallets;
-    if (!userLinkedWalletsArray.includes(userAddress))
-      userLinkedWalletsArray.push(userAddress);
-    else if (!userLinkedWalletsArray.includes(walletUserIsLinkingTo))
-      userLinkedWalletsArray.push(walletUserIsLinkingTo);
-    updateDoc(userLinkedWalletsDoc.docs[0].ref, {
-      wallets: userLinkedWalletsArray,
+  if (!walletProfileInCommunity.exists()) {
+    linkedWallets.forEach(async (wallet) => {
+      if (wallet !== walletAddress) {
+        // prob worth removing from array before
+        const linkedWalletProfileInCommunity = await getDoc(
+          doc(firestore, 'communities', communityId, 'profiles', wallet)
+        );
+        if (linkedWalletProfileInCommunity.exists()) {
+          await setDoc(walletProfileInCommunity.ref, {
+            id: walletAddress,
+            ...linkedWalletProfileInCommunity.data(),
+            walletAddress: walletAddress,
+          });
+        }
+        await deleteDoc(linkedWalletProfileInCommunity.ref);
+      }
     });
   }
-  await removeLinkRequests(
-    userAddress,
-    walletUserIsLinkingTo,
-    setReceivedRequests
-  );
-};
-
-export const removeLinkRequests = async (
-  userAddress: string,
-  walletUserIsLinkingTo: string,
-  setReceivedRequests: any
-) => {
-  const requests = await getDocs(
-    query(
-      collection(firestore, 'linkWalletRequests'),
-      where('receiver', '==', userAddress),
-      where('sender', '==', walletUserIsLinkingTo)
-    )
-  );
-  await deleteDoc(requests.docs[0].ref);
-  getLinkRequestsForWallet(userAddress, setReceivedRequests);
 };

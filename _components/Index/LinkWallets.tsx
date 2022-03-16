@@ -4,29 +4,33 @@ import InputField from '_styled/Forms/InputField';
 import ArrayInputField from '_styled/Forms/ArrayInputField';
 import FormSubmit from '_styled/Forms/FormSubmit';
 import {
+  getLinkedWallets,
   getLinkRequestsForWallet,
   linkWallets,
   removeLinkRequests,
   sendLinkRequest,
-} from '_api/profiles';
+  unlinkWallets,
+} from '_api/linkWallets';
 import { PublicKey } from '@solana/web3.js';
 import Web3 from 'web3';
 import { useEffect, useState } from 'react';
-import { FaCheck, FaSkullCrossbones } from 'react-icons/fa';
+import { FaCheck, FaSkullCrossbones, FaUnlink } from 'react-icons/fa';
 type LinkWalletProps = {
   walletAddress: string;
 };
 
 const LinkWallets = (props: LinkWalletProps) => {
   const [receivedRequests, setReceivedRequests] = useState<string[]>([]);
+  const [linkedWallets, setLinkedWallets] = useState<string[]>([]);
   const { register, handleSubmit, control } = useForm();
 
   useEffect(() => {
+    getLinkedWallets(props.walletAddress, setLinkedWallets);
     getLinkRequestsForWallet(props.walletAddress, setReceivedRequests);
   }, []);
 
   const title = (
-    <h1 className='mb-4 text-3xl font-bold text-center text-primary'>
+    <h1 className='my-3 text-3xl font-bold text-center text-primary'>
       Link Wallets
     </h1>
   );
@@ -68,6 +72,34 @@ const LinkWallets = (props: LinkWalletProps) => {
   );
   return (
     <div className='flex flex-col items-center pt-12 pb-16 overflow-y-scroll grow bg-background'>
+      {linkedWallets.length ? (
+        <div className=''>
+          <p>This address is currently linked to these wallets:</p>
+          <div className='grid grid-flow-row gap-1.5'>
+            {linkedWallets.map((wallet: string) => (
+              <div>
+                {!(wallet === props.walletAddress) ? (
+                  <div className='flex'>
+                    <p className='p-1 rounded-lg bg-backgroundDark'>{wallet}</p>
+                    <button
+                      onClick={() => {
+                        unlinkWallets(
+                          props.walletAddress,
+                          wallet,
+                          setLinkedWallets
+                        );
+                      }}
+                      className='ml-4'
+                    >
+                      <FaUnlink size={14} />
+                    </button>
+                  </div>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
       {receivedRequests.length ? (
         <div className=''>
           <p className='text-center'>
@@ -89,7 +121,7 @@ const LinkWallets = (props: LinkWalletProps) => {
                           setReceivedRequests
                         )
                       }
-                      className='p-2.5 text-white rounded-lg bg-primary hover:bg-primaryLight hover:cursor-pointer'
+                      className={styles.buttonContainer}
                     >
                       <FaCheck size={14} />
                     </button>
@@ -101,7 +133,7 @@ const LinkWallets = (props: LinkWalletProps) => {
                           setReceivedRequests
                         )
                       }
-                      className='p-2.5 text-white rounded-lg bg-primary hover:bg-primaryLight hover:cursor-pointer'
+                      className={styles.buttonContainer}
                     >
                       <FaSkullCrossbones size={14} />
                     </button>
@@ -147,3 +179,8 @@ const LinkWallets = (props: LinkWalletProps) => {
   );
 };
 export default LinkWallets;
+
+const styles = {
+  buttonContainer:
+    'p-2.5 text-white rounded-lg bg-primary hover:bg-primaryLight hover:cursor-pointer',
+};

@@ -1,4 +1,5 @@
 import {
+  checkForIdsInLinkedWallets,
   pinCommunity,
   subscribeToPinnedCommunityIds,
   subscribeToStakedCommunityIds,
@@ -15,8 +16,8 @@ import { validChainIds } from '_constants/validChainIds';
 import Link from 'next/link';
 import SearchBar from '_styled/SearchBar';
 import { filterCommunities } from '_helpers/filterCommunities';
-
 import StakedNftsForm from '_components/Index/StakedNftsForm';
+import { getLinkedWallets } from '_api/linkWallets';
 
 type CommunitiesProps = {
   network: Networks;
@@ -28,10 +29,6 @@ const Communities = (props: CommunitiesProps) => {
   const { chainId } = useMoralis();
 
   const [loadingData, setLoadingData] = useState(true);
-  const [loadingPinnedCommunityIds, setLoadingPinnedCommunityIds] =
-    useState(true);
-  const [loadingStakedCommunityIds, setLoadingStakedCommunityIds] =
-    useState(true);
   const [showAll, setShowAll] = useState(false);
   const [isPinning, setIsPinning] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -44,6 +41,35 @@ const Communities = (props: CommunitiesProps) => {
     []
   );
   const [showStakedNftsMenu, setShowStakedNftsMenu] = useState(false);
+  const [linkedWallets, setLinkedWallets] = useState();
+  useEffect(() => {
+    getLinkedWallets(props.walletAddress, setLinkedWallets);
+  }, []);
+
+  useEffect(() => {
+    if (!linkedWallets) return;
+    checkForIdsInLinkedWallets(props.walletAddress, linkedWallets);
+  }, [linkedWallets]);
+
+  useEffect(() => {
+    if (!stakedCommunityIds || !pinnedCommunityIds || !linkedWallets) return;
+    if (
+      (chainId && validChainIds.includes(chainId)) ||
+      props.network === Networks.SOL
+    ) {
+      getCommunities(
+        getNFTBalances,
+        linkedWallets,
+        updateData,
+        chainId!,
+        stakedCommunityIds,
+        pinnedCommunityIds
+      );
+    } else {
+      console.log(chainId);
+      setLoadingData(false);
+    }
+  }, [chainId, pinnedCommunityIds, stakedCommunityIds]);
 
   const updateData = (
     communities: Community[],
@@ -61,42 +87,24 @@ const Communities = (props: CommunitiesProps) => {
   }, [searchQuery]);
 
   useEffect(() => {
-    if (!stakedCommunityIds || !pinnedCommunityIds) return;
-    if (
-      (chainId && validChainIds.includes(chainId)) ||
-      props.network === Networks.SOL
-    ) {
-      getCommunities(
-        getNFTBalances,
-        props.walletAddress,
-        updateData,
-        chainId!,
-        stakedCommunityIds,
-        pinnedCommunityIds,
-        props.network
-      );
-    } else {
-      setLoadingData(false);
-    }
-  }, [chainId, pinnedCommunityIds, stakedCommunityIds]);
-
-  useEffect(() => {
+    if (!linkedWallets) return;
     const unsubscribePinned = subscribeToPinnedCommunityIds(
       props.walletAddress,
       setPinnedCommunityIds
     );
 
     return unsubscribePinned;
-  }, []);
+  }, [linkedWallets]);
 
   useEffect(() => {
+    if (!linkedWallets) return;
     const unsubscribeStaked = subscribeToStakedCommunityIds(
       props.walletAddress,
       setStakedCommunityIds
     );
 
     return unsubscribeStaked;
-  }, []);
+  }, [linkedWallets]);
 
   const showAllButton = (
     <button

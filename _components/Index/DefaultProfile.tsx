@@ -12,7 +12,7 @@ type DefaultProfileProps = {
 const DefaultProfile = (props: DefaultProfileProps) => {
   return (
     <div className={styles.container}>
-      {!props.existingDefaultProfile ? (
+      {!props.existingDefaultProfile?.displayName ? (
         <CreateProfileForm
           walletAddress={props.walletAddress}
           setIsShowingProfile={props.setIsShowingProfile}

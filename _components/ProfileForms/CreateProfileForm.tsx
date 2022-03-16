@@ -23,8 +23,8 @@ import { ConnectionData } from '_types/ConnectionData';
 
 type CreateProfileFormProps = {
   type: ProfileType;
+  walletAddress: string;
   existingDefaultProfile?: Profile;
-  walletAddress?: string;
   setIsShowingProfile?: any;
 };
 
@@ -89,11 +89,12 @@ const CreateProfileForm = (props: CreateProfileFormProps) => {
           walletAddress: connectionData!.address,
         } as Profile);
       };
-      description = props.existingDefaultProfile ? (
+      description = props.existingDefaultProfile?.displayName ? (
         <div className='flex flex-row-reverse items-center gap-4 mb-4 text-center'>
           <button
             onClick={() =>
               importDefaultProfileToCommunity(
+                props.walletAddress,
                 communityId,
                 props.existingDefaultProfile!
               )

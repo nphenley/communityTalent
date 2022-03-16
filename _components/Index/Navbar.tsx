@@ -69,8 +69,8 @@ const NavBar = (props: NavBarProps) => {
   const connected = (
     <div className='grid grid-cols-3'>
       <div className='flex gap-4'>
-        {profileButton}
-        {linkWalletsButton}
+        {props.isShowingLinkWallets ? null : <>{profileButton}</>}
+        {props.isShowingProfile ? null : <>{linkWalletsButton}</>}
       </div>
       {title}
       {disconnectButton}

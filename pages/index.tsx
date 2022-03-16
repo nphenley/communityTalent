@@ -6,9 +6,13 @@ import ConnectView from '_components/Index/ConnectView';
 import { Networks } from '_enums/Networks';
 import { useEffect, useState } from 'react';
 import NavBar from '_components/Index/Navbar';
-import { subscribeToDefaultProfile } from '_api/profiles';
+import {
+  checkForExistingDefaultProfile,
+  subscribeToDefaultProfile,
+} from '_api/profiles';
 import { Profile } from '_types/Profile';
 import LinkWallets from '_components/Index/LinkWallets';
+import { getLinkedWallets } from '_api/linkWallets';
 
 export default function Home() {
   const { isAuthenticated, user } = useMoralis();
@@ -16,6 +20,7 @@ export default function Home() {
   const [isShowingLinkWallets, setIsShowingLinkWallets] = useState(false);
   const [existingDefaultProfile, setExistingDefaultProfile] =
     useState<Profile>();
+  const [linkedWallets, setLinkedWallets] = useState();
   const network: Networks = user?.attributes.ethAddress
     ? Networks.ETH
     : Networks.SOL;
@@ -27,13 +32,24 @@ export default function Home() {
 
   useEffect(() => {
     if (!walletAddress) return;
+    console.log(walletAddress);
+    getLinkedWallets(walletAddress, setLinkedWallets);
+  }, [walletAddress]);
+
+  useEffect(() => {
+    if (!linkedWallets) return;
+    checkForExistingDefaultProfile(walletAddress, linkedWallets);
+  }, [linkedWallets]);
+
+  useEffect(() => {
+    if (!linkedWallets) return;
     const unsubscribe = subscribeToDefaultProfile(
       walletAddress,
       setExistingDefaultProfile
     );
 
     return unsubscribe;
-  }, [walletAddress]);
+  }, [linkedWallets]);
 
   return (
     <div className='flex flex-col h-screen bg-background text-primary'>

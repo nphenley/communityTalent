@@ -6,9 +6,12 @@ import { useState, useEffect } from 'react';
 import { ConnectionData } from '_types/ConnectionData';
 import { ConnectionContext } from '_contexts/ConnectionContext';
 import {
+  checkForCommunityProfileInLinkedWallets,
   checkForExistingDefaultProfile,
+  subscribeToDefaultProfile,
   subscribeToProfile,
 } from '_api/profiles';
+import { getLinkedWallets } from '_api/linkWallets';
 import { useMoralis } from 'react-moralis';
 import { useRouter } from 'next/router';
 import CreateProfileForm from '_components/ProfileForms/CreateProfileForm';
@@ -22,6 +25,8 @@ import { useNFTBalances } from 'react-moralis';
 import { Sections } from '_enums/Sections';
 import { CommunityContext } from '_contexts/CommunityContext';
 import { ProfileType } from '_enums/ProfileType';
+import { link } from 'fs';
+import { useForm } from 'react-hook-form';
 
 const Community = () => {
   const router = useRouter();
@@ -34,6 +39,7 @@ const Community = () => {
 
   const [loadingConnectionData, setLoadingConnectionData] = useState(true);
   const [connectionData, setConnectionData] = useState<ConnectionData>();
+  const [linkedWallets, setLinkedWallets] = useState();
 
   const [profile, setProfile] = useState<Profile>();
   const [loadingProfile, setLoadingProfile] = useState(true);
@@ -69,19 +75,30 @@ const Community = () => {
 
   useEffect(() => {
     if (!connectionData) return;
-
-    checkNftIsInWallet(
-      getNFTBalances,
-      connectionData.address,
-      communityId,
-      updateHasRequiredNft,
-      connectionData.network,
-      chainId
-    );
+    getLinkedWallets(connectionData.address, setLinkedWallets);
   }, [connectionData]);
 
   useEffect(() => {
-    if (!connectionData) {
+    if (!connectionData || !linkedWallets) return;
+
+    checkNftIsInWallet(
+      getNFTBalances,
+      linkedWallets,
+      communityId,
+      updateHasRequiredNft,
+      chainId
+    );
+    checkForExistingDefaultProfile(connectionData.address, linkedWallets);
+    checkForCommunityProfileInLinkedWallets(
+      connectionData.address,
+      linkedWallets,
+      communityId
+    );
+  }, [connectionData, linkedWallets]);
+  console.log(existingDefaultProfile);
+  console.log(profile);
+  useEffect(() => {
+    if (!connectionData || !linkedWallets) {
       setLoadingProfile(false);
       return;
     }
@@ -91,22 +108,31 @@ const Community = () => {
       connectionData.address,
       updateProfile
     );
-    checkForExistingDefaultProfile(
-      connectionData.address,
-      setExistingDefaultProfile
-    );
 
     return unsubscribe;
-  }, [connectionData]);
+  }, [connectionData, linkedWallets]);
+
+  useEffect(() => {
+    if (!connectionData || !linkedWallets) {
+      setLoadingDefaultProfile(false);
+      return;
+    }
+    const unsubscribe = subscribeToDefaultProfile(
+      connectionData.address,
+      updateDefaultProfile
+    );
+    return unsubscribe;
+  }, [connectionData, linkedWallets]);
 
   const updateProfile = (profile: Profile) => {
     setProfile(profile);
     setLoadingProfile(false);
   };
 
-  useEffect(() => {
+  const updateDefaultProfile = (profile: Profile) => {
+    setExistingDefaultProfile(profile);
     setLoadingDefaultProfile(false);
-  }, [existingDefaultProfile]);
+  };
 
   return (
     <ConnectionContext.Provider value={connectionData}>
@@ -136,6 +162,7 @@ const Community = () => {
                 />
                 <CreateProfileForm
                   type={ProfileType.Community}
+                  walletAddress={connectionData?.address!}
                   existingDefaultProfile={existingDefaultProfile}
                 />
               </div>
