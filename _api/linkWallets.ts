@@ -14,8 +14,6 @@ export const sendLinkRequest = async (
   requestedWalletAddresses: string[]
 ) => {
   requestedWalletAddresses.forEach(async (requestedWalletAddress) => {
-    if (requestedWalletAddress.startsWith('0x'))
-      requestedWalletAddress = requestedWalletAddress.toLowerCase();
     const checkIfRequestAlreadyExists = await getDocs(
       query(
         collection(firestore, 'linkWalletRequests'),

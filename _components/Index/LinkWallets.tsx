@@ -34,10 +34,15 @@ const LinkWallets = (props: LinkWalletProps) => {
       Link Wallets
     </h1>
   );
-  const areValidAddresses = (addresses: string[]) => {
+  const validateAddresses = (addresses: string[]) => {
     let validAddresses: boolean = true;
     addresses.forEach((address: string) => {
       const isEthValid = Web3.utils.isAddress(address);
+      if (isEthValid) {
+        const index = addresses.indexOf(address);
+        addresses[index] = addresses[index].toLowerCase();
+        return;
+      }
       let isSolValid;
       try {
         let pubkey = new PublicKey(address);
@@ -46,14 +51,16 @@ const LinkWallets = (props: LinkWalletProps) => {
       } catch (error) {
         isSolValid = false;
       }
-      if (!isEthValid && !isSolValid) validAddresses = false;
+      if (!isSolValid) validAddresses = false;
     });
-    return validAddresses;
+    if (validAddresses === true) {
+      return addresses;
+    } else return [];
   };
   const onSubmit = async (data: any) => {
     if (!data.wallets.length) return;
-    if (areValidAddresses(data.wallets))
-      sendLinkRequest(props.walletAddress, data.wallets);
+    const validatedAddresses = validateAddresses(data.wallets);
+    sendLinkRequest(props.walletAddress, validatedAddresses);
   };
   const {
     fields: walletsFields,
