@@ -7,7 +7,7 @@ import {
   getLinkedWallets,
   getLinkRequestsForWallet,
   linkWallets,
-  removeLinkRequests,
+  removeLinkRequest,
   sendLinkRequest,
   unlinkWallets,
 } from '_api/linkWallets';
@@ -29,11 +29,6 @@ const LinkWallets = (props: LinkWalletProps) => {
     getLinkRequestsForWallet(props.walletAddress, setReceivedRequests);
   }, []);
 
-  const title = (
-    <h1 className='my-3 text-3xl font-bold text-center text-primary'>
-      Link Wallets
-    </h1>
-  );
   const validateAddresses = (addresses: string[]) => {
     let validAddresses: boolean = true;
     addresses.forEach((address: string) => {
@@ -70,7 +65,11 @@ const LinkWallets = (props: LinkWalletProps) => {
     control: control,
     name: 'wallets',
   });
-
+  const title = (
+    <h1 className='my-3 text-3xl font-bold text-center text-primary'>
+      Link Wallets
+    </h1>
+  );
   const description = (
     <p className='mb-4 text-center'>
       Enter wallets to send link requests to. You will then need to accept the
@@ -108,13 +107,13 @@ const LinkWallets = (props: LinkWalletProps) => {
         </div>
       ) : null}
       {receivedRequests.length ? (
-        <div className=''>
+        <div className='mt-8'>
           <p className='text-center'>
             You have received link requests from the following addresses, please
             accept or deny them.
           </p>
 
-          <div className='grid grid-flow-row gap-2 p-3 m-4 mx-10 '>
+          <div className='grid grid-flow-row gap-2 p-3 mx-10 my-2 '>
             {receivedRequests.map((request) => (
               <div className='rounded-lg bg-backgroundDarker'>
                 <div className='grid p-2'>
@@ -134,7 +133,7 @@ const LinkWallets = (props: LinkWalletProps) => {
                     </button>
                     <button
                       onClick={() =>
-                        removeLinkRequests(
+                        removeLinkRequest(
                           props.walletAddress,
                           request,
                           setReceivedRequests

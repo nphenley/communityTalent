@@ -7,7 +7,7 @@ import { Networks } from '_enums/Networks';
 import { useEffect, useState } from 'react';
 import NavBar from '_components/Index/Navbar';
 import {
-  checkForExistingDefaultProfile,
+  checkForDefaultProfileInLinkedWallets,
   subscribeToDefaultProfile,
 } from '_api/profiles';
 import { Profile } from '_types/Profile';
@@ -38,16 +38,11 @@ export default function Home() {
 
   useEffect(() => {
     if (!linkedWallets) return;
-    checkForExistingDefaultProfile(walletAddress, linkedWallets);
-  }, [linkedWallets]);
-
-  useEffect(() => {
-    if (!linkedWallets) return;
+    checkForDefaultProfileInLinkedWallets(walletAddress, linkedWallets);
     const unsubscribe = subscribeToDefaultProfile(
       walletAddress,
       setExistingDefaultProfile
     );
-
     return unsubscribe;
   }, [linkedWallets]);
 

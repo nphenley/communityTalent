@@ -75,14 +75,14 @@ export const linkWallets = async (
       wallets: userLinkedWalletsArray,
     });
   }
-  await removeLinkRequests(
+  await removeLinkRequest(
     userAddress,
     walletUserIsLinkingTo,
     setReceivedRequests
   );
 };
 
-export const removeLinkRequests = async (
+export const removeLinkRequest = async (
   userAddress: string,
   walletUserIsLinkingTo: string,
   setReceivedRequests: any
@@ -109,7 +109,7 @@ export const getLinkedWallets = async (
     )
   );
   if (linkedWallets.empty) setLinkedWallets([walletAddress]);
-  setLinkedWallets(linkedWallets.docs[0].data().wallets);
+  else setLinkedWallets(linkedWallets.docs[0].data().wallets);
 };
 
 export const unlinkWallets = async (

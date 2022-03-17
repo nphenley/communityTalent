@@ -23,16 +23,10 @@ export const getCommunities = async (
   pinnedCommunityIds: string[]
 ) => {
   let communities: Community[] = [];
-
   await Promise.all(
     walletAddresses.map(async (walletAddress) => {
       if (Web3.utils.isAddress(walletAddress)) {
-        await getUserNftsEVM(
-          chainId,
-          walletAddress,
-          getNFTBalances,
-          communities
-        );
+        await getUserNftsEVM('0x1', walletAddress, getNFTBalances, communities);
       } else {
         try {
           let pubkey = new PublicKey(walletAddress);
@@ -42,7 +36,6 @@ export const getCommunities = async (
       }
     })
   );
-
   if (userStakedCommunityIds.length) {
     await Promise.all(
       userStakedCommunityIds.map(async (stakedCommunityId) => {
@@ -104,11 +97,12 @@ const getUserNftsEVM = async (
   getNFTBalances: any,
   allCommunities: Community[]
 ) => {
-  let communities: Community[] = [];
   const nftsInWallet = await getNFTBalances({
     params: {
-      chain: chainId,
-      address: walletAddress,
+      //we're gonna have to loop
+      //through different chainIds
+      chain: chainId, //I think we set eth to default
+      address: walletAddress, //and allow users to toggle other chains
     },
   });
   if (!nftsInWallet) return [];

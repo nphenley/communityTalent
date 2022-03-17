@@ -184,44 +184,46 @@ export const getAllStakingCommunities = async (setStakingCommunities: any) => {
   setStakingCommunities(stakingCommunityInfo);
 };
 
+// ==================== LINKED WALLETS ====================
+
 export const checkForIdsInLinkedWallets = async (
   walletAddress: string,
   linkedWallets: string[]
 ) => {
-  const walletPinned = await getDoc(
+  const currentWalletPinned = await getDoc(
     doc(firestore, 'pinnedCommunities', walletAddress)
   );
-  const walletStaked = await getDoc(
+  const currentWalletStaked = await getDoc(
     doc(firestore, 'stakedCommunities', walletAddress)
   );
-  if (!walletPinned.exists()) {
+  const index = linkedWallets.indexOf(walletAddress);
+  linkedWallets.splice(index, 1);
+
+  if (!currentWalletPinned.exists() && !currentWalletPinned.data()) {
     await Promise.all(
       linkedWallets.map(async (wallet) => {
-        if (wallet !== walletAddress) {
-          const linkedWalletPinned = await getDoc(
-            doc(firestore, 'pinnedCommunities', wallet)
-          );
-          if (linkedWalletPinned.exists()) {
-            await setDoc(walletPinned.ref, {
-              communityIds: linkedWalletPinned.data().communityIds,
-            });
-          }
-        }
-      })
-    );
-  }
-  if (!walletStaked.exists()) {
+        const linkedWalletPinned = await getDoc(
+          doc(firestore, 'pinnedCommunities', wallet)
+        );
+        if (linkedWalletPinned.exists()) {
+          console.log(wallet, linkedWalletPinned.data().communityIds);
+          await setDoc(currentWalletPinned.ref, {
+            communityIds: linkedWalletPinned.data().communityIds,
+          });
+        } //here as well we overwrite, shouldn't be much of an issue
+      }) //in practice as people will be able to link wallets
+    ); //with our first version so shouldn't be setting different
+  } //things on different wallets then linking them.
+  if (!currentWalletStaked.exists() && !currentWalletStaked.data()) {
     await Promise.all(
       linkedWallets.map(async (wallet) => {
-        if (wallet !== walletAddress) {
-          const linkedWalletStaked = await getDoc(
-            doc(firestore, 'stakedCommunities', wallet)
-          );
-          if (linkedWalletStaked.exists()) {
-            await setDoc(walletStaked.ref, {
-              communityIds: linkedWalletStaked.data().communityIds,
-            });
-          }
+        const linkedWalletStaked = await getDoc(
+          doc(firestore, 'stakedCommunities', wallet)
+        );
+        if (linkedWalletStaked.exists()) {
+          await setDoc(currentWalletStaked.ref, {
+            communityIds: linkedWalletStaked.data().communityIds,
+          });
         }
       })
     );

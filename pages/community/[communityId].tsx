@@ -7,9 +7,9 @@ import { ConnectionData } from '_types/ConnectionData';
 import { ConnectionContext } from '_contexts/ConnectionContext';
 import {
   checkForCommunityProfileInLinkedWallets,
-  checkForExistingDefaultProfile,
+  checkForDefaultProfileInLinkedWallets,
   subscribeToDefaultProfile,
-  subscribeToProfile,
+  subscribeToCommunityProfile,
 } from '_api/profiles';
 import { getLinkedWallets } from '_api/linkWallets';
 import { useMoralis } from 'react-moralis';
@@ -25,8 +25,6 @@ import { useNFTBalances } from 'react-moralis';
 import { Sections } from '_enums/Sections';
 import { CommunityContext } from '_contexts/CommunityContext';
 import { ProfileType } from '_enums/ProfileType';
-import { link } from 'fs';
-import { useForm } from 'react-hook-form';
 
 const Community = () => {
   const router = useRouter();
@@ -88,32 +86,33 @@ const Community = () => {
       updateHasRequiredNft,
       chainId
     );
-    checkForExistingDefaultProfile(connectionData.address, linkedWallets);
+    checkForDefaultProfileInLinkedWallets(
+      connectionData.address,
+      linkedWallets
+    );
     checkForCommunityProfileInLinkedWallets(
       connectionData.address,
       linkedWallets,
       communityId
     );
   }, [connectionData, linkedWallets]);
-  console.log(existingDefaultProfile);
-  console.log(profile);
   useEffect(() => {
-    if (!connectionData || !linkedWallets) {
+    if (!connectionData) {
       setLoadingProfile(false);
       return;
     }
     setLoadingProfile(true);
-    const unsubscribe = subscribeToProfile(
+    const unsubscribe = subscribeToCommunityProfile(
       communityId,
       connectionData.address,
       updateProfile
     );
 
     return unsubscribe;
-  }, [connectionData, linkedWallets]);
+  }, [connectionData]);
 
   useEffect(() => {
-    if (!connectionData || !linkedWallets) {
+    if (!connectionData) {
       setLoadingDefaultProfile(false);
       return;
     }
@@ -122,7 +121,7 @@ const Community = () => {
       updateDefaultProfile
     );
     return unsubscribe;
-  }, [connectionData, linkedWallets]);
+  }, [connectionData]);
 
   const updateProfile = (profile: Profile) => {
     setProfile(profile);
@@ -133,7 +132,8 @@ const Community = () => {
     setExistingDefaultProfile(profile);
     setLoadingDefaultProfile(false);
   };
-
+  console.log(existingDefaultProfile);
+  console.log(profile);
   return (
     <ConnectionContext.Provider value={connectionData}>
       <CommunityContext.Provider value={communityId}>
