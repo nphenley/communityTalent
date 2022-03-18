@@ -14,6 +14,7 @@ import {
   getStakedNftImages,
 } from '_helpers/getStakedNfts';
 import Web3 from 'web3';
+import next from 'next';
 
 export const getCommunities = async (
   getNFTBalances: any,
@@ -273,25 +274,27 @@ export const getNftImagesForCommunityProfile = async (
   });
   await Promise.all(
     walletAddresses.map(async (walletAddress) => {
-      var apiUrl =
-        'https://api.opensea.io/api/v1/assets?owner=' +
-        walletAddress +
-        '&owner=' +
-        walletAddress +
-        '&order_by=pk&order_direction=desc' +
-        tokenAddressString +
-        '&limit=50&include_orders=false';
+      if (Web3.utils.isAddress(walletAddress)) {
+        var apiUrl =
+          'https://api.opensea.io/api/v1/assets?owner=' +
+          walletAddress +
+          '&owner=' +
+          walletAddress +
+          '&order_by=pk&order_direction=desc' +
+          tokenAddressString +
+          '&limit=50&include_orders=false';
+        const response = await fetch(apiUrl, options);
+        const nftsInWallet = await response.json();
+        nftsInWallet.assets.forEach((nft: any) => {
+          images.push(nft.image_url);
+        });
 
-      const response = await fetch(apiUrl, options);
-      const nftsInWallet = await response.json();
-      nftsInWallet.assets.forEach((nft: any) => {
-        images.push(nft.image_url);
-      });
-      // let next = nftsInWallet.next;
-      // console.log(next);
-      // if (next) {
-      //   openseaPushUserImages(next, images);
-      // }
+        if (nftsInWallet.next) {
+          apiUrl += '&cursor=' + nftsInWallet.next;
+
+          await openseaPushUserImages(apiUrl, images);
+        }
+      }
     })
   );
   if (!community.stakingAddresses.length) {
@@ -314,7 +317,10 @@ export const getNftImagesForCommunityProfile = async (
   setUserOwnedImages(images);
 };
 
-const openseaPushUserImages = async (cursor: string, images: string[]) => {
+export const openseaPushUserImages = async (
+  apiUrl: string,
+  images: string[]
+) => {
   const options = {
     method: 'GET',
     headers: {
@@ -322,14 +328,16 @@ const openseaPushUserImages = async (cursor: string, images: string[]) => {
       'X-API-KEY': '7d5d2f9f7391463dadb8c3fca6b2662d',
     },
   };
-  const apiUrl = 'https://api.opensea.io/api/v1/assets?cursor=' + cursor;
   const response = await fetch(apiUrl, options);
   const nftsInWallet = await response.json();
   nftsInWallet.assets.forEach((nft: any) => {
     images.push(nft.image_url);
   });
   if (nftsInWallet.next) {
-    openseaPushUserImages(nftsInWallet.next, images);
+    const parts = apiUrl.split('cursor=');
+    parts[1] = nftsInWallet.next;
+    const newUrl = parts.join('cursor=');
+    openseaPushUserImages(newUrl, images);
   } else {
     return;
   }

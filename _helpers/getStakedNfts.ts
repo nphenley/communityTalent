@@ -1,3 +1,5 @@
+import { openseaPushUserImages } from './getUserNfts';
+
 export const checkIfUserStillHasStakedNft = async (
   walletAddress: string,
   tokenAddress: string,
@@ -77,6 +79,11 @@ export const getStakedNftImages = async (
   nftsInWallet.assets.forEach((nft: any) => {
     images.push(nft.image_url);
   });
+  if (nftsInWallet.next) {
+    apiUrl += '&cursor=' + nftsInWallet.next;
+
+    await openseaPushUserImages(apiUrl, images);
+  }
 };
 
 const getUserTransfersOfNft = async (

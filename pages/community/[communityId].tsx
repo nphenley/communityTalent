@@ -143,7 +143,6 @@ const Community = () => {
           </Head>
 
           <div className='flex h-screen text-white break-words bg-background'>
-            {linkedWallets?.length}
             {isAuthUndefined ||
             loadingConnectionData ||
             loadingHasRequiredNft ||
