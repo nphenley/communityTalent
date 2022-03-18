@@ -17,6 +17,9 @@ import OptionalArrayInputField from '_styled/Forms/OptionalArrayInputField';
 import FormSubmit from '_styled/Forms/FormSubmit';
 import { ProfileType } from '_enums/ProfileType';
 import SelectFieldSingle from '_styled/Forms/SelectFieldSingle';
+import { ProfilePicField } from '_styled/Forms/ProfilePicField';
+import { getNftImagesForCommunityProfile } from '_helpers/getUserNfts';
+import { getLinkedWallets } from '_api/linkWallets';
 
 type EditProfileFormProps = {
   profile: Profile;
@@ -30,6 +33,8 @@ const EditProfileForm = (props: EditProfileFormProps) => {
   if (props.type === ProfileType.Community) {
     communityId = useContext(CommunityContext);
   }
+  const [linkedWallets, setLinkedWallets] = useState();
+  const [userNftImages, setUserNftImages] = useState();
   const [selectFieldOptions, setSelectFieldOptions] = useState<any>();
   const { control, register, handleSubmit } = useForm<any>({
     defaultValues: {
@@ -41,10 +46,21 @@ const EditProfileForm = (props: EditProfileFormProps) => {
       timezone: props.profile.timezone ? props.profile.timezone : '',
     },
   });
+
   useEffect(() => {
-    if (selectFieldOptions) return;
+    if (!linkedWallets) return;
+    getNftImagesForCommunityProfile(
+      linkedWallets,
+      communityId,
+      setUserNftImages
+    );
+  }, [linkedWallets]);
+
+  useEffect(() => {
     getFormOptions(setSelectFieldOptions);
+    getLinkedWallets(props.profile.walletAddress, setLinkedWallets);
   }, []);
+
   const {
     fields: skillsFields,
     append: skillsAppend,
@@ -119,6 +135,7 @@ const EditProfileForm = (props: EditProfileFormProps) => {
           Update Community Profile
         </h1>
       );
+
       break;
 
     case ProfileType.Default:
@@ -162,6 +179,18 @@ const EditProfileForm = (props: EditProfileFormProps) => {
             />
           }
         />
+        <FormField
+          label='Profile Pic'
+          formField={
+            <ProfilePicField
+              control={control}
+              name='profilePic'
+              register={register}
+              userNftImages={userNftImages ? userNftImages : []}
+            />
+          }
+        />
+
         <FormField
           label='Bio'
           formField={

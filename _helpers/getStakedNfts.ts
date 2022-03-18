@@ -24,6 +24,61 @@ export const checkIfUserStillHasStakedNft = async (
   return hasRequiredNft;
 };
 
+export const getStakedNftImages = async (
+  walletAddress: string,
+  tokenAddress: string,
+  stakingAddress: string,
+  images: string[]
+) => {
+  const userTransfersOfNft = await getUserTransfersOfNft(
+    walletAddress,
+    tokenAddress
+  );
+  let unstakedNftIds: string[] = [];
+  let stakedNftIds: string[] = [];
+  userTransfersOfNft.forEach((transfer: any) => {
+    if (transfer.from === stakingAddress && transfer.to === walletAddress) {
+      unstakedNftIds.push(transfer.tokenID);
+    }
+    if (
+      transfer.to === stakingAddress &&
+      transfer.from === walletAddress &&
+      !unstakedNftIds.includes(transfer.tokenID)
+    ) {
+      stakedNftIds.push(transfer.tokenID);
+    }
+  });
+  let stakedNftsString = '';
+  if (!stakedNftIds) return;
+
+  stakedNftIds.forEach((id) => {
+    stakedNftsString += 'token_ids=' + id + '&';
+  });
+
+  const options = {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      'X-API-KEY': '7d5d2f9f7391463dadb8c3fca6b2662d',
+    },
+  };
+  var apiUrl =
+    'https://api.opensea.io/api/v1/assets?' +
+    stakedNftsString +
+    'owner=' +
+    stakingAddress +
+    '&owner=' +
+    stakingAddress +
+    '&order_by=pk&order_direction=desc&asset_contract_address=' +
+    tokenAddress +
+    '&limit=50';
+  const response = await fetch(apiUrl, options);
+  const nftsInWallet = await response.json();
+  nftsInWallet.assets.forEach((nft: any) => {
+    images.push(nft.image_url);
+  });
+};
+
 const getUserTransfersOfNft = async (
   walletAddress: string,
   tokenAddress: string

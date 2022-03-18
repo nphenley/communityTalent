@@ -11,6 +11,7 @@ import { Community } from '_types/Community';
 import {
   checkIfUserStillHasStakedNft,
   getImageForStakingCommunity,
+  getStakedNftImages,
 } from '_helpers/getStakedNfts';
 import Web3 from 'web3';
 
@@ -41,7 +42,7 @@ export const getCommunities = async (
       userStakedCommunityIds.map(async (stakedCommunityId) => {
         const stakedCommunity = await getCommunityById(stakedCommunityId);
         const image = await getImageForStakingCommunity(
-          stakedCommunity.tokenAddress[0]
+          stakedCommunity.tokenAddresses[0]
         );
         communities.push({
           id: stakedCommunity.id,
@@ -151,20 +152,19 @@ export const checkNftIsInWallet = async (
   getNFTBalances: any,
   walletAddresses: string[],
   communityId: string,
-  updateHasRequiredNft: (hasRequiredNft: boolean) => void,
-  chainId: string | null
+  updateHasRequiredNft: (hasRequiredNft: boolean) => void
 ) => {
+  const userWallets = Object.assign([], walletAddresses); // for some reason walletAddresses gets deleted in getNFTBalances
   let tokenAddressesInWallets: string[] = [];
   await Promise.all(
     walletAddresses.map(async (walletAddress) => {
       if (Web3.utils.isAddress(walletAddress)) {
         const nftsInWalletResponse = await getNFTBalances({
           params: {
-            chain: chainId,
+            chain: '0x1',
             address: walletAddress,
           },
         });
-
         nftsInWalletResponse.result.map((nft: any) =>
           tokenAddressesInWallets.push(nft.token_address)
         );
@@ -197,7 +197,7 @@ export const checkNftIsInWallet = async (
   if (!hasRequiredNft) {
     const stakingCommunityInfo = await checkForStakingAddresses(communityId);
     await Promise.all(
-      walletAddresses.map(async (walletAddress) => {
+      userWallets.map(async (walletAddress) => {
         if (Web3.utils.isAddress(walletAddress)) {
           await Promise.all(
             stakingCommunityInfo.map(async (stakingCommunity) => {
@@ -251,4 +251,60 @@ const openseaApiCall = async (walletAddress: string, tokenAddress: string) => {
   const response = await fetch(apiUrl, options);
   const nftInWallet = await response.json();
   return nftInWallet.assets[0].image_url;
+};
+
+export const getNftImagesForCommunityProfile = async (
+  walletAddresses: string[],
+  communityId: string,
+  setUserOwnedImages: any
+) => {
+  const community = await getCommunityById(communityId);
+  let images: string[] = [];
+  let tokenAddressString: string = '';
+  const options = {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      'X-API-KEY': '7d5d2f9f7391463dadb8c3fca6b2662d',
+    },
+  };
+  community.tokenAddresses.forEach((tokenAddress) => {
+    tokenAddressString += '&asset_contract_address=' + tokenAddress;
+  });
+  await Promise.all(
+    walletAddresses.map(async (walletAddress) => {
+      var apiUrl =
+        'https://api.opensea.io/api/v1/assets?owner=' +
+        walletAddress +
+        '&owner=' +
+        walletAddress +
+        '&order_by=pk&order_direction=desc' +
+        tokenAddressString +
+        '&limit=50&include_orders=false';
+
+      const response = await fetch(apiUrl, options);
+      const nftsInWallet = await response.json();
+      nftsInWallet.assets.forEach((nft: any) => {
+        images.push(nft.image_url);
+      });
+    })
+  );
+  if (!community.stakingAddresses.length) {
+    setUserOwnedImages(images);
+    return;
+  }
+
+  await Promise.all(
+    walletAddresses.map(async (walletAddress) => {
+      for (let i = 0; i < community.stakingAddresses.length; i++) {
+        await getStakedNftImages(
+          walletAddress,
+          community.tokenAddresses[i],
+          community.stakingAddresses[i],
+          images
+        );
+      }
+    })
+  );
+  setUserOwnedImages(images);
 };

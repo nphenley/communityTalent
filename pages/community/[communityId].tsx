@@ -37,7 +37,7 @@ const Community = () => {
 
   const [loadingConnectionData, setLoadingConnectionData] = useState(true);
   const [connectionData, setConnectionData] = useState<ConnectionData>();
-  const [linkedWallets, setLinkedWallets] = useState();
+  const [linkedWallets, setLinkedWallets] = useState<string[]>();
 
   const [profile, setProfile] = useState<Profile>();
   const [loadingProfile, setLoadingProfile] = useState(true);
@@ -78,13 +78,11 @@ const Community = () => {
 
   useEffect(() => {
     if (!connectionData || !linkedWallets) return;
-
     checkNftIsInWallet(
       getNFTBalances,
       linkedWallets,
       communityId,
-      updateHasRequiredNft,
-      chainId
+      updateHasRequiredNft
     );
     checkForDefaultProfileInLinkedWallets(
       connectionData.address,
@@ -132,8 +130,6 @@ const Community = () => {
     setExistingDefaultProfile(profile);
     setLoadingDefaultProfile(false);
   };
-  console.log(existingDefaultProfile);
-  console.log(profile);
   return (
     <ConnectionContext.Provider value={connectionData}>
       <CommunityContext.Provider value={communityId}>

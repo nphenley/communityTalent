@@ -18,7 +18,7 @@ import SearchBar from '_styled/SearchBar';
 import { filterCommunities } from '_helpers/filterCommunities';
 import StakedNftsForm from '_components/Index/StakedNftsForm';
 import { getLinkedWallets } from '_api/linkWallets';
-
+import { getNftImagesForCommunityProfile } from '_helpers/getUserNfts';
 type CommunitiesProps = {
   network: Networks;
   walletAddress: string;
@@ -41,7 +41,8 @@ const Communities = (props: CommunitiesProps) => {
     []
   );
   const [showStakedNftsMenu, setShowStakedNftsMenu] = useState(false);
-  const [linkedWallets, setLinkedWallets] = useState();
+  const [linkedWallets, setLinkedWallets] = useState<string[]>();
+  const [userOwnedImages, setUserOwnedImages] = useState<string[]>([]);
   useEffect(() => {
     getLinkedWallets(props.walletAddress, setLinkedWallets);
   }, []);

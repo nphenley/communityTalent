@@ -55,9 +55,14 @@ const ProfileCard = (props: ProfileCardProps) => {
           <div className='flex'>
             <div className={styles.imageContainer}>
               <Image
-                src={profileNFTImages[props.profile.displayName.length % 5]}
+                src={
+                  props.profile.profilePic
+                    ? props.profile.profilePic
+                    : profileNFTImages[props.profile.displayName.length % 5]
+                }
                 height={130}
                 width={130}
+                unoptimized={true}
               />
             </div>
           </div>

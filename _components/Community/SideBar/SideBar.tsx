@@ -23,7 +23,16 @@ const SideBar = (props: SideBarProps) => {
         <SideBarIcon
           icon={
             <div className='flex justify-center mb-4 overflow-hidden rounded-full'>
-              <Image src={profileNFTImages[3]} height={150} width={150} />
+              <Image
+                src={
+                  profile && profile.profilePic
+                    ? profile.profilePic
+                    : profileNFTImages[3]
+                }
+                height={150}
+                width={150}
+                unoptimized={true}
+              />
             </div>
           }
           text={profile!.displayName}

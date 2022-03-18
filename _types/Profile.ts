@@ -10,6 +10,7 @@ export type Profile = {
   discordUsername?: string;
   bio: string;
   lookingForProject: boolean;
+  profilePic?: string;
   tags?: string[];
   skills?: string[];
   experience?: string;

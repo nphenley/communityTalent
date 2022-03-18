@@ -118,10 +118,16 @@ export const getCommunityById = async (communityId: string) => {
   const communityAddress = await getDocs(
     collection(firestore, 'communities', communityId, 'tokenAddresses')
   );
+  const communityStakingAddress = await getDocs(
+    collection(firestore, 'communities', communityId, 'stakingAddresses')
+  );
   return {
     id: communityId,
     name: community.data()!.name,
-    tokenAddress: communityAddress.docs.map((community) => community.id),
+    tokenAddresses: communityAddress.docs.map((community) => community.id),
+    stakingAddresses: !communityStakingAddress.empty
+      ? communityStakingAddress.docs.map((community) => community.id)
+      : [],
   };
 };
 
