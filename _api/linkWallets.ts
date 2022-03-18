@@ -108,7 +108,6 @@ export const getLinkedWallets = async (
       where('wallets', 'array-contains', walletAddress)
     )
   );
-  console.log(linkedWallets.docs[0].data().wallets);
   if (linkedWallets.empty) {
     setLinkedWallets([walletAddress]);
     return;

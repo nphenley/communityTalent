@@ -72,10 +72,6 @@ const Community = () => {
   };
 
   useEffect(() => {
-    console.log(linkedWallets);
-  }, [linkedWallets]);
-
-  useEffect(() => {
     if (!connectionData) return;
     getLinkedWallets(connectionData.address, setLinkedWallets);
   }, [connectionData]);

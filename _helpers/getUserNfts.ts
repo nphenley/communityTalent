@@ -323,7 +323,6 @@ const openseaPushUserImages = async (cursor: string, images: string[]) => {
     },
   };
   const apiUrl = 'https://api.opensea.io/api/v1/assets?cursor=' + cursor;
-  console.log(apiUrl);
   const response = await fetch(apiUrl, options);
   const nftsInWallet = await response.json();
   nftsInWallet.assets.forEach((nft: any) => {

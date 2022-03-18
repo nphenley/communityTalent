@@ -213,7 +213,6 @@ export const checkForIdsInLinkedWallets = async (
           doc(firestore, 'pinnedCommunities', wallet)
         );
         if (linkedWalletPinned.exists()) {
-          console.log(wallet, linkedWalletPinned.data().communityIds);
           await setDoc(currentWalletPinned.ref, {
             communityIds: linkedWalletPinned.data().communityIds,
           });
