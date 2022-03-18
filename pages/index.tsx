@@ -32,7 +32,6 @@ export default function Home() {
 
   useEffect(() => {
     if (!walletAddress) return;
-    console.log(walletAddress);
     getLinkedWallets(walletAddress, setLinkedWallets);
   }, [walletAddress]);
 

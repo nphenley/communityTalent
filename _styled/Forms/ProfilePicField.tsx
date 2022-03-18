@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Controller } from 'react-hook-form';
 
 type ProfilePicProps = {
@@ -12,7 +12,10 @@ type ProfilePicProps = {
 
 export const ProfilePicField = (props: ProfilePicProps) => {
   const [active, setActive] = useState('');
-
+  useEffect(() => {
+    if (!props.defaultValue) return;
+    setActive(props.defaultValue);
+  }, []);
   return (
     <div className='p-3 rounded-lg grow sm:w-fit bg-backgroundDark focus:outline-none'>
       <Controller

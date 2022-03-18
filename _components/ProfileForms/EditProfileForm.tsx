@@ -179,17 +179,20 @@ const EditProfileForm = (props: EditProfileFormProps) => {
             />
           }
         />
-        <FormField
-          label='Profile Pic'
-          formField={
-            <ProfilePicField
-              control={control}
-              name='profilePic'
-              register={register}
-              userNftImages={userNftImages ? userNftImages : []}
-            />
-          }
-        />
+        {props.type === ProfileType.Community ? (
+          <FormField
+            label='Profile Pic'
+            formField={
+              <ProfilePicField
+                control={control}
+                defaultValue={props.profile.profilePic}
+                name='profilePic'
+                register={register}
+                userNftImages={userNftImages ? userNftImages : []}
+              />
+            }
+          />
+        ) : null}
 
         <FormField
           label='Bio'
