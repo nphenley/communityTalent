@@ -287,6 +287,11 @@ export const getNftImagesForCommunityProfile = async (
       nftsInWallet.assets.forEach((nft: any) => {
         images.push(nft.image_url);
       });
+      // let next = nftsInWallet.next;
+      // console.log(next);
+      // if (next) {
+      //   openseaPushUserImages(next, images);
+      // }
     })
   );
   if (!community.stakingAddresses.length) {
@@ -307,4 +312,26 @@ export const getNftImagesForCommunityProfile = async (
     })
   );
   setUserOwnedImages(images);
+};
+
+const openseaPushUserImages = async (cursor: string, images: string[]) => {
+  const options = {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      'X-API-KEY': '7d5d2f9f7391463dadb8c3fca6b2662d',
+    },
+  };
+  const apiUrl = 'https://api.opensea.io/api/v1/assets?cursor=' + cursor;
+  console.log(apiUrl);
+  const response = await fetch(apiUrl, options);
+  const nftsInWallet = await response.json();
+  nftsInWallet.assets.forEach((nft: any) => {
+    images.push(nft.image_url);
+  });
+  if (nftsInWallet.next) {
+    openseaPushUserImages(nftsInWallet.next, images);
+  } else {
+    return;
+  }
 };

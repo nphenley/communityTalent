@@ -159,15 +159,16 @@ export const checkForDefaultProfileInLinkedWallets = async (
   const defaultProfile = await getDoc(
     doc(firestore, 'defaultProfiles', walletAddress)
   );
-  const index = linkedWallets.indexOf(walletAddress);
-  linkedWallets.splice(index, 1);
+  const linkedWalletsCopy = [...linkedWallets];
+  const index = linkedWalletsCopy.indexOf(walletAddress);
+  linkedWalletsCopy.splice(index, 1);
   if (
     !defaultProfile.exists() ||
     !defaultProfile.data() ||
     !defaultProfile.data().displayName
   ) {
     await Promise.all(
-      linkedWallets.map(async (wallet) => {
+      linkedWalletsCopy.map(async (wallet) => {
         const linkedDefaultProfile = await getDoc(
           doc(firestore, 'defaultProfiles', wallet)
         );
@@ -195,10 +196,12 @@ export const checkForCommunityProfileInLinkedWallets = async (
   const walletProfileInCommunity = await getDoc(
     doc(firestore, 'communities', communityId, 'profiles', walletAddress)
   );
-  const index = linkedWallets.indexOf(walletAddress);
-  linkedWallets.splice(index, 1);
+  const linkedWalletsCopy = [...linkedWallets];
+  const index = linkedWalletsCopy.indexOf(walletAddress);
+
+  linkedWalletsCopy.splice(index, 1);
   if (!walletProfileInCommunity.exists()) {
-    linkedWallets.forEach(async (wallet) => {
+    linkedWalletsCopy.forEach(async (wallet) => {
       const linkedWalletProfileInCommunity = await getDoc(
         doc(firestore, 'communities', communityId, 'profiles', wallet)
       );

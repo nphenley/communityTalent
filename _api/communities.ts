@@ -202,12 +202,13 @@ export const checkForIdsInLinkedWallets = async (
   const currentWalletStaked = await getDoc(
     doc(firestore, 'stakedCommunities', walletAddress)
   );
-  const index = linkedWallets.indexOf(walletAddress);
-  linkedWallets.splice(index, 1);
+  const linkedWalletsCopy = [...linkedWallets];
+  const index = linkedWalletsCopy.indexOf(walletAddress);
+  linkedWalletsCopy.splice(index, 1);
 
   if (!currentWalletPinned.exists() && !currentWalletPinned.data()) {
     await Promise.all(
-      linkedWallets.map(async (wallet) => {
+      linkedWalletsCopy.map(async (wallet) => {
         const linkedWalletPinned = await getDoc(
           doc(firestore, 'pinnedCommunities', wallet)
         );

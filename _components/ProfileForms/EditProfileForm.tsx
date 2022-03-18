@@ -47,14 +47,16 @@ const EditProfileForm = (props: EditProfileFormProps) => {
     },
   });
 
-  useEffect(() => {
-    if (!linkedWallets) return;
-    getNftImagesForCommunityProfile(
-      linkedWallets,
-      communityId,
-      setUserNftImages
-    );
-  }, [linkedWallets]);
+  if (props.type === ProfileType.Community) {
+    useEffect(() => {
+      if (!linkedWallets) return;
+      getNftImagesForCommunityProfile(
+        linkedWallets,
+        communityId,
+        setUserNftImages
+      );
+    }, [linkedWallets]);
+  }
 
   useEffect(() => {
     getFormOptions(setSelectFieldOptions);

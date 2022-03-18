@@ -72,12 +72,16 @@ const Community = () => {
   };
 
   useEffect(() => {
+    console.log(linkedWallets);
+  }, [linkedWallets]);
+
+  useEffect(() => {
     if (!connectionData) return;
     getLinkedWallets(connectionData.address, setLinkedWallets);
   }, [connectionData]);
-
   useEffect(() => {
     if (!connectionData || !linkedWallets) return;
+
     checkNftIsInWallet(
       getNFTBalances,
       linkedWallets,
@@ -143,6 +147,7 @@ const Community = () => {
           </Head>
 
           <div className='flex h-screen text-white break-words bg-background'>
+            {linkedWallets?.length}
             {isAuthUndefined ||
             loadingConnectionData ||
             loadingHasRequiredNft ||

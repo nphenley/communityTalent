@@ -108,8 +108,12 @@ export const getLinkedWallets = async (
       where('wallets', 'array-contains', walletAddress)
     )
   );
-  if (linkedWallets.empty) setLinkedWallets([walletAddress]);
-  else setLinkedWallets(linkedWallets.docs[0].data().wallets);
+  console.log(linkedWallets.docs[0].data().wallets);
+  if (linkedWallets.empty) {
+    setLinkedWallets([walletAddress]);
+    return;
+  }
+  setLinkedWallets(linkedWallets.docs[0].data().wallets);
 };
 
 export const unlinkWallets = async (
