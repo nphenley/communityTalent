@@ -4,13 +4,12 @@ export type Profile = {
   id: string;
   dateCreated: Timestamp;
   dateLastUpdated: Timestamp;
-  walletAddress: string;
   displayName: string;
-  twitterHandle?: string;
-  discordUsername?: string;
   bio: string;
   lookingForProject: boolean;
-  profilePic?: string;
+  profilePic: string;
+  twitterHandle?: string;
+  discordUsername?: string;
   tags?: string[];
   skills?: string[];
   experience?: string;
@@ -18,5 +17,5 @@ export type Profile = {
   timezone?: string;
   contacts?: string;
   relevantLinks?: string[];
-  votes?: [{ walletAddress: string; type: 'up' | 'down' }];
+  votes?: [{ walletGroupID: string; type: 'up' | 'down' }];
 };

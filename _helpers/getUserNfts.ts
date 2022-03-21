@@ -15,10 +15,11 @@ import {
 } from '_helpers/getStakedNfts';
 import Web3 from 'web3';
 import next from 'next';
+import { getAddressesInWalletGroup } from '_api/walletGroups';
 
 export const getCommunities = async (
   getNFTBalances: any,
-  walletAddresses: string[],
+  walletGroupIDs: string[],
   updateData: any,
   chainId: string,
   userStakedCommunityIds: string[],
@@ -26,14 +27,14 @@ export const getCommunities = async (
 ) => {
   let communities: Community[] = [];
   await Promise.all(
-    walletAddresses.map(async (walletAddress) => {
-      if (Web3.utils.isAddress(walletAddress)) {
-        await getUserNftsEVM('0x1', walletAddress, getNFTBalances, communities);
+    walletGroupIDs.map(async (walletGroupID) => {
+      if (Web3.utils.isAddress(walletGroupID)) {
+        await getUserNftsEVM('0x1', walletGroupID, getNFTBalances, communities);
       } else {
         try {
-          let pubkey = new PublicKey(walletAddress);
+          let pubkey = new PublicKey(walletGroupID);
           PublicKey.isOnCurve(pubkey.toBuffer());
-          await getUserNftsSolana(walletAddress, communities);
+          await getUserNftsSolana(walletGroupID, communities);
         } catch (error) {}
       }
     })
@@ -67,11 +68,11 @@ export const getCommunities = async (
 };
 
 export const getUserNftsSolana = async (
-  walletAddress: string,
+  walletGroupID: string,
   allCommunities: Community[]
 ) => {
   const nftsInWallet = await getParsedNftAccountsByOwner({
-    publicAddress: walletAddress,
+    publicAddress: walletGroupID,
     connection: new Connection(mainNetUrl),
   });
   if (!nftsInWallet) return [];
@@ -95,7 +96,7 @@ export const getUserNftsSolana = async (
 
 const getUserNftsEVM = async (
   chainId: string,
-  walletAddress: string,
+  walletGroupID: string,
   getNFTBalances: any,
   allCommunities: Community[]
 ) => {
@@ -104,7 +105,7 @@ const getUserNftsEVM = async (
       //we're gonna have to loop
       //through different chainIds
       chain: chainId, //I think we set eth to default
-      address: walletAddress, //and allow users to toggle other chains
+      address: walletGroupID, //and allow users to toggle other chains
     },
   });
   if (!nftsInWallet) return [];
@@ -115,10 +116,13 @@ const getUserNftsEVM = async (
   await Promise.all(
     communitiesWithoutImages.map(async (communityWithoutImage: any) => {
       if (chainId === '0x1') {
-        const nftImage = await openseaApiCall(
-          walletAddress,
-          communityWithoutImage.tokenAddress
-        );
+        // const nftImage = await openseaApiCall(
+        //   walletGroupID,
+        //   communityWithoutImage.tokenAddress
+        // );
+        // TODO:
+        // Fix opensea api call
+        const nftImage = 'TEMP';
         allCommunities.push({
           id: communityWithoutImage.id,
           name: communityWithoutImage.name,
@@ -149,75 +153,76 @@ const getUserNftsEVM = async (
   );
 };
 
-export const checkNftIsInWallet = async (
+// TODO:
+// Probably broken, needs testing
+export const checkWalletGroupOwnsNFT = async (
   getNFTBalances: any,
-  walletAddresses: string[],
+  walletGroupID: string,
   communityId: string,
-  updateHasRequiredNft: (hasRequiredNft: boolean) => void
+  updateWalletGroupOwnsNFT: (hasRequiredNft: boolean) => void
 ) => {
-  const userWallets = Object.assign([], walletAddresses); // for some reason walletAddresses gets deleted in getNFTBalances
-  let tokenAddressesInWallets: string[] = [];
-  await Promise.all(
-    walletAddresses.map(async (walletAddress) => {
-      if (Web3.utils.isAddress(walletAddress)) {
-        const nftsInWalletResponse = await getNFTBalances({
-          params: {
-            chain: '0x1',
-            address: walletAddress,
-          },
-        });
-        nftsInWalletResponse.result.map((nft: any) =>
-          tokenAddressesInWallets.push(nft.token_address)
-        );
-      } else {
-        try {
-          let pubkey = new PublicKey(walletAddress);
-          PublicKey.isOnCurve(pubkey.toBuffer());
-          const nftsInWallet: any = await getParsedNftAccountsByOwner({
-            publicAddress: walletAddress,
-            connection: new Connection(mainNetUrl),
-          });
-
-          nftsInWallet.map((nft: any) =>
-            tokenAddressesInWallets.push(nft.mint)
-          );
-        } catch (error) {}
-      }
-    })
-  );
-
-  let filteredTokenAddresses = [...new Set(tokenAddressesInWallets)];
-  let hasRequiredNft = false;
-  await Promise.all(
-    filteredTokenAddresses.map(async (tokenAddress: any) => {
-      if (await checkCommunityIdMatchesAddress(communityId, tokenAddress)) {
-        hasRequiredNft = true;
-      }
-    })
-  );
-  if (!hasRequiredNft) {
-    const stakingCommunityInfo = await checkForStakingAddresses(communityId);
-    await Promise.all(
-      userWallets.map(async (walletAddress) => {
-        if (Web3.utils.isAddress(walletAddress)) {
-          await Promise.all(
-            stakingCommunityInfo.map(async (stakingCommunity) => {
-              if (
-                await checkIfUserStillHasStakedNft(
-                  walletAddress,
-                  stakingCommunity.tokenAddress,
-                  stakingCommunity.stakingAddress
-                )
-              ) {
-                hasRequiredNft = true;
-              }
-            })
-          );
-        }
-      })
-    );
-  }
-  updateHasRequiredNft(hasRequiredNft);
+  // const walletAddresses = await getAddressesInWalletGroup(walletGroupID);
+  // updateWalletGroupOwnsNFT(true);
+  // let tokenAddressesInWallets: string[] = [];
+  // await Promise.all(
+  //   walletAddresses.map(async (walletAddress) => {
+  //     if (Web3.utils.isAddress(walletAddress)) {
+  //       const nftsInWalletResponse = await getNFTBalances({
+  //         params: {
+  //           chain: '0x1',
+  //           address: walletGroupID,
+  //         },
+  //       });
+  //       nftsInWalletResponse.result.map((nft: any) =>
+  //         tokenAddressesInWallets.push(nft.token_address)
+  //       );
+  //     } else {
+  //       try {
+  //         let pubkey = new PublicKey(walletGroupID);
+  //         PublicKey.isOnCurve(pubkey.toBuffer());
+  //         const nftsInWallet: any = await getParsedNftAccountsByOwner({
+  //           publicAddress: walletGroupID,
+  //           connection: new Connection(mainNetUrl),
+  //         });
+  //         nftsInWallet.map((nft: any) =>
+  //           tokenAddressesInWallets.push(nft.mint)
+  //         );
+  //       } catch (error) {}
+  //     }
+  //   })
+  // );
+  // let filteredTokenAddresses = [...new Set(tokenAddressesInWallets)];
+  // let hasRequiredNft = false;
+  // await Promise.all(
+  //   filteredTokenAddresses.map(async (tokenAddress: any) => {
+  //     if (await checkCommunityIdMatchesAddress(communityId, tokenAddress)) {
+  //       hasRequiredNft = true;
+  //     }
+  //   })
+  // );
+  // if (!hasRequiredNft) {
+  //   const stakingCommunityInfo = await checkForStakingAddresses(communityId);
+  //   await Promise.all(
+  //     walletAddresses.map(async (walletAddress) => {
+  //       if (Web3.utils.isAddress(walletAddress)) {
+  //         await Promise.all(
+  //           stakingCommunityInfo.map(async (stakingCommunity) => {
+  //             if (
+  //               await checkIfUserStillHasStakedNft(
+  //                 walletAddress,
+  //                 stakingCommunity.tokenAddress,
+  //                 stakingCommunity.stakingAddress
+  //               )
+  //             ) {
+  //               hasRequiredNft = true;
+  //             }
+  //           })
+  //         );
+  //       }
+  //     })
+  //   );
+  // }
+  // updateHasRequiredNft(hasRequiredNft);
 };
 
 const filterDuplicateCommunities = (nonUniqueCommunities: Community[]) => {
@@ -232,30 +237,8 @@ const filterDuplicateCommunities = (nonUniqueCommunities: Community[]) => {
   return uniqueCommunities;
 };
 
-const openseaApiCall = async (walletAddress: string, tokenAddress: string) => {
-  const options = {
-    method: 'GET',
-    headers: {
-      Accept: 'application/json',
-      'X-API-KEY': '7d5d2f9f7391463dadb8c3fca6b2662d',
-    },
-  };
-  var apiUrl =
-    'https://api.opensea.io/api/v1/assets?owner=' +
-    walletAddress +
-    '&owner=' +
-    walletAddress +
-    '&order_by=pk&order_direction=desc&asset_contract_address=' +
-    tokenAddress +
-    '&limit=1';
-
-  const response = await fetch(apiUrl, options);
-  const nftInWallet = await response.json();
-  return nftInWallet.assets[0].image_url;
-};
-
 export const getNftImagesForCommunityProfile = async (
-  walletAddresses: string[],
+  walletGroupIDs: string[],
   communityId: string,
   setUserOwnedImages: any
 ) => {
@@ -273,13 +256,13 @@ export const getNftImagesForCommunityProfile = async (
     tokenAddressString += '&asset_contract_address=' + tokenAddress;
   });
   await Promise.all(
-    walletAddresses.map(async (walletAddress) => {
-      if (Web3.utils.isAddress(walletAddress)) {
+    walletGroupIDs.map(async (walletGroupID) => {
+      if (Web3.utils.isAddress(walletGroupID)) {
         var apiUrl =
           'https://api.opensea.io/api/v1/assets?owner=' +
-          walletAddress +
+          walletGroupID +
           '&owner=' +
-          walletAddress +
+          walletGroupID +
           '&order_by=pk&order_direction=desc' +
           tokenAddressString +
           '&limit=50&include_orders=false';
@@ -303,10 +286,10 @@ export const getNftImagesForCommunityProfile = async (
   }
 
   await Promise.all(
-    walletAddresses.map(async (walletAddress) => {
+    walletGroupIDs.map(async (walletGroupID) => {
       for (let i = 0; i < community.stakingAddresses.length; i++) {
         await getStakedNftImages(
-          walletAddress,
+          walletGroupID,
           community.tokenAddresses[i],
           community.stakingAddresses[i],
           images

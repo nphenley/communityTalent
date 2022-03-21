@@ -10,8 +10,6 @@ type ProfileCardProps = {
   alwaysExpanded?: boolean;
 };
 
-// TODO:
-// Get Profile Pics properly.
 const ProfileCard = (props: ProfileCardProps) => {
   const ruler = <hr className='border-primary'></hr>;
 

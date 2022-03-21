@@ -3,24 +3,16 @@ import Content from '_components/Community/Content/Content';
 import TopBar from '_components/Community/TopBar';
 import MobileSideBar from '_components/Community/SideBar/MobileSideBar';
 import { useState, useEffect } from 'react';
-import { ConnectionData } from '_types/ConnectionData';
-import { ConnectionContext } from '_contexts/ConnectionContext';
-import {
-  checkForCommunityProfileInLinkedWallets,
-  checkForDefaultProfileInLinkedWallets,
-  subscribeToDefaultProfile,
-  subscribeToCommunityProfile,
-} from '_api/profiles';
-import { getLinkedWallets } from '_api/linkWallets';
+import { subscribeToCommunityProfile } from '_api/profiles';
+import { getOrCreateWalletGroupID } from '_api/walletGroups';
 import { useMoralis } from 'react-moralis';
 import { useRouter } from 'next/router';
 import CreateProfileForm from '_components/ProfileForms/CreateProfileForm';
 import LoadingSpinner from '_styled/LoadingSpinner';
 import Head from 'next/head';
 import { Profile } from '_types/Profile';
-import { Networks } from '_enums/Networks';
 import { ProfileContext } from '_contexts/ProfileContext';
-import { checkNftIsInWallet } from '_helpers/getUserNfts';
+import { checkWalletGroupOwnsNFT } from '_helpers/getUserNfts';
 import { useNFTBalances } from 'react-moralis';
 import { Sections } from '_enums/Sections';
 import { CommunityContext } from '_contexts/CommunityContext';
@@ -30,168 +22,116 @@ const Community = () => {
   const router = useRouter();
   const communityId = router.query.communityId as string;
 
-  const { isAuthUndefined, isAuthenticated, user, chainId } = useMoralis();
+  const { isAuthUndefined, isAuthenticated, user } = useMoralis();
   const { getNFTBalances } = useNFTBalances();
 
-  const [loadingHasRequiredNft, setLoadingHasRequiredNft] = useState(true);
+  const [loadingWalletGroupOwnsNFT, setLoadingWalletGroupOwnsNFT] =
+    useState(true);
 
-  const [loadingConnectionData, setLoadingConnectionData] = useState(true);
-  const [connectionData, setConnectionData] = useState<ConnectionData>();
-  const [linkedWallets, setLinkedWallets] = useState<string[]>();
-
-  const [profile, setProfile] = useState<Profile>();
   const [loadingProfile, setLoadingProfile] = useState(true);
-  const [existingDefaultProfile, setExistingDefaultProfile] =
-    useState<Profile>();
-  const [loadingDefaultProfile, setLoadingDefaultProfile] = useState(true);
+  const [profile, setProfile] = useState<Profile>();
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [toggleState, setToggleState] = useState<Sections>(Sections.TALENT);
 
+  const [walletGroupID, setWalletGroupID] = useState('');
+
   useEffect(() => {
-    if (isAuthUndefined || !router.query.communityId) return;
+    if (isAuthUndefined) return;
     if (!isAuthenticated) {
       router.push('/');
       return;
     }
-    initConnectionData();
-  }, [isAuthUndefined, isAuthenticated, router.query]);
+  }, [isAuthUndefined, isAuthenticated]);
 
-  const initConnectionData = async () => {
-    setLoadingConnectionData(true);
-    setConnectionData({
-      network: user!.attributes.ethAddress ? Networks.ETH : Networks.SOL,
-      address: user!.attributes.ethAddress
+  useEffect(() => {
+    getOrCreateWalletGroupID(
+      user!.attributes.ethAddress
         ? user!.attributes.ethAddress
         : user!.attributes.solAddress,
-    });
-    setLoadingConnectionData(false);
-  };
-  const updateHasRequiredNft = (hasRequiredNft: boolean) => {
-    hasRequiredNft ? setLoadingHasRequiredNft(false) : router.push('/');
-  };
+      setWalletGroupID
+    );
+  }, []);
 
+  // TODO:
+  // Check if any wallet in walletGroup contains the required NFT.
   useEffect(() => {
-    if (!connectionData) return;
-    getLinkedWallets(connectionData.address, setLinkedWallets);
-  }, [connectionData]);
-  useEffect(() => {
-    if (!connectionData || !linkedWallets) return;
+    if (!walletGroupID) return;
 
-    checkNftIsInWallet(
+    checkWalletGroupOwnsNFT(
       getNFTBalances,
-      linkedWallets,
+      walletGroupID,
       communityId,
-      updateHasRequiredNft
+      updateWalletGroupOwnsNFT
     );
-    checkForDefaultProfileInLinkedWallets(
-      connectionData.address,
-      linkedWallets
-    );
-    checkForCommunityProfileInLinkedWallets(
-      connectionData.address,
-      linkedWallets,
-      communityId
-    );
-  }, [connectionData, linkedWallets]);
-  useEffect(() => {
-    if (!connectionData) {
-      setLoadingProfile(false);
-      return;
-    }
-    setLoadingProfile(true);
-    const unsubscribe = subscribeToCommunityProfile(
+
+    const unsubToProfile = subscribeToCommunityProfile(
       communityId,
-      connectionData.address,
+      walletGroupID,
       updateProfile
     );
+    return unsubToProfile;
+  }, [walletGroupID]);
 
-    return unsubscribe;
-  }, [connectionData]);
-
-  useEffect(() => {
-    if (!connectionData) {
-      setLoadingDefaultProfile(false);
-      return;
-    }
-    const unsubscribe = subscribeToDefaultProfile(
-      connectionData.address,
-      updateDefaultProfile
-    );
-    return unsubscribe;
-  }, [connectionData]);
+  const updateWalletGroupOwnsNFT = (walletGroupOwnsNFT: boolean) => {
+    walletGroupOwnsNFT ? setLoadingWalletGroupOwnsNFT(false) : router.push('/');
+  };
 
   const updateProfile = (profile: Profile) => {
     setProfile(profile);
     setLoadingProfile(false);
   };
 
-  const updateDefaultProfile = (profile: Profile) => {
-    setExistingDefaultProfile(profile);
-    setLoadingDefaultProfile(false);
-  };
   return (
-    <ConnectionContext.Provider value={connectionData}>
-      <CommunityContext.Provider value={communityId}>
-        <ProfileContext.Provider value={profile}>
-          <Head>
-            <title>community/{communityId}</title>
-            <meta
-              name='viewport'
-              content='initial-scale=1.0, width=device-width'
+    <CommunityContext.Provider value={communityId}>
+      <Head>
+        <title>community/{communityId}</title>
+        <meta name='viewport' content='initial-scale=1.0, width=device-width' />
+      </Head>
+
+      <div className='flex h-screen text-white break-words bg-background'>
+        {isAuthUndefined || loadingWalletGroupOwnsNFT || loadingProfile ? (
+          <LoadingSpinner />
+        ) : !profile ? (
+          <div className='flex flex-col w-full'>
+            <TopBar
+              isSidebarOpen={isSidebarOpen}
+              setIsSidebarOpen={undefined}
+              hideHamburgerMenu={true}
             />
-          </Head>
-
-          <div className='flex h-screen text-white break-words bg-background'>
-            {isAuthUndefined ||
-            loadingConnectionData ||
-            loadingHasRequiredNft ||
-            loadingProfile ||
-            loadingDefaultProfile ? (
-              <LoadingSpinner />
-            ) : !profile ? (
-              <div className='flex flex-col w-full'>
-                <TopBar
-                  isSidebarOpen={isSidebarOpen}
-                  setIsSidebarOpen={undefined}
-                  hideHamburgerMenu={true}
-                />
-                <CreateProfileForm
-                  type={ProfileType.Community}
-                  walletAddress={connectionData?.address!}
-                  existingDefaultProfile={existingDefaultProfile}
-                />
-              </div>
-            ) : (
-              <>
-                <div className='hidden md:block'>
-                  <SideBar
-                    toggleState={toggleState}
-                    setToggleState={setToggleState}
-                  />
-                </div>
-                <div className='block md:hidden'>
-                  <MobileSideBar
-                    isOpen={isSidebarOpen}
-                    setIsOpen={setIsSidebarOpen}
-                    toggleState={toggleState}
-                    setToggleState={setToggleState}
-                  />
-                </div>
-
-                <div className='flex flex-col grow'>
-                  <TopBar
-                    isSidebarOpen={isSidebarOpen}
-                    setIsSidebarOpen={setIsSidebarOpen}
-                  />
-                  <Content toggleState={toggleState} />
-                </div>
-              </>
-            )}
+            <CreateProfileForm
+              type={ProfileType.COMMUNITY}
+              walletGroupID={walletGroupID}
+            />
           </div>
-        </ProfileContext.Provider>
-      </CommunityContext.Provider>
-    </ConnectionContext.Provider>
+        ) : (
+          <ProfileContext.Provider value={profile}>
+            <div className='hidden md:block'>
+              <SideBar
+                toggleState={toggleState}
+                setToggleState={setToggleState}
+              />
+            </div>
+            <div className='block md:hidden'>
+              <MobileSideBar
+                isOpen={isSidebarOpen}
+                setIsOpen={setIsSidebarOpen}
+                toggleState={toggleState}
+                setToggleState={setToggleState}
+              />
+            </div>
+
+            <div className='flex flex-col grow'>
+              <TopBar
+                isSidebarOpen={isSidebarOpen}
+                setIsSidebarOpen={setIsSidebarOpen}
+              />
+              <Content toggleState={toggleState} />
+            </div>
+          </ProfileContext.Provider>
+        )}
+      </div>
+    </CommunityContext.Provider>
   );
 };
 export default Community;

@@ -11,7 +11,6 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.1.16",
-    "@headlessui/react": "^1.4.3",
     "@nfteyez/sol-rayz": "^0.10.2",
     "@solana/web3.js": "^1.36.0",
     "firebase": "^9.6.6",

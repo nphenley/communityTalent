@@ -6,6 +6,7 @@ import { ProfileContext } from '_contexts/ProfileContext';
 import { CommunityContext } from '_contexts/CommunityContext';
 import SelectField from '_styled/Forms/SelectField';
 import { getFormOptions } from '_api/profiles';
+import FormSubmit from '_styled/Forms/FormSubmit';
 
 type ProjectFormProps = {
   setAddProject: any;
@@ -20,7 +21,7 @@ const ProjectForm = (props: ProjectFormProps) => {
   const onSubmit = (data: any) => {
     createProject(communityId, {
       ...data,
-      walletAddress: profile!.walletAddress,
+      walletGroupID: profile!.id,
     } as Project);
     props.setAddProject(false);
   };
@@ -67,10 +68,7 @@ const ProjectForm = (props: ProjectFormProps) => {
             name='tags'
           />
 
-          <input
-            className='rounded-lg bg-primary p-4 hover:cursor-pointer hover:bg-primaryLight'
-            type='submit'
-          />
+          <FormSubmit />
         </form>
       </div>
     </div>

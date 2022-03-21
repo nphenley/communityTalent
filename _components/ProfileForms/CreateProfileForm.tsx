@@ -1,11 +1,11 @@
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useContext, useEffect, useState } from 'react';
-import { ConnectionContext } from '_contexts/ConnectionContext';
 import {
   createProfile,
   getFormOptions,
   importDefaultProfileToCommunity,
-  updateDefaultProfile,
+  subscribeToDefaultProfile,
+  updateDefaultProfile as apiUpdateDefaultProfile,
 } from '_api/profiles';
 import { Profile } from '_types/Profile';
 import ToggleField from '_styled/Forms/ToggleField';
@@ -19,22 +19,32 @@ import OptionalArrayInputField from '_styled/Forms/OptionalArrayInputField';
 import FormSubmit from '_styled/Forms/FormSubmit';
 import { ProfileType } from '_enums/ProfileType';
 import SelectFieldSingle from '_styled/Forms/SelectFieldSingle';
-import { ConnectionData } from '_types/ConnectionData';
+import LoadingSpinner from '_styled/LoadingSpinner';
 
 type CreateProfileFormProps = {
   type: ProfileType;
-  walletAddress: string;
-  existingDefaultProfile?: Profile;
-  setIsShowingProfile?: any;
+  walletGroupID: string;
+  onSubmit?: any;
 };
 
 const CreateProfileForm = (props: CreateProfileFormProps) => {
-  let connectionData: ConnectionData | undefined;
   let communityId: string;
-  if (props.type === ProfileType.Community) {
-    connectionData = useContext(ConnectionContext);
+
+  if (props.type === ProfileType.COMMUNITY) {
     communityId = useContext(CommunityContext);
   }
+
+  const [loadingDefaultProfile, setLoadingDefaultProfile] = useState(true);
+  const [defaultProfile, setDefaultProfile] = useState<Profile>();
+
+  const updateDefaultProfile = (defaultProfile: Profile) => {
+    setDefaultProfile(defaultProfile);
+    setLoadingDefaultProfile(false);
+  };
+
+  useEffect(() => {
+    return subscribeToDefaultProfile(props.walletGroupID, updateDefaultProfile);
+  }, []);
 
   const { control, register, unregister, handleSubmit } = useForm();
   const [selectFieldOptions, setSelectFieldOptions] = useState<any>();
@@ -75,7 +85,7 @@ const CreateProfileForm = (props: CreateProfileFormProps) => {
   let description: any;
 
   switch (props.type) {
-    case ProfileType.Community:
+    case ProfileType.COMMUNITY:
       onSubmit = async (data: any) => {
         for (const property in data)
           if (
@@ -84,19 +94,16 @@ const CreateProfileForm = (props: CreateProfileFormProps) => {
             (Array.isArray(data[property]) && !data[property].length)
           )
             delete data[property];
-        createProfile(communityId, {
-          ...data,
-          walletAddress: connectionData!.address,
-        } as Profile);
+        createProfile(props.walletGroupID, communityId, data);
       };
-      description = props.existingDefaultProfile?.displayName ? (
+      description = defaultProfile?.displayName ? (
         <div className='flex flex-row-reverse items-center gap-4 mb-4 text-center'>
           <button
             onClick={() =>
               importDefaultProfileToCommunity(
-                props.walletAddress,
+                props.walletGroupID,
                 communityId,
-                props.existingDefaultProfile!
+                defaultProfile
               )
             }
             className='px-3 py-2 font-bold text-white rounded-lg bg-primary'
@@ -117,7 +124,8 @@ const CreateProfileForm = (props: CreateProfileFormProps) => {
         </h1>
       );
       break;
-    case ProfileType.Default:
+
+    case ProfileType.DEFAULT:
       onSubmit = async (data: any) => {
         for (const property in data)
           if (
@@ -126,8 +134,8 @@ const CreateProfileForm = (props: CreateProfileFormProps) => {
             (Array.isArray(data[property]) && !data[property].length)
           )
             delete data[property];
-        updateDefaultProfile(props.walletAddress!, { ...data } as Profile);
-        props.setIsShowingProfile(false);
+        apiUpdateDefaultProfile(props.walletGroupID, { ...data } as Profile);
+        props.onSubmit();
       };
 
       description = (
@@ -152,219 +160,223 @@ const CreateProfileForm = (props: CreateProfileFormProps) => {
 
   return (
     <div className='flex flex-col items-center pt-12 pb-16 overflow-y-scroll grow bg-background'>
-      <form
-        className='flex flex-col w-full max-w-screen-sm gap-8 px-10 sm:px-0'
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        {title}
-        {description}
-        <FormField
-          label='Display Name'
-          formField={
-            <InputField
-              register={register}
-              placeholder='Display Name'
-              name='displayName'
-              required={true}
-              maxLength={34}
-            />
-          }
-        />
-        <FormField
-          label='Bio'
-          formField={
-            <LargeInputField
-              register={register}
-              placeholder='Bio'
-              name='bio'
-              required={true}
-              maxLength={160}
-            />
-          }
-        />
-        <FormField
-          label='Looking For Project'
-          formField={
-            <ToggleField
-              register={register}
-              label='Looking for Project'
-              name='lookingForProject'
-            />
-          }
-        />
-        <FormField
-          label='Tags'
-          formField={
-            <SelectField
-              control={control}
-              label='Tags'
-              options={selectFieldOptions?.tags}
-              name='tags'
-            />
-          }
-        />
-        <OptionalFormFieldWrapper
-          label='Discord Username'
-          formField={
-            <FormField
-              label='Discord Username'
-              formField={
-                <InputField
-                  register={register}
-                  placeholder='Discord Username'
-                  name='discordUsername'
-                  maxLength={37}
-                />
-              }
-            />
-          }
-          onHideField={() => unregister('discordUsername')}
-          isFieldShown={showDiscord}
-          setIsFieldShown={setShowDiscord}
-        />
-        <OptionalFormFieldWrapper
-          label='Twitter Handle'
-          formField={
-            <FormField
-              label='Twitter Handle'
-              formField={
-                <InputField
-                  register={register}
-                  placeholder='Twitter Handle'
-                  name='twitterHandle'
-                  maxLength={16}
-                />
-              }
-            />
-          }
-          onHideField={() => unregister('twitterHandle')}
-          isFieldShown={showTwitter}
-          setIsFieldShown={setShowTwitter}
-        />
-        <OptionalFormFieldWrapper
-          label='Timezone'
-          formField={
-            <FormField
-              label='Timezone'
-              formField={
-                <SelectFieldSingle
-                  control={control}
-                  label='Timezone'
-                  options={selectFieldOptions?.timezones}
-                  name='timezone'
-                />
-              }
-            />
-          }
-          onHideField={() => unregister('timezone')}
-          isFieldShown={showTimezone}
-          setIsFieldShown={setShowTimezone}
-        />
-        <OptionalArrayInputField
-          label='Skills'
-          fieldName='Skill'
-          fields={skillsFields}
-          append={skillsAppend}
-          remove={skillsRemove}
-          isFieldShown={showSkills}
-          setIsFieldShown={setShowSkills}
-          fieldComponents={skillsFields.map((field, index) => (
-            <FormField
-              key={field.id}
-              label={index === 0 ? 'Skills' : ''}
-              formField={
-                <InputField
-                  register={register}
-                  placeholder={'Skill'}
-                  name={`skills.${index}`}
-                  maxLength={50}
-                />
-              }
-            />
-          ))}
-        />
-        <OptionalFormFieldWrapper
-          label='Experience'
-          formField={
-            <FormField
-              label='Experience'
-              formField={
-                <LargeInputField
-                  register={register}
-                  placeholder='Experience'
-                  name='experience'
-                  maxLength={500}
-                />
-              }
-            />
-          }
-          onHideField={() => unregister('experience')}
-          isFieldShown={showExperience}
-          setIsFieldShown={setShowExperience}
-        />
-        <OptionalFormFieldWrapper
-          label='Languages'
-          formField={
-            <FormField
-              label='Languages'
-              formField={
-                <SelectField
-                  control={control}
-                  label='Languages'
-                  options={selectFieldOptions?.languages}
-                  name='languages'
-                />
-              }
-            />
-          }
-          onHideField={() => unregister('languages')}
-          isFieldShown={showLanguages}
-          setIsFieldShown={setShowLanguages}
-        />
-        <OptionalFormFieldWrapper
-          label='Contacts'
-          formField={
-            <FormField
-              label='Contacts'
-              formField={
-                <LargeInputField
-                  register={register}
-                  placeholder='Contacts'
-                  name='contacts'
-                  maxLength={500}
-                />
-              }
-            />
-          }
-          onHideField={() => unregister('contacts')}
-          isFieldShown={showContacts}
-          setIsFieldShown={setShowContacts}
-        />
-        <OptionalArrayInputField
-          label='Relevant Links'
-          fieldName='Link'
-          fields={relevantLinksFields}
-          append={relevantLinksAppend}
-          remove={relevantLinksRemove}
-          fieldComponents={relevantLinksFields.map((field, index) => (
-            <FormField
-              key={field.id}
-              label={index === 0 ? 'Relevant Links' : ''}
-              formField={
-                <InputField
-                  register={register}
-                  placeholder={'Relevant Link'}
-                  name={`relevantLinks.${index}`}
-                  maxLength={50}
-                />
-              }
-            />
-          ))}
-          isFieldShown={showLinks}
-          setIsFieldShown={setShowLinks}
-        />
-        <FormSubmit />
-      </form>
+      {loadingDefaultProfile ? (
+        <LoadingSpinner />
+      ) : (
+        <form
+          className='flex flex-col w-full max-w-screen-sm gap-8 px-10 sm:px-0'
+          onSubmit={handleSubmit(onSubmit)}
+        >
+          {title}
+          {description}
+          <FormField
+            label='Display Name'
+            formField={
+              <InputField
+                register={register}
+                placeholder='Display Name'
+                name='displayName'
+                required={true}
+                maxLength={34}
+              />
+            }
+          />
+          <FormField
+            label='Bio'
+            formField={
+              <LargeInputField
+                register={register}
+                placeholder='Bio'
+                name='bio'
+                required={true}
+                maxLength={160}
+              />
+            }
+          />
+          <FormField
+            label='Looking For Project'
+            formField={
+              <ToggleField
+                register={register}
+                label='Looking for Project'
+                name='lookingForProject'
+              />
+            }
+          />
+          <FormField
+            label='Tags'
+            formField={
+              <SelectField
+                control={control}
+                label='Tags'
+                options={selectFieldOptions?.tags}
+                name='tags'
+              />
+            }
+          />
+          <OptionalFormFieldWrapper
+            label='Discord Username'
+            formField={
+              <FormField
+                label='Discord Username'
+                formField={
+                  <InputField
+                    register={register}
+                    placeholder='Discord Username'
+                    name='discordUsername'
+                    maxLength={37}
+                  />
+                }
+              />
+            }
+            onHideField={() => unregister('discordUsername')}
+            isFieldShown={showDiscord}
+            setIsFieldShown={setShowDiscord}
+          />
+          <OptionalFormFieldWrapper
+            label='Twitter Handle'
+            formField={
+              <FormField
+                label='Twitter Handle'
+                formField={
+                  <InputField
+                    register={register}
+                    placeholder='Twitter Handle'
+                    name='twitterHandle'
+                    maxLength={16}
+                  />
+                }
+              />
+            }
+            onHideField={() => unregister('twitterHandle')}
+            isFieldShown={showTwitter}
+            setIsFieldShown={setShowTwitter}
+          />
+          <OptionalFormFieldWrapper
+            label='Timezone'
+            formField={
+              <FormField
+                label='Timezone'
+                formField={
+                  <SelectFieldSingle
+                    control={control}
+                    label='Timezone'
+                    options={selectFieldOptions?.timezones}
+                    name='timezone'
+                  />
+                }
+              />
+            }
+            onHideField={() => unregister('timezone')}
+            isFieldShown={showTimezone}
+            setIsFieldShown={setShowTimezone}
+          />
+          <OptionalArrayInputField
+            label='Skills'
+            fieldName='Skill'
+            fields={skillsFields}
+            append={skillsAppend}
+            remove={skillsRemove}
+            isFieldShown={showSkills}
+            setIsFieldShown={setShowSkills}
+            fieldComponents={skillsFields.map((field, index) => (
+              <FormField
+                key={field.id}
+                label={index === 0 ? 'Skills' : ''}
+                formField={
+                  <InputField
+                    register={register}
+                    placeholder={'Skill'}
+                    name={`skills.${index}`}
+                    maxLength={50}
+                  />
+                }
+              />
+            ))}
+          />
+          <OptionalFormFieldWrapper
+            label='Experience'
+            formField={
+              <FormField
+                label='Experience'
+                formField={
+                  <LargeInputField
+                    register={register}
+                    placeholder='Experience'
+                    name='experience'
+                    maxLength={500}
+                  />
+                }
+              />
+            }
+            onHideField={() => unregister('experience')}
+            isFieldShown={showExperience}
+            setIsFieldShown={setShowExperience}
+          />
+          <OptionalFormFieldWrapper
+            label='Languages'
+            formField={
+              <FormField
+                label='Languages'
+                formField={
+                  <SelectField
+                    control={control}
+                    label='Languages'
+                    options={selectFieldOptions?.languages}
+                    name='languages'
+                  />
+                }
+              />
+            }
+            onHideField={() => unregister('languages')}
+            isFieldShown={showLanguages}
+            setIsFieldShown={setShowLanguages}
+          />
+          <OptionalFormFieldWrapper
+            label='Contacts'
+            formField={
+              <FormField
+                label='Contacts'
+                formField={
+                  <LargeInputField
+                    register={register}
+                    placeholder='Contacts'
+                    name='contacts'
+                    maxLength={500}
+                  />
+                }
+              />
+            }
+            onHideField={() => unregister('contacts')}
+            isFieldShown={showContacts}
+            setIsFieldShown={setShowContacts}
+          />
+          <OptionalArrayInputField
+            label='Relevant Links'
+            fieldName='Link'
+            fields={relevantLinksFields}
+            append={relevantLinksAppend}
+            remove={relevantLinksRemove}
+            fieldComponents={relevantLinksFields.map((field, index) => (
+              <FormField
+                key={field.id}
+                label={index === 0 ? 'Relevant Links' : ''}
+                formField={
+                  <InputField
+                    register={register}
+                    placeholder={'Relevant Link'}
+                    name={`relevantLinks.${index}`}
+                    maxLength={50}
+                  />
+                }
+              />
+            ))}
+            isFieldShown={showLinks}
+            setIsFieldShown={setShowLinks}
+          />
+          <FormSubmit />
+        </form>
+      )}
     </div>
   );
 };

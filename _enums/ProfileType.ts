@@ -1,4 +1,4 @@
 export enum ProfileType {
-  Default,
-  Community,
+  DEFAULT,
+  COMMUNITY,
 }

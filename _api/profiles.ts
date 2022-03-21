@@ -8,23 +8,17 @@ import {
   updateDoc,
   onSnapshot,
   setDoc,
-  addDoc,
   deleteDoc,
 } from 'firebase/firestore';
 import { Profile } from '_types/Profile';
 
 export const createProfile = async (
+  walletGroupID: string,
   communityId: string,
   profileData: Profile
 ) => {
   setDoc(
-    doc(
-      firestore,
-      'communities',
-      communityId,
-      'profiles',
-      profileData.walletAddress
-    ),
+    doc(firestore, 'communities', communityId, 'profiles', walletGroupID),
     {
       ...profileData,
       dateCreated: Timestamp.now(),
@@ -47,11 +41,11 @@ export const updateCommunityProfile = async (
 
 export const subscribeToCommunityProfile = (
   communityId: string,
-  walletAddress: string,
+  walletGroupID: string,
   updateProfile: any
 ) => {
   return onSnapshot(
-    doc(firestore, 'communities', communityId, 'profiles', walletAddress),
+    doc(firestore, 'communities', communityId, 'profiles', walletGroupID),
 
     (snapshot: any) =>
       updateProfile(
@@ -106,112 +100,42 @@ export const getFormOptions = async (setSelectOptions: any) => {
 };
 
 export const updateDefaultProfile = async (
-  walletAddress: string,
+  walletGroupID: string,
   defaultProfile: Partial<Profile>
 ) => {
   const updated = await updateDoc(
-    doc(firestore, 'defaultProfiles', walletAddress),
+    doc(firestore, 'defaultProfiles', walletGroupID),
     {
       ...defaultProfile,
       dateLastUpdated: Timestamp.now(),
-      walletAddress: walletAddress,
+      walletGroupID: walletGroupID,
     }
   );
   return updated;
 };
 
 export const importDefaultProfileToCommunity = async (
-  walletAddress: string,
+  walletGroupID: string,
   communityId: string,
   defaultProfile: Profile
 ) => {
   return setDoc(
-    doc(firestore, 'communities', communityId, 'profiles', walletAddress),
+    doc(firestore, 'communities', communityId, 'profiles', walletGroupID),
     {
       ...defaultProfile,
       dateCreated: Timestamp.now(),
       dateLastUpdated: Timestamp.now(),
-      walletAddress: walletAddress,
+      walletGroupID: walletGroupID,
     }
   );
 };
 
 export const subscribeToDefaultProfile = (
-  walletAddress: string,
-  setExistingDefaultProfile: any
+  walletGroupID: string,
+  setDefaultProfile: any
 ) => {
   return onSnapshot(
-    doc(firestore, 'defaultProfiles', walletAddress),
-    (snapshot) => {
-      if (!snapshot.exists()) {
-        setDoc(snapshot.ref, { dateCreated: Timestamp.now() });
-      } else {
-        setExistingDefaultProfile(snapshot.data());
-      }
-    }
+    doc(firestore, 'defaultProfiles', walletGroupID),
+    (docSnap) => setDefaultProfile(docSnap.data())
   );
-};
-
-export const checkForDefaultProfileInLinkedWallets = async (
-  walletAddress: string,
-  linkedWallets: string[]
-) => {
-  const defaultProfile = await getDoc(
-    doc(firestore, 'defaultProfiles', walletAddress)
-  );
-  const linkedWalletsCopy = [...linkedWallets];
-  const index = linkedWalletsCopy.indexOf(walletAddress);
-  linkedWalletsCopy.splice(index, 1);
-  if (
-    !defaultProfile.exists() ||
-    !defaultProfile.data() ||
-    !defaultProfile.data().displayName
-  ) {
-    await Promise.all(
-      linkedWalletsCopy.map(async (wallet) => {
-        const linkedDefaultProfile = await getDoc(
-          doc(firestore, 'defaultProfiles', wallet)
-        );
-        if (linkedDefaultProfile.exists() && linkedDefaultProfile.data()) {
-          await setDoc(defaultProfile.ref, {
-            ...linkedDefaultProfile.data(),
-            dateCreated: Timestamp.now(),
-            dateLastUpdated: Timestamp.now(),
-            walletAddress: walletAddress,
-          });
-          //if there are several existing ones they get overwritten.
-          //guess we could decide which ones has priority based on Timestamp
-        } //We could set a bool that turns true if a linkedDefaultProfile is
-        //found and push the refs to an array if we that's desirable.
-      })
-    );
-  }
-};
-
-export const checkForCommunityProfileInLinkedWallets = async (
-  walletAddress: string,
-  linkedWallets: string[],
-  communityId: string
-) => {
-  const walletProfileInCommunity = await getDoc(
-    doc(firestore, 'communities', communityId, 'profiles', walletAddress)
-  );
-  const linkedWalletsCopy = [...linkedWallets];
-  const index = linkedWalletsCopy.indexOf(walletAddress);
-
-  linkedWalletsCopy.splice(index, 1);
-  if (!walletProfileInCommunity.exists()) {
-    linkedWalletsCopy.forEach(async (wallet) => {
-      const linkedWalletProfileInCommunity = await getDoc(
-        doc(firestore, 'communities', communityId, 'profiles', wallet)
-      );
-      if (linkedWalletProfileInCommunity.exists()) {
-        await setDoc(walletProfileInCommunity.ref, {
-          ...linkedWalletProfileInCommunity.data(),
-          walletAddress: walletAddress, //could make this linkedWallets?
-        });
-      }
-      await deleteDoc(linkedWalletProfileInCommunity.ref);
-    });
-  }
 };

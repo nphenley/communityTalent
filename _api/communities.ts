@@ -10,55 +10,40 @@ import {
   arrayRemove,
   arrayUnion,
   collectionGroup,
+  deleteDoc,
 } from 'firebase/firestore';
+import { SelectOption } from '_types/SelectOption';
+import { Dispatch, SetStateAction } from 'react';
 
 export const unpinCommunity = async (
-  walletAddress: string,
+  walletGroupID: string,
   communityId: string
 ) => {
-  await updateDoc(doc(firestore, 'pinnedCommunities', walletAddress), {
+  await updateDoc(doc(firestore, 'pinnedCommunities', walletGroupID), {
     communityIds: arrayRemove(communityId),
   });
 };
 
 export const pinCommunity = async (
-  walletAddress: string,
+  walletGroupID: string,
   communityId: string
 ) => {
-  await updateDoc(doc(firestore, 'pinnedCommunities', walletAddress), {
+  await updateDoc(doc(firestore, 'pinnedCommunities', walletGroupID), {
     communityIds: arrayUnion(communityId),
   });
 };
 
 export const subscribeToPinnedCommunityIds = (
-  walletAddress: string,
+  walletGroupID: string,
   setUserPinnedCommunityIds: any
 ) => {
   return onSnapshot(
-    doc(firestore, 'pinnedCommunities', walletAddress),
+    doc(firestore, 'pinnedCommunities', walletGroupID),
     (snapshot) => {
       if (!snapshot.exists()) {
         setDoc(snapshot.ref, {});
       } else {
         setUserPinnedCommunityIds(
-          snapshot.data().communityIds ? snapshot.data().communityIds : []
-        );
-      }
-    }
-  );
-};
-
-export const subscribeToStakedCommunityIds = (
-  walletAddress: string,
-  setUserStakedCommunityIds: any
-) => {
-  return onSnapshot(
-    doc(firestore, 'stakedCommunities', walletAddress),
-    (snapshot) => {
-      if (!snapshot.exists()) {
-        setDoc(snapshot.ref, {});
-      } else {
-        setUserStakedCommunityIds(
           snapshot.data().communityIds ? snapshot.data().communityIds : []
         );
       }
@@ -151,87 +136,73 @@ export const checkForStakingAddresses = async (communityId: string) => {
   return stakingCommunityInfo;
 };
 
-// ==================== STAKED NFTS ====================
+// ==================== STAKED COMMUNITIES ====================
 
-export const addStakedCommunityId = async (
-  walletAddress: string,
+export const addStakedCommunity = async (
+  walletGroupID: string,
   communityId: string
 ) => {
-  updateDoc(doc(firestore, 'stakedCommunities', walletAddress), {
-    communityIds: arrayUnion(communityId),
-  });
+  setDoc(
+    doc(
+      firestore,
+      'walletGroups',
+      walletGroupID,
+      'stakedCommunities',
+      communityId
+    ),
+    {}
+  );
 };
 
-export const removeStakedCommunityId = async (
-  walletAddress: string,
+export const removeStakedCommunity = async (
+  walletGroupID: string,
   communityId: string
 ) => {
-  updateDoc(doc(firestore, 'stakedCommunities', walletAddress), {
-    communityIds: arrayRemove(communityId),
-  });
-};
-
-export const getAllStakingCommunities = async (setStakingCommunities: any) => {
-  const stakingCommunities = await getDoc(
-    doc(firestore, 'selectOptions', 'stakingCommunities')
+  deleteDoc(
+    doc(
+      firestore,
+      'walletGroups',
+      walletGroupID,
+      'stakedCommunities',
+      communityId
+    )
   );
-  let stakingCommunityInfo: { value: string; label: string }[] = [];
-  if (!stakingCommunities.exists()) return;
-  stakingCommunities
-    .data()
-    .array.forEach(
-      (stakingCommunity: { communityId: string; communityName: string }) => {
-        stakingCommunityInfo.push({
-          value: stakingCommunity.communityId,
-          label: stakingCommunity.communityName,
-        });
-      }
-    );
-  setStakingCommunities(stakingCommunityInfo);
 };
 
-// ==================== LINKED WALLETS ====================
-
-export const checkForIdsInLinkedWallets = async (
-  walletAddress: string,
-  linkedWallets: string[]
+export const getStakingCommunitiesSelectOptions = async (
+  updateSelectOptions: (selectOptions: SelectOption[]) => void
 ) => {
-  const currentWalletPinned = await getDoc(
-    doc(firestore, 'pinnedCommunities', walletAddress)
+  return getDoc(doc(firestore, 'selectOptions', 'stakingCommunities')).then(
+    (docSnap) => {
+      let stakingCommunityInfo: SelectOption[] = [];
+      docSnap
+        .data()!
+        .array.forEach(
+          (stakingCommunity: {
+            communityId: string;
+            communityName: string;
+          }) => {
+            stakingCommunityInfo.push({
+              value: stakingCommunity.communityId,
+              label: stakingCommunity.communityName,
+            });
+          }
+        );
+      updateSelectOptions(stakingCommunityInfo);
+    }
   );
-  const currentWalletStaked = await getDoc(
-    doc(firestore, 'stakedCommunities', walletAddress)
-  );
-  const linkedWalletsCopy = [...linkedWallets];
-  const index = linkedWalletsCopy.indexOf(walletAddress);
-  linkedWalletsCopy.splice(index, 1);
+};
 
-  if (!currentWalletPinned.exists() && !currentWalletPinned.data()) {
-    await Promise.all(
-      linkedWalletsCopy.map(async (wallet) => {
-        const linkedWalletPinned = await getDoc(
-          doc(firestore, 'pinnedCommunities', wallet)
-        );
-        if (linkedWalletPinned.exists()) {
-          await setDoc(currentWalletPinned.ref, {
-            communityIds: linkedWalletPinned.data().communityIds,
-          });
-        } //here as well we overwrite, shouldn't be much of an issue
-      }) //in practice as people will be able to link wallets
-    ); //with our first version so shouldn't be setting different
-  } //things on different wallets then linking them.
-  if (!currentWalletStaked.exists() && !currentWalletStaked.data()) {
-    await Promise.all(
-      linkedWallets.map(async (wallet) => {
-        const linkedWalletStaked = await getDoc(
-          doc(firestore, 'stakedCommunities', wallet)
-        );
-        if (linkedWalletStaked.exists()) {
-          await setDoc(currentWalletStaked.ref, {
-            communityIds: linkedWalletStaked.data().communityIds,
-          });
-        }
-      })
-    );
-  }
+export const subscribeToStakedCommunities = (
+  walletGroupID: string,
+  updateStakedCommunities: (stakedCommunities: string[]) => void
+) => {
+  return onSnapshot(
+    collection(firestore, 'walletGroups', walletGroupID, 'stakedCommunities'),
+    (querySnap) => {
+      let stakedCommunities: string[] = [];
+      querySnap.docs.forEach((doc) => stakedCommunities.push(doc.id));
+      updateStakedCommunities(stakedCommunities);
+    }
+  );
 };

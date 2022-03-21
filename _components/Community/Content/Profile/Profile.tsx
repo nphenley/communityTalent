@@ -32,7 +32,7 @@ const Profile = () => {
         profileView
       ) : (
         <EditProfileForm
-          type={ProfileType.Community}
+          type={ProfileType.COMMUNITY}
           profile={profile!}
           setEdit={setEdit}
         />

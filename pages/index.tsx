@@ -3,78 +3,77 @@ import Head from 'next/head';
 import DefaultProfile from '_components/Index/DefaultProfile';
 import Communities from '_components/Index/Communities';
 import ConnectView from '_components/Index/ConnectView';
-import { Networks } from '_enums/Networks';
 import { useEffect, useState } from 'react';
 import NavBar from '_components/Index/Navbar';
-import {
-  checkForDefaultProfileInLinkedWallets,
-  subscribeToDefaultProfile,
-} from '_api/profiles';
-import { Profile } from '_types/Profile';
-import LinkWallets from '_components/Index/LinkWallets';
-import { getLinkedWallets } from '_api/linkWallets';
+import WalletGroups from '_components/Index/WalletGroups/WalletGroups';
+import { subscribeToOrCreateWalletGroupID } from '_api/walletGroups';
+import LoadingSpinner from '_styled/LoadingSpinner';
 
-export default function Home() {
+const nextHead = (
+  <Head>
+    <title>communityTalent</title>
+    <meta name='viewport' content='initial-scale=1.0, width=device-width' />
+  </Head>
+);
+
+export enum HomeSection {
+  COMMUNITIES,
+  DEFAULTPROFILE,
+  WALLETGROUPS,
+}
+
+const Home = () => {
   const { isAuthenticated, user } = useMoralis();
-  const [isShowingProfile, setIsShowingProfile] = useState(false);
-  const [isShowingLinkWallets, setIsShowingLinkWallets] = useState(false);
-  const [existingDefaultProfile, setExistingDefaultProfile] =
-    useState<Profile>();
-  const [linkedWallets, setLinkedWallets] = useState();
-  const network: Networks = user?.attributes.ethAddress
-    ? Networks.ETH
-    : Networks.SOL;
 
-  const walletAddress =
-    network === Networks.ETH
-      ? user?.attributes.ethAddress
-      : user?.attributes.solAddress;
+  const [homeSection, setHomeSection] = useState<HomeSection>(
+    HomeSection.WALLETGROUPS
+  );
+
+  const [loadingWalletGroupID, setLoadingWalletGroupID] = useState(true);
+  const [walletGroupID, setWalletGroupID] = useState<string>();
 
   useEffect(() => {
-    if (!walletAddress) return;
-    getLinkedWallets(walletAddress, setLinkedWallets);
-  }, [walletAddress]);
+    if (!isAuthenticated || !user) return;
 
-  useEffect(() => {
-    if (!linkedWallets) return;
-    checkForDefaultProfileInLinkedWallets(walletAddress, linkedWallets);
-    const unsubscribe = subscribeToDefaultProfile(
-      walletAddress,
-      setExistingDefaultProfile
+    subscribeToOrCreateWalletGroupID(
+      user.attributes.ethAddress
+        ? user.attributes.ethAddress
+        : user.attributes.solAddress,
+      (walletGroupID: string) => {
+        setWalletGroupID(walletGroupID);
+        setLoadingWalletGroupID(false);
+      }
     );
-    return unsubscribe;
-  }, [linkedWallets]);
+  }, [isAuthenticated, user]);
+
+  const connectedView = loadingWalletGroupID ? (
+    <LoadingSpinner />
+  ) : homeSection === HomeSection.COMMUNITIES ? (
+    <Communities walletGroupID={walletGroupID!} />
+  ) : homeSection === HomeSection.WALLETGROUPS ? (
+    <WalletGroups walletGroupID={walletGroupID!} />
+  ) : (
+    <DefaultProfile
+      walletGroupID={walletGroupID!}
+      onSubmit={() => setHomeSection(HomeSection.COMMUNITIES)}
+    />
+  );
 
   return (
-    <div className='flex flex-col h-screen bg-background text-primary'>
-      <Head>
-        <title>communityTalent</title>
-        <meta name='viewport' content='initial-scale=1.0, width=device-width' />
-      </Head>
+    <div className='flex flex-col h-screen bg-background text-white'>
+      {nextHead}
 
       <NavBar
         isAuthenticated={isAuthenticated}
-        isShowingProfile={isShowingProfile}
-        setIsShowingProfile={setIsShowingProfile}
-        isShowingLinkWallets={isShowingLinkWallets}
-        setIsShowingLinkWallets={setIsShowingLinkWallets}
+        homeSection={homeSection}
+        setHomeSection={setHomeSection}
       />
 
-      <div className='overflow-y-scroll grow'>
-        {!isAuthenticated ? (
-          <ConnectView />
-        ) : isShowingProfile ? (
-          <DefaultProfile
-            walletAddress={walletAddress}
-            setIsShowingProfile={setIsShowingProfile}
-            existingDefaultProfile={existingDefaultProfile}
-          />
-        ) : isShowingLinkWallets ? (
-          <LinkWallets walletAddress={walletAddress} />
-        ) : (
-          <Communities network={network} walletAddress={walletAddress} />
-        )}
+      <div className='overflow-y-scroll grow lg:max-w-[96%] mx-auto w-full py-4'>
+        {isAuthenticated ? connectedView : <ConnectView />}
       </div>
     </div>
   );
-}
+};
+
+export default Home;

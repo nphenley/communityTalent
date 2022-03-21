@@ -9,7 +9,7 @@ export const somProfile: Profile = {
   discordUsername: 'soM#3041',
   twitterHandle: 'somkoda',
   id: 'soM',
-  walletAddress: 'somkoda.eth',
+  walletGroupID: 'somkoda.eth',
   lookingForProject: false,
 };
 
@@ -22,6 +22,6 @@ export const richProfile: Profile = {
   twitterHandle: 'richpepsi_',
   skills: ['Full-Stack Web Dev'],
   id: 'richpepsi',
-  walletAddress: 'richpepsi.eth',
+  walletGroupID: 'richpepsi.eth',
   lookingForProject: false,
 };

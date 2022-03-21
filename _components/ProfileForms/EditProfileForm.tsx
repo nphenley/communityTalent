@@ -19,18 +19,18 @@ import { ProfileType } from '_enums/ProfileType';
 import SelectFieldSingle from '_styled/Forms/SelectFieldSingle';
 import { ProfilePicField } from '_styled/Forms/ProfilePicField';
 import { getNftImagesForCommunityProfile } from '_helpers/getUserNfts';
-import { getLinkedWallets } from '_api/linkWallets';
+import { getLinkedWallets } from '_api/walletGroups';
 
 type EditProfileFormProps = {
   profile: Profile;
   type: ProfileType;
   setEdit?: any;
-  setIsShowingProfile?: any;
+  onSubmit?: any;
 };
 
 const EditProfileForm = (props: EditProfileFormProps) => {
   let communityId: string;
-  if (props.type === ProfileType.Community) {
+  if (props.type === ProfileType.COMMUNITY) {
     communityId = useContext(CommunityContext);
   }
   const [linkedWallets, setLinkedWallets] = useState();
@@ -47,7 +47,7 @@ const EditProfileForm = (props: EditProfileFormProps) => {
     },
   });
 
-  if (props.type === ProfileType.Community) {
+  if (props.type === ProfileType.COMMUNITY) {
     useEffect(() => {
       if (!linkedWallets) return;
       getNftImagesForCommunityProfile(
@@ -60,7 +60,7 @@ const EditProfileForm = (props: EditProfileFormProps) => {
 
   useEffect(() => {
     getFormOptions(setSelectFieldOptions);
-    getLinkedWallets(props.profile.walletAddress, setLinkedWallets);
+    getLinkedWallets(props.profile.id, setLinkedWallets);
   }, []);
 
   const {
@@ -116,7 +116,7 @@ const EditProfileForm = (props: EditProfileFormProps) => {
   let title: any;
 
   switch (props.type) {
-    case ProfileType.Community:
+    case ProfileType.COMMUNITY:
       onSubmit = async (data: any) => {
         for (const property in data)
           if (!dirtyFields[property]) delete data[property];
@@ -140,7 +140,7 @@ const EditProfileForm = (props: EditProfileFormProps) => {
 
       break;
 
-    case ProfileType.Default:
+    case ProfileType.DEFAULT:
       onSubmit = async (data: any) => {
         if (!showSkills) data.skills = [];
         if (!showExperience) data.experience = '';
@@ -149,8 +149,8 @@ const EditProfileForm = (props: EditProfileFormProps) => {
         if (!showLinks) data.relevantLinks = [];
         if (!showTimezone) data.timezone = '';
 
-        updateDefaultProfile(props.profile.walletAddress, data);
-        props.setIsShowingProfile(false);
+        updateDefaultProfile(props.profile.id, data);
+        props.onSubmit();
       };
 
       title = (
@@ -181,7 +181,7 @@ const EditProfileForm = (props: EditProfileFormProps) => {
             />
           }
         />
-        {props.type === ProfileType.Community ? (
+        {props.type === ProfileType.COMMUNITY ? (
           <FormField
             label='Profile Pic'
             formField={

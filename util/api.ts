@@ -1,5 +1,5 @@
 export const getUserNftImageByAddress = async (
-  walletAddress: string,
+  walletGroupID: string,
   tokenAddress: string
 ) => {
   const options = {
@@ -11,9 +11,9 @@ export const getUserNftImageByAddress = async (
   };
   var apiUrl =
     'https://api.opensea.io/api/v1/assets?owner=' +
-    walletAddress +
+    walletGroupID +
     '&owner=' +
-    walletAddress +
+    walletGroupID +
     '&order_by=pk&order_direction=desc&asset_contract_address=' +
     tokenAddress +
     '&limit=1';

@@ -1,23 +1,23 @@
 import { openseaPushUserImages } from './getUserNfts';
 
 export const checkIfUserStillHasStakedNft = async (
-  walletAddress: string,
+  walletGroupID: string,
   tokenAddress: string,
   stakingAddress: string
 ) => {
   const userTransfersOfNft = await getUserTransfersOfNft(
-    walletAddress,
+    walletGroupID,
     tokenAddress
   );
   let unstakedNftIds: string[] = [];
   let hasRequiredNft = false;
   userTransfersOfNft.forEach((transfer: any) => {
-    if (transfer.from === stakingAddress && transfer.to === walletAddress) {
+    if (transfer.from === stakingAddress && transfer.to === walletGroupID) {
       unstakedNftIds.push(transfer.tokenID);
     }
     if (
       transfer.to === stakingAddress &&
-      transfer.from === walletAddress &&
+      transfer.from === walletGroupID &&
       !unstakedNftIds.includes(transfer.tokenID)
     ) {
       hasRequiredNft = true;
@@ -27,24 +27,24 @@ export const checkIfUserStillHasStakedNft = async (
 };
 
 export const getStakedNftImages = async (
-  walletAddress: string,
+  walletGroupID: string,
   tokenAddress: string,
   stakingAddress: string,
   images: string[]
 ) => {
   const userTransfersOfNft = await getUserTransfersOfNft(
-    walletAddress,
+    walletGroupID,
     tokenAddress
   );
   let unstakedNftIds: string[] = [];
   let stakedNftIds: string[] = [];
   userTransfersOfNft.forEach((transfer: any) => {
-    if (transfer.from === stakingAddress && transfer.to === walletAddress) {
+    if (transfer.from === stakingAddress && transfer.to === walletGroupID) {
       unstakedNftIds.push(transfer.tokenID);
     }
     if (
       transfer.to === stakingAddress &&
-      transfer.from === walletAddress &&
+      transfer.from === walletGroupID &&
       !unstakedNftIds.includes(transfer.tokenID)
     ) {
       stakedNftIds.push(transfer.tokenID);
@@ -87,14 +87,14 @@ export const getStakedNftImages = async (
 };
 
 const getUserTransfersOfNft = async (
-  walletAddress: string,
+  walletGroupID: string,
   tokenAddress: string
 ) => {
   const apiUrl =
     'https://api.etherscan.io/api?module=account&action=tokennfttx&contractaddress=' +
     tokenAddress +
     '&address=' +
-    walletAddress +
+    walletGroupID +
     '&page=1&offset=10000&sort=desc&apikey=UU7BPMNMSJAP95U8JT7NN6HVD2ZTH7ZVHE';
   const response = await fetch(apiUrl);
   const transfers = await response.json();

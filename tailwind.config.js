@@ -19,6 +19,7 @@ module.exports = {
         secondary: 'rgb(122, 11, 192)',
 
         grey: '#6b7280',
+        red: 'hsl(360, 56%, 52%)',
       },
       screens: {
         '3xl': '1900px',

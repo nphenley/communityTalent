@@ -40,7 +40,7 @@ const Projects = () => {
         <ProjectCard
           key={project.id}
           project={project}
-          walletAddress={connectionData!.address}
+          walletGroupID={connectionData!.address}
         />
       ))}
 

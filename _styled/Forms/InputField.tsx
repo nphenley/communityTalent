@@ -15,7 +15,9 @@ const InputField = (props: InputFieldProps) => {
       defaultValue={props.defaultValue}
       maxLength={props.maxLength}
       {...props.register(props.name, {
-        required: props.required,
+        required: props.required
+          ? `Please submit a ${props.placeholder}.`
+          : false,
         maxLength: props.maxLength,
       })}
     />

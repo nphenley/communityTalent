@@ -1,59 +1,44 @@
+import { HomeSection } from 'pages';
 import { FaLink, FaUserAlt, FaUsers } from 'react-icons/fa';
 import { useMoralis } from 'react-moralis';
 
 type NavBarProps = {
   isAuthenticated: boolean;
-  isShowingProfile: boolean;
-  setIsShowingProfile: any;
-  isShowingLinkWallets: boolean;
-  setIsShowingLinkWallets: any;
+  homeSection: HomeSection;
+  setHomeSection: any;
 };
 
 const NavBar = (props: NavBarProps) => {
   const { logout } = useMoralis();
 
   const profileButton = (
-    <div>
-      {props.isShowingProfile ? (
-        <button
-          onClick={() => props.setIsShowingProfile(false)}
-          className={styles.profileSubContainer}
-        >
-          <FaUsers size={20} />
-          Communities
-        </button>
-      ) : (
-        <button
-          onClick={() => props.setIsShowingProfile(true)}
-          className={styles.profileSubContainer}
-        >
-          <FaUserAlt size={14} />
-          Profile
-        </button>
-      )}
-    </div>
+    <button
+      onClick={() => props.setHomeSection(HomeSection.DEFAULTPROFILE)}
+      className={styles.profileSubContainer}
+    >
+      <FaUserAlt size={14} />
+      Profile
+    </button>
+  );
+
+  const communitiesButton = (
+    <button
+      onClick={() => props.setHomeSection(HomeSection.COMMUNITIES)}
+      className={styles.profileSubContainer}
+    >
+      <FaUsers size={20} />
+      Communities
+    </button>
   );
 
   const linkWalletsButton = (
-    <div>
-      {props.isShowingLinkWallets ? (
-        <button
-          onClick={() => props.setIsShowingLinkWallets(false)}
-          className={styles.profileSubContainer}
-        >
-          <FaUsers size={20} />
-          Communities
-        </button>
-      ) : (
-        <button
-          onClick={() => props.setIsShowingLinkWallets(true)}
-          className={styles.profileSubContainer}
-        >
-          <FaLink size={14} />
-          Link Wallets
-        </button>
-      )}
-    </div>
+    <button
+      onClick={() => props.setHomeSection(HomeSection.WALLETGROUPS)}
+      className={styles.profileSubContainer}
+    >
+      <FaLink size={14} />
+      Link Wallets
+    </button>
   );
 
   const title = (
@@ -69,8 +54,9 @@ const NavBar = (props: NavBarProps) => {
   const connected = (
     <div className='grid grid-cols-3'>
       <div className='flex gap-4'>
-        {props.isShowingLinkWallets ? null : <>{profileButton}</>}
-        {props.isShowingProfile ? null : <>{linkWalletsButton}</>}
+        {props.homeSection !== HomeSection.COMMUNITIES && communitiesButton}
+        {props.homeSection !== HomeSection.WALLETGROUPS && linkWalletsButton}
+        {props.homeSection !== HomeSection.DEFAULTPROFILE && profileButton}
       </div>
       {title}
       {disconnectButton}
@@ -80,7 +66,7 @@ const NavBar = (props: NavBarProps) => {
   const disconnected = <div className='flex justify-center'>{title}</div>;
 
   return (
-    <div className='w-full p-8'>
+    <div className='w-full p-8 text-primary'>
       {props.isAuthenticated ? connected : disconnected}
     </div>
   );

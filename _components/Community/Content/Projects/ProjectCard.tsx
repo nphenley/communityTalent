@@ -6,7 +6,7 @@ import EditProjectForm from './EditProjectForm';
 import moment from 'moment';
 type ProjectCardProps = {
   project: Project;
-  walletAddress: string;
+  walletGroupID: string;
 };
 
 const ProjectCard = (props: ProjectCardProps) => {
@@ -15,7 +15,7 @@ const ProjectCard = (props: ProjectCardProps) => {
   const isUserPinned =
     props.project.votes &&
     props.project.votes.find(
-      (obj) => obj.walletAddress === props.walletAddress && obj.type === 'up'
+      (obj) => obj.walletGroupID === props.walletGroupID && obj.type === 'up'
     )
       ? true
       : false;
@@ -23,8 +23,8 @@ const ProjectCard = (props: ProjectCardProps) => {
   // Note:
   // Technically shouldn't use toLowerCase() here, instead use checksum converter or whatever.
   const postedByUser =
-    props.project.walletAddress.toLowerCase() ===
-    props.walletAddress.toLowerCase();
+    props.project.walletGroupID.toLowerCase() ===
+    props.walletGroupID.toLowerCase();
 
   return (
     <div className={styles.container}>
@@ -42,7 +42,7 @@ const ProjectCard = (props: ProjectCardProps) => {
             <div className='col-span-6 '>{props.project.title}</div>
             <div className='flex flex-row '>
               <div className='text-sm text-grey'>
-                {props.project.walletAddress}
+                {props.project.walletGroupID}
               </div>
               <div className='ml-auto mr-0 text-sm text-grey'>
                 {moment(props.project.dateCreated.toDate()).fromNow()}

@@ -12,10 +12,12 @@ type ProfilePicProps = {
 
 export const ProfilePicField = (props: ProfilePicProps) => {
   const [active, setActive] = useState('');
+
   useEffect(() => {
     if (!props.defaultValue) return;
     setActive(props.defaultValue);
   }, []);
+
   return (
     <div className='p-3 rounded-lg grow sm:w-fit bg-backgroundDark focus:outline-none'>
       <Controller
