@@ -1,25 +1,37 @@
-export const getNftImagesForCommunityProfile = async (walletGroupIDs: string[], communityId: string, setUserOwnedImages: any) => {
-  const community = await getCommunityById(communityId);
+import Web3 from 'web3';
+import { getAddressesInWalletGroup } from '_api/walletGroups';
+import { getStakedNftImages } from '_helpers/getStakedNfts';
+
+const options = {
+  method: 'GET',
+  headers: {
+    Accept: 'application/json',
+    'X-API-KEY': '7d5d2f9f7391463dadb8c3fca6b2662d',
+  },
+};
+
+// TODO:
+// Needs Solana
+// Also needs to get Token Addresses and Staking Addresses
+export const getCommunityNFTImagesForWalletGroup = async (walletGroupID: string, communityId: string, setUserOwnedImages: any) => {
+  const walletAddresses = await getAddressesInWalletGroup(walletGroupID);
+
   let images: string[] = [];
-  let tokenAddressString: string = '';
-  const options = {
-    method: 'GET',
-    headers: {
-      Accept: 'application/json',
-      'X-API-KEY': '7d5d2f9f7391463dadb8c3fca6b2662d',
-    },
-  };
-  community.tokenAddresses.forEach((tokenAddress) => {
-    tokenAddressString += '&asset_contract_address=' + tokenAddress;
-  });
+  let tokenAddressString = '';
+
+  const tokenAddresses: string[] = [];
+  const stakingAddresses: string[] = [];
+
+  tokenAddresses.forEach((tokenAddress) => (tokenAddressString += '&asset_contract_address=' + tokenAddress));
+
   await Promise.all(
-    walletGroupIDs.map(async (walletGroupID) => {
-      if (Web3.utils.isAddress(walletGroupID)) {
+    walletAddresses.map(async (walletAddress) => {
+      if (Web3.utils.isAddress(walletAddress)) {
         var apiUrl =
           'https://api.opensea.io/api/v1/assets?owner=' +
-          walletGroupID +
+          walletAddress +
           '&owner=' +
-          walletGroupID +
+          walletAddress +
           '&order_by=pk&order_direction=desc' +
           tokenAddressString +
           '&limit=50&include_orders=false';
@@ -37,18 +49,15 @@ export const getNftImagesForCommunityProfile = async (walletGroupIDs: string[], 
       }
     })
   );
-  if (!community.stakingAddresses.length) {
-    setUserOwnedImages(images);
-    return;
-  }
 
   await Promise.all(
-    walletGroupIDs.map(async (walletGroupID) => {
-      for (let i = 0; i < community.stakingAddresses.length; i++) {
-        await getStakedNftImages(walletGroupID, community.tokenAddresses[i], community.stakingAddresses[i], images);
+    walletAddresses.map(async (walletAddress) => {
+      for (let i = 0; i < stakingAddresses.length; i++) {
+        await getStakedNftImages(walletAddress, tokenAddresses[i], stakingAddresses[i], images);
       }
     })
   );
+
   setUserOwnedImages(images);
 };
 

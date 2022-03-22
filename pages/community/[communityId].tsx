@@ -4,19 +4,20 @@ import TopBar from '_components/Community/TopBar';
 import MobileSideBar from '_components/Community/SideBar/MobileSideBar';
 import { useState, useEffect } from 'react';
 import { subscribeToCommunityProfile } from '_api/profiles';
-import { getOrCreateWalletGroupID } from '_api/walletGroups';
+import { subscribeToOrCreateWalletGroupID } from '_api/walletGroups';
 import { useMoralis } from 'react-moralis';
 import { useRouter } from 'next/router';
-import CreateProfileForm from '_components/Community/ProfileForms/CreateProfileForm';
 import LoadingSpinner from '_styled/LoadingSpinner';
 import Head from 'next/head';
 import { Profile } from '_types/Profile';
 import { ProfileContext } from '_contexts/ProfileContext';
-import { checkWalletGroupOwnsNFT } from '_helpers/getWalletCommunities';
 import { useNFTBalances } from 'react-moralis';
 import { Sections } from '_enums/Sections';
 import { CommunityContext } from '_contexts/CommunityContext';
 import { ProfileType } from '_enums/ProfileType';
+import { WalletGroupContext } from '_contexts/WalletGroupContext';
+import { doesWalletGroupOwnNFT } from '_helpers/doesWalletGroupOwnNFT';
+import ProfileForm from '_components/Community/Content/Profile/ProfileForm';
 
 const Community = () => {
   const router = useRouter();
@@ -41,69 +42,76 @@ const Community = () => {
       router.push('/');
       return;
     }
+
+    const unsub = subscribeToOrCreateWalletGroupID(
+      user!.attributes.ethAddress ? user!.attributes.ethAddress : user!.attributes.solAddress,
+      (walletGroupID: string) => {
+        setWalletGroupID(walletGroupID);
+      }
+    );
+
+    return unsub;
   }, [isAuthUndefined, isAuthenticated]);
 
   useEffect(() => {
-    getOrCreateWalletGroupID(user!.attributes.ethAddress ? user!.attributes.ethAddress : user!.attributes.solAddress, setWalletGroupID);
-  }, []);
-
-  // TODO:
-  // Check if any wallet in walletGroup contains the required NFT.
-  useEffect(() => {
     if (!walletGroupID) return;
 
-    checkWalletGroupOwnsNFT(getNFTBalances, walletGroupID, communityId, updateWalletGroupOwnsNFT);
+    (async () => {
+      (await doesWalletGroupOwnNFT(getNFTBalances, walletGroupID, communityId)) ? setLoadingWalletGroupOwnsNFT(false) : router.push('/');
+    })();
 
-    const unsubToProfile = subscribeToCommunityProfile(communityId, walletGroupID, updateProfile);
+    const unsubToProfile = subscribeToCommunityProfile(communityId, walletGroupID, (profile: Profile) => {
+      setProfile(profile);
+      setLoadingProfile(false);
+    });
+
     return unsubToProfile;
   }, [walletGroupID]);
 
-  const updateWalletGroupOwnsNFT = (walletGroupOwnsNFT: boolean) => {
-    walletGroupOwnsNFT ? setLoadingWalletGroupOwnsNFT(false) : router.push('/');
-  };
-
-  const updateProfile = (profile: Profile) => {
-    setProfile(profile);
-    setLoadingProfile(false);
-  };
-
   return (
-    <CommunityContext.Provider value={communityId}>
-      <Head>
-        <title>community/{communityId}</title>
-        <meta name='viewport' content='initial-scale=1.0, width=device-width' />
-      </Head>
+    <WalletGroupContext.Provider value={walletGroupID}>
+      <CommunityContext.Provider value={communityId}>
+        <Head>
+          <title>community/{communityId}</title>
+          <meta name='viewport' content='initial-scale=1.0, width=device-width' />
+        </Head>
 
-      <div className='flex h-screen text-white break-words bg-background'>
-        {isAuthUndefined || loadingWalletGroupOwnsNFT || loadingProfile ? (
-          <LoadingSpinner />
-        ) : !profile ? (
-          <div className='flex flex-col w-full'>
-            <TopBar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={undefined} hideHamburgerMenu={true} />
-            <CreateProfileForm type={ProfileType.COMMUNITY} walletGroupID={walletGroupID} />
-          </div>
-        ) : (
-          <ProfileContext.Provider value={profile}>
-            <div className='hidden md:block'>
-              <SideBar toggleState={toggleState} setToggleState={setToggleState} />
+        <div className={styles.container}>
+          {isAuthUndefined || loadingWalletGroupOwnsNFT || loadingProfile ? (
+            <LoadingSpinner />
+          ) : !profile ? (
+            <div className={styles.noProfileContainer}>
+              <TopBar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={undefined} hideHamburgerMenu={true} />
+              <ProfileForm />
             </div>
-            <div className='block md:hidden'>
-              <MobileSideBar
-                isOpen={isSidebarOpen}
-                setIsOpen={setIsSidebarOpen}
-                toggleState={toggleState}
-                setToggleState={setToggleState}
-              />
-            </div>
+          ) : (
+            <ProfileContext.Provider value={profile}>
+              <div className='hidden md:block'>
+                <SideBar toggleState={toggleState} setToggleState={setToggleState} />
+              </div>
+              <div className='block md:hidden'>
+                <MobileSideBar
+                  isOpen={isSidebarOpen}
+                  setIsOpen={setIsSidebarOpen}
+                  toggleState={toggleState}
+                  setToggleState={setToggleState}
+                />
+              </div>
 
-            <div className='flex flex-col grow'>
-              <TopBar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
-              <Content toggleState={toggleState} />
-            </div>
-          </ProfileContext.Provider>
-        )}
-      </div>
-    </CommunityContext.Provider>
+              <div className='flex flex-col grow'>
+                <TopBar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
+                <Content toggleState={toggleState} />
+              </div>
+            </ProfileContext.Provider>
+          )}
+        </div>
+      </CommunityContext.Provider>
+    </WalletGroupContext.Provider>
   );
 };
 export default Community;
+
+const styles = {
+  container: 'flex h-screen text-white break-words bg-background',
+  noProfileContainer: 'flex flex-col gap-10 w-full overflow-y-scroll pb-20',
+};

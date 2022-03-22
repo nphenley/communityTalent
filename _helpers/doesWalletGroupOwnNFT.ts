@@ -1,9 +1,5 @@
-export const doesWalletGroupOwnNFT = async (
-  getNFTBalances: any,
-  walletGroupID: string,
-  communityId: string,
-  updateWalletGroupOwnsNFT: (hasRequiredNft: boolean) => void
-) => {
+// TODO
+export const doesWalletGroupOwnNFT = async (getNFTBalances: any, walletGroupID: string, communityId: string) => {
   // const walletAddresses = await getAddressesInWalletGroup(walletGroupID);
   // updateWalletGroupOwnsNFT(true);
   // let tokenAddressesInWallets: string[] = [];
@@ -66,4 +62,5 @@ export const doesWalletGroupOwnNFT = async (
   //   );
   // }
   // updateHasRequiredNft(hasRequiredNft);
+  return true;
 };

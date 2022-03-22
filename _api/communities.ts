@@ -15,32 +15,6 @@ import {
 } from 'firebase/firestore';
 import { Community } from '_types/Community';
 
-export const getUserCommunitiesByTokenAddresses = async (userTokenAddresses: string[], userTokenMetadata: string[]) => {
-  const allTokenAddresses = await getDocs(collectionGroup(firestore, 'tokenAddresses'));
-  let communitiesMatchingUserTokenAddresses: {
-    id: string;
-    name: string;
-    tokenAddress: string;
-    metadata: string | undefined;
-  }[] = [];
-
-  await Promise.all(
-    allTokenAddresses.docs.map(async (docSnap) => {
-      if (userTokenAddresses.includes(docSnap.id)) {
-        const index = userTokenAddresses.indexOf(docSnap.id);
-        const community = await getDoc(docSnap.ref.parent.parent!);
-        communitiesMatchingUserTokenAddresses.push({
-          id: community.id,
-          name: community.data()!.name,
-          tokenAddress: docSnap.id,
-          metadata: userTokenMetadata[index] ? userTokenMetadata[index] : undefined,
-        });
-      }
-    })
-  );
-  return communitiesMatchingUserTokenAddresses;
-};
-
 export const checkCommunityIdMatchesAddress = async (communityId: string, tokenAddress: string) => {
   const tokenAddresses = await getDocs(collection(firestore, 'communities', communityId, 'tokenAddresses'));
   let matchFound = false;
@@ -48,18 +22,6 @@ export const checkCommunityIdMatchesAddress = async (communityId: string, tokenA
     if (communityTokenAddress.id == tokenAddress) matchFound = true;
   });
   return matchFound;
-};
-
-export const getCommunityById = async (communityId: string) => {
-  const community = await getDoc(doc(firestore, 'communities', communityId));
-  const communityAddress = await getDocs(collection(firestore, 'communities', communityId, 'tokenAddresses'));
-  const communityStakingAddress = await getDocs(collection(firestore, 'communities', communityId, 'stakingAddresses'));
-  return {
-    id: communityId,
-    name: community.data()!.name,
-    tokenAddresses: communityAddress.docs.map((community) => community.id),
-    stakingAddresses: !communityStakingAddress.empty ? communityStakingAddress.docs.map((community) => community.id) : [],
-  };
 };
 
 export const checkForStakingAddresses = async (communityId: string) => {

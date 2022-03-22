@@ -1,9 +1,8 @@
 import { useContext, useState } from 'react';
 import { Profile } from '_types/Profile';
 import ProfileCard from '_components/Community/Content/Profile/ProfileCard';
-import EditProfileForm from '_components/Community/ProfileForms/EditProfileForm';
 import { ProfileContext } from '_contexts/ProfileContext';
-import { ProfileType } from '_enums/ProfileType';
+import ProfileForm from '_components/Community/Content/Profile/ProfileForm';
 
 const Profile = () => {
   const [edit, setEdit] = useState(false);
@@ -28,7 +27,7 @@ const Profile = () => {
 
   return (
     <div className='flex flex-col items-center justify-center h-full'>
-      {!edit ? profileView : <EditProfileForm type={ProfileType.COMMUNITY} profile={profile!} setEdit={setEdit} />}
+      {!edit ? profileView : <ProfileForm profile={profile} onSubmit={() => setEdit(false)} />}
     </div>
   );
 };

@@ -7,7 +7,7 @@ export type Profile = {
   displayName: string;
   bio: string;
   lookingForProject: boolean;
-  profilePic: string;
+  profilePicture?: string;
   twitterHandle?: string;
   discordUsername?: string;
   tags?: string[];

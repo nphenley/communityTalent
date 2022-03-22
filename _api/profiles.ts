@@ -43,6 +43,14 @@ export const createOrUpdateDefaultProfile = async (walletGroupID: string, defaul
   return setDoc(doc(firestore, 'defaultProfiles', walletGroupID), { ...defaultProfile, dateLastUpdated: Timestamp.now() }, { merge: true });
 };
 
+export const createOrUpdateCommunityProfile = async (walletGroupID: string, communityId: string, communityProfile: Partial<Profile>) => {
+  return setDoc(
+    doc(firestore, 'communities', communityId, 'profiles', walletGroupID),
+    { ...communityProfile, dateLastUpdated: Timestamp.now() },
+    { merge: true }
+  );
+};
+
 export const importDefaultProfileToCommunity = async (walletGroupID: string, communityId: string, defaultProfile: Profile) => {
   return setDoc(doc(firestore, 'communities', communityId, 'profiles', walletGroupID), {
     ...defaultProfile,

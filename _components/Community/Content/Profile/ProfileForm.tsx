@@ -1,6 +1,6 @@
 import { useFieldArray, useForm } from 'react-hook-form';
-import { useEffect, useState } from 'react';
-import { subscribeToDefaultProfile, createOrUpdateDefaultProfile } from '_api/profiles';
+import { useContext, useEffect, useState } from 'react';
+import { createOrUpdateCommunityProfile } from '_api/profiles';
 import { Profile } from '_types/Profile';
 import ToggleField from '_styled/Forms/ToggleField';
 import SelectField from '_styled/Forms/SelectField';
@@ -14,9 +14,14 @@ import SelectFieldSingle from '_styled/Forms/SelectFieldSingle';
 import LoadingSpinner from '_styled/LoadingSpinner';
 import { getProfileFormOptions } from '_api/selectOptions';
 import { SelectOption } from '_types/SelectOption';
+import { CommunityContext } from '_contexts/CommunityContext';
+import { ImageSelectField } from '_styled/Forms/ImageSelectField';
+import { WalletGroupContext } from '_contexts/WalletGroupContext';
+import { getCommunityNFTImagesForWalletGroup } from '_helpers/getNFTImages';
 
-type DefaultProfileFormProps = {
-  walletGroupID: string;
+type ProfileFormProps = {
+  profile?: Profile;
+  onSubmit?: () => void;
 };
 
 type ProfileFormSelectOptions = {
@@ -25,13 +30,17 @@ type ProfileFormSelectOptions = {
   timezones: SelectOption[];
 };
 
-const DefaultProfileForm = (props: DefaultProfileFormProps) => {
-  const [defaultProfile, setDefaultProfile] = useState<Profile | undefined>();
+const ProfileForm = (props: ProfileFormProps) => {
+  const communityId = useContext(CommunityContext);
+  const walletGroupID = useContext(WalletGroupContext);
 
   const { control, register, unregister, handleSubmit, reset } = useForm<any>();
 
   const [loadingProfileFormSelectOptions, setLoadingProfileFormSelectOptions] = useState(true);
   const [profileFormSelectOptions, setProfileFormSelectOptions] = useState<ProfileFormSelectOptions>();
+
+  const [loadingImageOptions, setLoadingImageOptions] = useState(true);
+  const [imageOptions, setImageOptions] = useState<string[]>([]);
 
   const {
     fields: skillsFields,
@@ -66,22 +75,24 @@ const DefaultProfileForm = (props: DefaultProfileFormProps) => {
       setLoadingProfileFormSelectOptions(false);
     });
 
-    const unsub = subscribeToDefaultProfile(props.walletGroupID, setDefaultProfile);
-    return () => unsub();
+    getCommunityNFTImagesForWalletGroup(walletGroupID, communityId, (images: string[]) => {
+      setImageOptions(images);
+      setLoadingImageOptions(false);
+    });
   }, []);
 
   useEffect(() => {
-    if (!defaultProfile) return;
-    if (defaultProfile.discordUsername) setShowDiscord(true);
-    if (defaultProfile.twitterHandle) setShowTwitter(true);
-    if (defaultProfile.skills && defaultProfile.skills.length) setShowSkills(true);
-    if (defaultProfile.experience) setShowExperience(true);
-    if (defaultProfile.languages && defaultProfile.languages.length) setShowLanguages(true);
-    if (defaultProfile.contacts) setShowContacts(true);
-    if (defaultProfile.relevantLinks && defaultProfile.relevantLinks.length) setShowLinks(true);
-    if (defaultProfile.timezone) setShowTimezone(true);
-    reset(defaultProfile);
-  }, [defaultProfile]);
+    if (!props.profile) return;
+    if (props.profile.discordUsername) setShowDiscord(true);
+    if (props.profile.twitterHandle) setShowTwitter(true);
+    if (props.profile.skills && props.profile.skills.length) setShowSkills(true);
+    if (props.profile.experience) setShowExperience(true);
+    if (props.profile.languages && props.profile.languages.length) setShowLanguages(true);
+    if (props.profile.contacts) setShowContacts(true);
+    if (props.profile.relevantLinks && props.profile.relevantLinks.length) setShowLinks(true);
+    if (props.profile.timezone) setShowTimezone(true);
+    reset(props.profile);
+  }, [props.profile]);
 
   const onSubmit = async (data: any) => {
     if (!showDiscord) data.discordUsername = '';
@@ -95,18 +106,17 @@ const DefaultProfileForm = (props: DefaultProfileFormProps) => {
 
     for (const property in data) if (data[property] === undefined) data[property] = [];
 
-    createOrUpdateDefaultProfile(props.walletGroupID, data);
+    createOrUpdateCommunityProfile(walletGroupID, communityId, data);
+    props.onSubmit && props.onSubmit();
   };
 
-  const title = <h1 className='mb-4 text-3xl font-bold text-center text-primary'>Create Default Profile</h1>;
+  const title = <h1 className='mb-4 text-3xl font-bold text-center text-primary'>Create Profile</h1>;
 
-  const description = (
-    <p className='mb-4 text-center'>This is your default profile. When joining a new community, you will be able to easily import it.</p>
-  );
+  const description = <p className='mb-4 text-center'>This is your first time connecting to this community, please create a profile.</p>;
 
   return (
     <div className='flex flex-col items-center'>
-      {loadingProfileFormSelectOptions ? (
+      {loadingProfileFormSelectOptions || loadingImageOptions ? (
         <LoadingSpinner />
       ) : (
         <form className='flex flex-col w-full max-w-screen-sm gap-8 px-10 sm:px-0' onSubmit={handleSubmit(onSubmit)}>
@@ -116,6 +126,18 @@ const DefaultProfileForm = (props: DefaultProfileFormProps) => {
           <FormField
             label='Display Name'
             formField={<InputField register={register} placeholder='Display Name' name='displayName' required={true} maxLength={34} />}
+          />
+          <FormField
+            label='Profile Picture'
+            formField={
+              <ImageSelectField
+                control={control}
+                defaultValue={props.profile ? props.profile.profilePicture : undefined}
+                name='profilePicture'
+                register={register}
+                imageOptions={imageOptions}
+              />
+            }
           />
           <FormField
             label='Bio'
@@ -133,7 +155,7 @@ const DefaultProfileForm = (props: DefaultProfileFormProps) => {
                 label='Tags'
                 options={profileFormSelectOptions!.tags}
                 name='tags'
-                defaultValues={defaultProfile ? defaultProfile.tags : undefined}
+                defaultValues={props.profile ? props.profile.tags : undefined}
               />
             }
           />
@@ -172,7 +194,7 @@ const DefaultProfileForm = (props: DefaultProfileFormProps) => {
                     label='Timezone'
                     options={profileFormSelectOptions!.timezones}
                     name='timezone'
-                    defaultValue={defaultProfile ? defaultProfile.timezone : undefined}
+                    defaultValue={props.profile ? props.profile.timezone : undefined}
                   />
                 }
               />
@@ -220,7 +242,7 @@ const DefaultProfileForm = (props: DefaultProfileFormProps) => {
                     label='Languages'
                     options={profileFormSelectOptions!.languages}
                     name='languages'
-                    defaultValues={defaultProfile && defaultProfile.languages ? defaultProfile.languages : []}
+                    defaultValues={props.profile && props.profile.languages ? props.profile.languages : []}
                   />
                 }
               />
@@ -264,4 +286,4 @@ const DefaultProfileForm = (props: DefaultProfileFormProps) => {
   );
 };
 
-export default DefaultProfileForm;
+export default ProfileForm;
