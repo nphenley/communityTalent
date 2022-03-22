@@ -5,7 +5,7 @@ import { useNFTBalances } from 'react-moralis';
 import LoadingSpinner from '_styled/LoadingSpinner';
 import SearchBar from '_styled/SearchBar';
 import { filterCommunities } from '_helpers/filterCommunities';
-import StakedCommunitiesForm from '_components/Index/StakedCommunitiesForm';
+import StakedCommunitiesForm from '_components/Index/Communities/StakedCommunitiesForm';
 import CommunityButton from '_components/Index/Communities/CommunityButton';
 import { getWalletCommunities } from '_helpers/getWalletCommunities';
 

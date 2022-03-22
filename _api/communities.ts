@@ -89,7 +89,6 @@ export const pinCommunity = async (walletGroupID: string, communityId: string) =
 
 export const subscribeToPinnedCommunityIds = (walletGroupID: string, updatePinnedCommunityIds: (ids: string[]) => void): Unsubscribe => {
   return onSnapshot(doc(firestore, 'pinnedCommunities', walletGroupID), (snapshot) => {
-    console.log('hello?');
     updatePinnedCommunityIds(snapshot.exists() ? snapshot.data().array : []);
   });
 };
@@ -121,7 +120,7 @@ export const addStakedCommunity = async (walletGroupID: string, communityId: str
 };
 
 export const removeStakedCommunity = async (walletGroupID: string, communityId: string) => {
-  return setDoc(doc(firestore, 'stakedCommunities', walletGroupID), { array: arrayUnion(communityId) }, { merge: true });
+  return setDoc(doc(firestore, 'stakedCommunities', walletGroupID), { array: arrayRemove(communityId) }, { merge: true });
 };
 
 export const getCommunitiesByTokenAddress = async (tokenAddress: string): Promise<Community[]> => {
@@ -140,4 +139,22 @@ export const getCommunitiesByTokenAddress = async (tokenAddress: string): Promis
     );
   });
   return communities;
+};
+
+export const getStakingCommunities = async (updateStakingCommunities: (stakingCommunities: Community[]) => void) => {
+  let communities: Community[] = [];
+  await getDocs(collectionGroup(firestore, 'stakingAddresses')).then(async (querySnap) => {
+    await Promise.all(
+      querySnap.docs.map(async (doc) => {
+        return getDoc(doc.ref.parent.parent!).then((doc) => {
+          communities.push({
+            id: doc.id,
+            name: doc.data()!.name,
+            image: doc.data()!.image,
+          });
+        });
+      })
+    );
+  });
+  updateStakingCommunities(communities);
 };

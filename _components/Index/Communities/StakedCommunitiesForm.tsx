@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { addStakedCommunity, removeStakedCommunity, subscribeToStakedCommunities } from '_api/communities';
+import { addStakedCommunity, getStakingCommunities, removeStakedCommunity, subscribeToStakedCommunities } from '_api/communities';
 import FormField from '_styled/Forms/FormField';
 import FormSubmit from '_styled/Forms/FormSubmit';
 import SelectFieldSingle from '_styled/Forms/SelectFieldSingle';
 import LoadingSpinner from '_styled/LoadingSpinner';
 import { SelectOption } from '_types/SelectOption';
 import { AiFillDelete } from 'react-icons/ai';
-import { getStakingCommunitiesSelectOptions } from '_api/selectOptions';
+import {} from '_api/selectOptions';
+import { Community } from '_types/Community';
 
 type StakedNftsFormProps = {
   walletGroupID: string;
@@ -17,23 +18,37 @@ const StakedNftsForm = (props: StakedNftsFormProps) => {
   const [loadingSelectOptions, setLoadingSelectOptions] = useState(true);
   const [selectOptions, setSelectOptions] = useState<SelectOption[]>();
 
+  const [loadingStakingCommunities, setLoadingStakingCommunities] = useState(true);
+  const [stakingCommunities, setStakingCommunities] = useState<Community[]>([]);
+
   const [loadingStakedCommunities, setLoadingStakedCommunities] = useState(true);
-  const [stakedCommunities, setStakedCommunities] = useState<string[]>([]);
-
-  const updateSelectOptions = (selectOptions: SelectOption[]) => {
-    setSelectOptions(selectOptions);
-    setLoadingSelectOptions(false);
-  };
-
-  const updateStakedCommunities = (stakedCommunities: string[]) => {
-    setStakedCommunities(stakedCommunities);
-    setLoadingStakedCommunities(false);
-  };
+  const [stakedCommunities, setStakedCommunities] = useState<Community[]>([]);
 
   useEffect(() => {
-    getStakingCommunitiesSelectOptions(updateSelectOptions);
-    subscribeToStakedCommunities(props.walletGroupID, updateStakedCommunities);
+    getStakingCommunities((stakingCommunities: Community[]) => {
+      setStakingCommunities(stakingCommunities);
+      setLoadingStakingCommunities(false);
+    });
+
+    subscribeToStakedCommunities(props.walletGroupID, (stakedCommunities: Community[]) => {
+      setStakedCommunities(stakedCommunities);
+      setLoadingStakedCommunities(false);
+    });
   }, []);
+
+  useEffect(() => {
+    const selectOptions: SelectOption[] = [];
+
+    stakingCommunities.forEach((community) => {
+      selectOptions.push({
+        label: community.name,
+        value: community.id,
+      });
+    });
+
+    setSelectOptions(selectOptions);
+    setLoadingSelectOptions(false);
+  }, [stakingCommunities]);
 
   const { control, handleSubmit } = useForm();
 
@@ -41,7 +56,7 @@ const StakedNftsForm = (props: StakedNftsFormProps) => {
     addStakedCommunity(props.walletGroupID, data.communityId);
   };
 
-  return loadingSelectOptions || loadingStakedCommunities ? (
+  return loadingSelectOptions || loadingStakingCommunities || loadingStakedCommunities ? (
     <LoadingSpinner />
   ) : (
     <div className='flex flex-col gap-12 items-center p-5 max-w-screen-sm w-full'>
@@ -60,12 +75,7 @@ const StakedNftsForm = (props: StakedNftsFormProps) => {
         <div className='text-center text-primary font-bold'>Staked Communities:</div>
         <div className='grid grid-cols-2 gap-2'>
           {stakedCommunities.map((stakedCommunity) => (
-            <StakedCommunityItem
-              key={stakedCommunity}
-              walletGroupID={props.walletGroupID}
-              stakedCommunity={stakedCommunity}
-              label={selectOptions!.find((val) => val.value === stakedCommunity)!.label}
-            />
+            <StakedCommunityItem key={stakedCommunity.id} walletGroupID={props.walletGroupID} stakedCommunity={stakedCommunity} />
           ))}
         </div>
       </div>
@@ -76,15 +86,14 @@ export default StakedNftsForm;
 
 type StakedCommunityItemProps = {
   walletGroupID: string;
-  label: string;
-  stakedCommunity: string;
+  stakedCommunity: Community;
 };
 
 const StakedCommunityItem = (props: StakedCommunityItemProps) => {
   return (
     <div className='rounded-lg bg-backgroundDark px-3 py-2 flex justify-between'>
-      {props.label}
-      <button onClick={() => removeStakedCommunity(props.walletGroupID, props.stakedCommunity)} className='text-grey'>
+      {props.stakedCommunity.name}
+      <button onClick={() => removeStakedCommunity(props.walletGroupID, props.stakedCommunity.id)} className='text-grey'>
         <AiFillDelete size={18} />
       </button>
     </div>
