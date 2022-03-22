@@ -1,10 +1,6 @@
 import { useFieldArray, useForm, useFormState } from 'react-hook-form';
 import { useContext, useEffect, useState } from 'react';
-import {
-  getFormOptions,
-  updateCommunityProfile,
-  updateDefaultProfile,
-} from '_api/profiles';
+import { getFormOptions, updateCommunityProfile, updateDefaultProfile } from '_api/profiles';
 import { Profile } from '_types/Profile';
 import ToggleField from '_styled/Forms/ToggleField';
 import { CommunityContext } from '_contexts/CommunityContext';
@@ -18,7 +14,7 @@ import FormSubmit from '_styled/Forms/FormSubmit';
 import { ProfileType } from '_enums/ProfileType';
 import SelectFieldSingle from '_styled/Forms/SelectFieldSingle';
 import { ProfilePicField } from '_styled/Forms/ProfilePicField';
-import { getNftImagesForCommunityProfile } from '_helpers/getUserNfts';
+import { getNftImagesForCommunityProfile } from '_helpers/getWalletCommunities';
 import { getLinkedWallets } from '_api/walletGroups';
 
 type EditProfileFormProps = {
@@ -40,9 +36,7 @@ const EditProfileForm = (props: EditProfileFormProps) => {
     defaultValues: {
       tags: props.profile.tags ? props.profile.tags : [],
       skills: props.profile.skills ? props.profile.skills : [],
-      relevantLinks: props.profile.relevantLinks
-        ? props.profile.relevantLinks
-        : [],
+      relevantLinks: props.profile.relevantLinks ? props.profile.relevantLinks : [],
       timezone: props.profile.timezone ? props.profile.timezone : '',
     },
   });
@@ -50,11 +44,7 @@ const EditProfileForm = (props: EditProfileFormProps) => {
   if (props.type === ProfileType.COMMUNITY) {
     useEffect(() => {
       if (!linkedWallets) return;
-      getNftImagesForCommunityProfile(
-        linkedWallets,
-        communityId,
-        setUserNftImages
-      );
+      getNftImagesForCommunityProfile(linkedWallets, communityId, setUserNftImages);
     }, [linkedWallets]);
   }
 
@@ -85,32 +75,14 @@ const EditProfileForm = (props: EditProfileFormProps) => {
     control,
   });
 
-  const [showDiscord, setShowDiscord] = useState(
-    props.profile.discordUsername ? true : false
-  );
-  const [showTwitter, setShowTwitter] = useState(
-    props.profile.twitterHandle ? true : false
-  );
-  const [showSkills, setShowSkills] = useState(
-    props.profile.skills && props.profile.skills.length ? true : false
-  );
-  const [showExperience, setShowExperience] = useState(
-    props.profile.experience ? true : false
-  );
-  const [showLanguages, setShowLanguages] = useState(
-    props.profile.languages && props.profile.languages.length ? true : false
-  );
-  const [showContacts, setShowContacts] = useState(
-    props.profile.contacts ? true : false
-  );
-  const [showLinks, setShowLinks] = useState(
-    props.profile.relevantLinks && props.profile.relevantLinks.length
-      ? true
-      : false
-  );
-  const [showTimezone, setShowTimezone] = useState(
-    props.profile.timezone ? true : false
-  );
+  const [showDiscord, setShowDiscord] = useState(props.profile.discordUsername ? true : false);
+  const [showTwitter, setShowTwitter] = useState(props.profile.twitterHandle ? true : false);
+  const [showSkills, setShowSkills] = useState(props.profile.skills && props.profile.skills.length ? true : false);
+  const [showExperience, setShowExperience] = useState(props.profile.experience ? true : false);
+  const [showLanguages, setShowLanguages] = useState(props.profile.languages && props.profile.languages.length ? true : false);
+  const [showContacts, setShowContacts] = useState(props.profile.contacts ? true : false);
+  const [showLinks, setShowLinks] = useState(props.profile.relevantLinks && props.profile.relevantLinks.length ? true : false);
+  const [showTimezone, setShowTimezone] = useState(props.profile.timezone ? true : false);
 
   let onSubmit: any;
   let title: any;
@@ -118,8 +90,7 @@ const EditProfileForm = (props: EditProfileFormProps) => {
   switch (props.type) {
     case ProfileType.COMMUNITY:
       onSubmit = async (data: any) => {
-        for (const property in data)
-          if (!dirtyFields[property]) delete data[property];
+        for (const property in data) if (!dirtyFields[property]) delete data[property];
 
         if (!showSkills) data.skills = [];
         if (!showExperience) data.experience = '';
@@ -132,11 +103,7 @@ const EditProfileForm = (props: EditProfileFormProps) => {
         props.setEdit(false);
       };
 
-      title = (
-        <h1 className='mb-4 text-3xl font-bold text-center text-primary'>
-          Update Community Profile
-        </h1>
-      );
+      title = <h1 className='mb-4 text-3xl font-bold text-center text-primary'>Update Community Profile</h1>;
 
       break;
 
@@ -153,20 +120,13 @@ const EditProfileForm = (props: EditProfileFormProps) => {
         props.onSubmit();
       };
 
-      title = (
-        <h1 className='mb-4 text-3xl font-bold text-center text-primary'>
-          Update Default Profile
-        </h1>
-      );
+      title = <h1 className='mb-4 text-3xl font-bold text-center text-primary'>Update Default Profile</h1>;
       break;
   }
 
   return (
     <div className='flex flex-col items-center w-full pt-12 pb-16 overflow-y-scroll grow bg-background'>
-      <form
-        className='flex flex-col w-full max-w-screen-sm gap-8 px-10 sm:px-0'
-        onSubmit={handleSubmit(onSubmit)}
-      >
+      <form className='flex flex-col w-full max-w-screen-sm gap-8 px-10 sm:px-0' onSubmit={handleSubmit(onSubmit)}>
         {title}
         <FormField
           label='Display Name'
@@ -282,9 +242,7 @@ const EditProfileForm = (props: EditProfileFormProps) => {
                   control={control}
                   label='Timezone'
                   options={selectFieldOptions?.timezones}
-                  defaultValue={
-                    props.profile.timezone ? props.profile.timezone : ''
-                  }
+                  defaultValue={props.profile.timezone ? props.profile.timezone : ''}
                   name='timezone'
                 />
               }
@@ -305,15 +263,7 @@ const EditProfileForm = (props: EditProfileFormProps) => {
             <FormField
               key={field.id}
               label={index === 0 ? 'Skills' : ''}
-              formField={
-                <InputField
-                  register={register}
-                  placeholder={'Skill'}
-                  name={`skills.${index}`}
-                  required={false}
-                  maxLength={50}
-                />
-              }
+              formField={<InputField register={register} placeholder={'Skill'} name={`skills.${index}`} required={false} maxLength={50} />}
             />
           ))}
         />
@@ -327,9 +277,7 @@ const EditProfileForm = (props: EditProfileFormProps) => {
                   register={register}
                   placeholder='Experience'
                   name='experience'
-                  defaultValue={
-                    props.profile.experience ? props.profile.experience : ''
-                  }
+                  defaultValue={props.profile.experience ? props.profile.experience : ''}
                   required={false}
                   maxLength={500}
                 />
@@ -350,9 +298,7 @@ const EditProfileForm = (props: EditProfileFormProps) => {
                   label='Languages'
                   options={selectFieldOptions?.languages}
                   name='languages'
-                  defaultValues={
-                    props.profile.languages ? props.profile.languages : []
-                  }
+                  defaultValues={props.profile.languages ? props.profile.languages : []}
                 />
               }
             />
@@ -370,9 +316,7 @@ const EditProfileForm = (props: EditProfileFormProps) => {
                   register={register}
                   placeholder='Contacts'
                   name='contacts'
-                  defaultValue={
-                    props.profile.contacts ? props.profile.contacts : ''
-                  }
+                  defaultValue={props.profile.contacts ? props.profile.contacts : ''}
                   required={false}
                   maxLength={500}
                 />

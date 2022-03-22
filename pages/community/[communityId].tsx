@@ -12,7 +12,7 @@ import LoadingSpinner from '_styled/LoadingSpinner';
 import Head from 'next/head';
 import { Profile } from '_types/Profile';
 import { ProfileContext } from '_contexts/ProfileContext';
-import { checkWalletGroupOwnsNFT } from '_helpers/getUserNfts';
+import { checkWalletGroupOwnsNFT } from '_helpers/getWalletCommunities';
 import { useNFTBalances } from 'react-moralis';
 import { Sections } from '_enums/Sections';
 import { CommunityContext } from '_contexts/CommunityContext';
@@ -25,8 +25,7 @@ const Community = () => {
   const { isAuthUndefined, isAuthenticated, user } = useMoralis();
   const { getNFTBalances } = useNFTBalances();
 
-  const [loadingWalletGroupOwnsNFT, setLoadingWalletGroupOwnsNFT] =
-    useState(true);
+  const [loadingWalletGroupOwnsNFT, setLoadingWalletGroupOwnsNFT] = useState(true);
 
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [profile, setProfile] = useState<Profile>();
@@ -45,12 +44,7 @@ const Community = () => {
   }, [isAuthUndefined, isAuthenticated]);
 
   useEffect(() => {
-    getOrCreateWalletGroupID(
-      user!.attributes.ethAddress
-        ? user!.attributes.ethAddress
-        : user!.attributes.solAddress,
-      setWalletGroupID
-    );
+    getOrCreateWalletGroupID(user!.attributes.ethAddress ? user!.attributes.ethAddress : user!.attributes.solAddress, setWalletGroupID);
   }, []);
 
   // TODO:
@@ -58,18 +52,9 @@ const Community = () => {
   useEffect(() => {
     if (!walletGroupID) return;
 
-    checkWalletGroupOwnsNFT(
-      getNFTBalances,
-      walletGroupID,
-      communityId,
-      updateWalletGroupOwnsNFT
-    );
+    checkWalletGroupOwnsNFT(getNFTBalances, walletGroupID, communityId, updateWalletGroupOwnsNFT);
 
-    const unsubToProfile = subscribeToCommunityProfile(
-      communityId,
-      walletGroupID,
-      updateProfile
-    );
+    const unsubToProfile = subscribeToCommunityProfile(communityId, walletGroupID, updateProfile);
     return unsubToProfile;
   }, [walletGroupID]);
 
@@ -94,23 +79,13 @@ const Community = () => {
           <LoadingSpinner />
         ) : !profile ? (
           <div className='flex flex-col w-full'>
-            <TopBar
-              isSidebarOpen={isSidebarOpen}
-              setIsSidebarOpen={undefined}
-              hideHamburgerMenu={true}
-            />
-            <CreateProfileForm
-              type={ProfileType.COMMUNITY}
-              walletGroupID={walletGroupID}
-            />
+            <TopBar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={undefined} hideHamburgerMenu={true} />
+            <CreateProfileForm type={ProfileType.COMMUNITY} walletGroupID={walletGroupID} />
           </div>
         ) : (
           <ProfileContext.Provider value={profile}>
             <div className='hidden md:block'>
-              <SideBar
-                toggleState={toggleState}
-                setToggleState={setToggleState}
-              />
+              <SideBar toggleState={toggleState} setToggleState={setToggleState} />
             </div>
             <div className='block md:hidden'>
               <MobileSideBar
@@ -122,10 +97,7 @@ const Community = () => {
             </div>
 
             <div className='flex flex-col grow'>
-              <TopBar
-                isSidebarOpen={isSidebarOpen}
-                setIsSidebarOpen={setIsSidebarOpen}
-              />
+              <TopBar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
               <Content toggleState={toggleState} />
             </div>
           </ProfileContext.Provider>

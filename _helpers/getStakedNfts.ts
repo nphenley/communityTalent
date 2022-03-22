@@ -1,52 +1,29 @@
-import { openseaPushUserImages } from './getUserNfts';
+import { openseaPushUserImages } from '_helpers/getNFTImages';
 
-export const checkIfUserStillHasStakedNft = async (
-  walletGroupID: string,
-  tokenAddress: string,
-  stakingAddress: string
-) => {
-  const userTransfersOfNft = await getUserTransfersOfNft(
-    walletGroupID,
-    tokenAddress
-  );
+export const checkIfUserStillHasStakedNft = async (walletGroupID: string, tokenAddress: string, stakingAddress: string) => {
+  const userTransfersOfNft = await getUserTransfersOfNft(walletGroupID, tokenAddress);
   let unstakedNftIds: string[] = [];
   let hasRequiredNft = false;
   userTransfersOfNft.forEach((transfer: any) => {
     if (transfer.from === stakingAddress && transfer.to === walletGroupID) {
       unstakedNftIds.push(transfer.tokenID);
     }
-    if (
-      transfer.to === stakingAddress &&
-      transfer.from === walletGroupID &&
-      !unstakedNftIds.includes(transfer.tokenID)
-    ) {
+    if (transfer.to === stakingAddress && transfer.from === walletGroupID && !unstakedNftIds.includes(transfer.tokenID)) {
       hasRequiredNft = true;
     }
   });
   return hasRequiredNft;
 };
 
-export const getStakedNftImages = async (
-  walletGroupID: string,
-  tokenAddress: string,
-  stakingAddress: string,
-  images: string[]
-) => {
-  const userTransfersOfNft = await getUserTransfersOfNft(
-    walletGroupID,
-    tokenAddress
-  );
+export const getStakedNftImages = async (walletGroupID: string, tokenAddress: string, stakingAddress: string, images: string[]) => {
+  const userTransfersOfNft = await getUserTransfersOfNft(walletGroupID, tokenAddress);
   let unstakedNftIds: string[] = [];
   let stakedNftIds: string[] = [];
   userTransfersOfNft.forEach((transfer: any) => {
     if (transfer.from === stakingAddress && transfer.to === walletGroupID) {
       unstakedNftIds.push(transfer.tokenID);
     }
-    if (
-      transfer.to === stakingAddress &&
-      transfer.from === walletGroupID &&
-      !unstakedNftIds.includes(transfer.tokenID)
-    ) {
+    if (transfer.to === stakingAddress && transfer.from === walletGroupID && !unstakedNftIds.includes(transfer.tokenID)) {
       stakedNftIds.push(transfer.tokenID);
     }
   });
@@ -86,10 +63,7 @@ export const getStakedNftImages = async (
   }
 };
 
-const getUserTransfersOfNft = async (
-  walletGroupID: string,
-  tokenAddress: string
-) => {
+const getUserTransfersOfNft = async (walletGroupID: string, tokenAddress: string) => {
   const apiUrl =
     'https://api.etherscan.io/api?module=account&action=tokennfttx&contractaddress=' +
     tokenAddress +

@@ -1,7 +1,7 @@
 import { useMoralis } from 'react-moralis';
 import Head from 'next/head';
 import DefaultProfile from '_components/Index/DefaultProfile';
-import Communities from '_components/Index/Communities';
+import Communities from '_components/Index/Communities/Communities';
 import ConnectView from '_components/Index/ConnectView';
 import { useEffect, useState } from 'react';
 import NavBar from '_components/Index/Navbar';
@@ -25,9 +25,7 @@ export enum HomeSection {
 const Home = () => {
   const { isAuthenticated, user } = useMoralis();
 
-  const [homeSection, setHomeSection] = useState<HomeSection>(
-    HomeSection.WALLETGROUPS
-  );
+  const [homeSection, setHomeSection] = useState<HomeSection>(HomeSection.COMMUNITIES);
 
   const [loadingWalletGroupID, setLoadingWalletGroupID] = useState(true);
   const [walletGroupID, setWalletGroupID] = useState<string>();
@@ -36,9 +34,7 @@ const Home = () => {
     if (!isAuthenticated || !user) return;
 
     subscribeToOrCreateWalletGroupID(
-      user.attributes.ethAddress
-        ? user.attributes.ethAddress
-        : user.attributes.solAddress,
+      user.attributes.ethAddress ? user.attributes.ethAddress : user.attributes.solAddress,
       (walletGroupID: string) => {
         setWalletGroupID(walletGroupID);
         setLoadingWalletGroupID(false);
