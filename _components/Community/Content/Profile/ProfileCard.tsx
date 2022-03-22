@@ -16,10 +16,7 @@ const ProfileCard = (props: ProfileCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const expandButton = (
-    <button
-      className='absolute text-2xl font-bold top-1 right-4 text-backgroundLight'
-      onClick={() => setIsExpanded(!isExpanded)}
-    >
+    <button className='absolute text-2xl font-bold top-1 right-4 text-backgroundLight' onClick={() => setIsExpanded(!isExpanded)}>
       {isExpanded ? '-' : '+'}
     </button>
   );
@@ -35,14 +32,9 @@ const ProfileCard = (props: ProfileCardProps) => {
     </div>
   );
 
-  let containerClassName =
-    'relative bg-backgroundDark rounded-lg shadow-lg w-full py-11 flex flex-col gap-6 overflow-y-scroll mx-auto';
+  let containerClassName = 'relative bg-backgroundDark rounded-lg shadow-lg w-full py-11 flex flex-col gap-6 overflow-y-scroll mx-auto';
 
-  containerClassName += props.alwaysExpanded
-    ? ''
-    : isExpanded
-    ? ' max-h-[1000px] min-h-[600px]'
-    : ' h-[600px]';
+  containerClassName += props.alwaysExpanded ? '' : isExpanded ? ' max-h-[1000px] min-h-[600px]' : ' h-[600px]';
 
   return (
     <div className={containerClassName}>
@@ -53,11 +45,7 @@ const ProfileCard = (props: ProfileCardProps) => {
           <div className='flex'>
             <div className={styles.imageContainer}>
               <Image
-                src={
-                  props.profile.profilePic
-                    ? props.profile.profilePic
-                    : profileNFTImages[props.profile.displayName.length % 5]
-                }
+                src={props.profile.profilePicture ? props.profile.profilePicture : profileNFTImages[props.profile.displayName.length % 5]}
                 height={130}
                 width={130}
                 unoptimized={true}
@@ -67,19 +55,9 @@ const ProfileCard = (props: ProfileCardProps) => {
         </div>
 
         <div className='flex flex-col justify-center h-full gap-1 mt-2 break-words'>
-          <div className='font-bold break-words'>
-            {props.profile.displayName}
-          </div>
-          {props.profile.twitterHandle && (
-            <div className='break-words text-grey'>
-              {props.profile.twitterHandle}
-            </div>
-          )}
-          {props.profile.discordUsername && (
-            <div className='break-words text-grey'>
-              {props.profile.discordUsername}
-            </div>
-          )}
+          <div className='font-bold break-words'>{props.profile.displayName}</div>
+          {props.profile.twitterHandle && <div className='break-words text-grey'>{props.profile.twitterHandle}</div>}
+          {props.profile.discordUsername && <div className='break-words text-grey'>{props.profile.discordUsername}</div>}
         </div>
       </div>
 
@@ -90,9 +68,7 @@ const ProfileCard = (props: ProfileCardProps) => {
 
         <div className={styles.sectionContainer}>
           <div className={styles.sectionHeading}>Bio</div>
-          <div className={styles.sectionParagraph}>
-            {props.profile.bio.replace('<br/>', '\n')}
-          </div>
+          <div className={styles.sectionParagraph}>{props.profile.bio.replace('<br/>', '\n')}</div>
         </div>
 
         {props.profile.tags && props.profile.tags.length ? (
@@ -139,9 +115,7 @@ const ProfileCard = (props: ProfileCardProps) => {
 
             <div className={styles.sectionContainer}>
               <div className={styles.sectionHeading}>Experience</div>
-              <div className={styles.sectionParagraph}>
-                {props.profile.experience.replace('<br/>', '\n')}
-              </div>
+              <div className={styles.sectionParagraph}>{props.profile.experience.replace('<br/>', '\n')}</div>
             </div>
           </>
         ) : null}
@@ -152,9 +126,7 @@ const ProfileCard = (props: ProfileCardProps) => {
 
             <div className={styles.sectionContainer}>
               <div className={styles.sectionHeading}>Contacts</div>
-              <div className={styles.sectionParagraph}>
-                {props.profile.contacts.replace('<br/>', '\n')}
-              </div>
+              <div className={styles.sectionParagraph}>{props.profile.contacts.replace('<br/>', '\n')}</div>
             </div>
           </>
         ) : null}
@@ -184,10 +156,7 @@ const ProfileCard = (props: ProfileCardProps) => {
               <div className={styles.sectionHeading}>Links</div>
               <div className={styles.sectionBulletpoints}>
                 {props.profile.relevantLinks.map((link) => (
-                  <div
-                    key={link}
-                    className='flex items-center gap-2 text-grey hover:text-white'
-                  >
+                  <div key={link} className='flex items-center gap-2 text-grey hover:text-white'>
                     <div>
                       <GiPlainCircle size={8} />
                     </div>

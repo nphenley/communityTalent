@@ -1,9 +1,4 @@
-import {
-  FaIdCard,
-  FaNetworkWired,
-  FaBriefcase,
-  FaArrowLeft,
-} from 'react-icons/fa';
+import { FaIdCard, FaBriefcase, FaArrowLeft } from 'react-icons/fa';
 import SideBarIcon from '_components/Community/SideBar/SideBarIcon';
 import { profileNFTImages } from '_constants/dev';
 import Image from 'next/image';
@@ -36,19 +31,12 @@ const MobileSideBar = (props: SideBarProps) => {
         <SideBarIcon icon={<FaArrowLeft size='20' />} />
       </button>
 
-      <button
-        className='flex justify-center w-full mt-4 mb-8'
-        onClick={() => toggleState(Sections.PROFILE)}
-      >
+      <button className='flex justify-center w-full mt-4 mb-8' onClick={() => toggleState(Sections.PROFILE)}>
         <SideBarIcon
           icon={
             <div className='flex justify-center mb-1 overflow-hidden rounded-full'>
               <Image
-                src={
-                  profile && profile.profilePic
-                    ? profile.profilePic
-                    : profileNFTImages[3]
-                }
+                src={profile && profile.profilePicture ? profile.profilePicture : profileNFTImages[3]}
                 height={150}
                 width={150}
                 unoptimized={true}
@@ -61,23 +49,12 @@ const MobileSideBar = (props: SideBarProps) => {
       </button>
 
       <div className='flex flex-col items-center w-full grow gap-y-6'>
-        <button
-          onClick={() => toggleState(Sections.PROJECTS)}
-          className='w-full'
-        >
-          <SideBarIcon
-            icon={<FaBriefcase size='20' />}
-            text={'Projects'}
-            active={props.toggleState === Sections.PROJECTS}
-          />
+        <button onClick={() => toggleState(Sections.PROJECTS)} className='w-full'>
+          <SideBarIcon icon={<FaBriefcase size='20' />} text={'Projects'} active={props.toggleState === Sections.PROJECTS} />
         </button>
 
         <button onClick={() => toggleState(Sections.TALENT)} className='w-full'>
-          <SideBarIcon
-            icon={<FaIdCard size='20' />}
-            text={'Talent'}
-            active={props.toggleState === Sections.TALENT}
-          />
+          <SideBarIcon icon={<FaIdCard size='20' />} text={'Talent'} active={props.toggleState === Sections.TALENT} />
         </button>
       </div>
     </div>
