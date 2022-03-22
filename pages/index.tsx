@@ -1,6 +1,5 @@
 import { useMoralis } from 'react-moralis';
 import Head from 'next/head';
-import DefaultProfile from '_components/Index/DefaultProfile';
 import Communities from '_components/Index/Communities/Communities';
 import ConnectView from '_components/Index/ConnectView';
 import { useEffect, useState } from 'react';
@@ -8,6 +7,7 @@ import NavBar from '_components/Index/Navbar';
 import WalletGroups from '_components/Index/WalletGroups/WalletGroups';
 import { subscribeToOrCreateWalletGroupID } from '_api/walletGroups';
 import LoadingSpinner from '_styled/LoadingSpinner';
+import DefaultProfileForm from '_components/Index/DefaultProfileForm';
 
 const nextHead = (
   <Head>
@@ -49,27 +49,23 @@ const Home = () => {
   ) : homeSection === HomeSection.WALLETGROUPS ? (
     <WalletGroups walletGroupID={walletGroupID!} />
   ) : (
-    <DefaultProfile
-      walletGroupID={walletGroupID!}
-      onSubmit={() => setHomeSection(HomeSection.COMMUNITIES)}
-    />
+    <DefaultProfileForm walletGroupID={walletGroupID!} />
   );
 
   return (
-    <div className='flex flex-col h-screen bg-background text-white'>
+    <div className={styles.container}>
       {nextHead}
 
-      <NavBar
-        isAuthenticated={isAuthenticated}
-        homeSection={homeSection}
-        setHomeSection={setHomeSection}
-      />
+      <NavBar isAuthenticated={isAuthenticated} homeSection={homeSection} setHomeSection={setHomeSection} />
 
-      <div className='overflow-y-scroll grow lg:max-w-[96%] mx-auto w-full py-4'>
-        {isAuthenticated ? connectedView : <ConnectView />}
-      </div>
+      <div className={styles.contentContainer}>{isAuthenticated ? connectedView : <ConnectView />}</div>
     </div>
   );
 };
 
 export default Home;
+
+const styles = {
+  container: 'flex flex-col h-screen bg-background text-white',
+  contentContainer: 'overflow-y-scroll grow lg:max-w-[96%] mx-auto w-full py-12',
+};

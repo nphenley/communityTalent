@@ -1,6 +1,6 @@
 import { useFieldArray, useForm, useFormState } from 'react-hook-form';
 import { useContext, useEffect, useState } from 'react';
-import { getFormOptions, updateCommunityProfile, updateDefaultProfile } from '_api/profiles';
+import { updateCommunityProfile, updateDefaultProfile } from '_api/profiles';
 import { Profile } from '_types/Profile';
 import ToggleField from '_styled/Forms/ToggleField';
 import { CommunityContext } from '_contexts/CommunityContext';
@@ -14,8 +14,7 @@ import FormSubmit from '_styled/Forms/FormSubmit';
 import { ProfileType } from '_enums/ProfileType';
 import SelectFieldSingle from '_styled/Forms/SelectFieldSingle';
 import { ProfilePicField } from '_styled/Forms/ProfilePicField';
-import { getNftImagesForCommunityProfile } from '_helpers/getWalletCommunities';
-import { getLinkedWallets } from '_api/walletGroups';
+import { getProfileFormOptions } from '_api/selectOptions';
 
 type EditProfileFormProps = {
   profile: Profile;
@@ -49,7 +48,7 @@ const EditProfileForm = (props: EditProfileFormProps) => {
   }
 
   useEffect(() => {
-    getFormOptions(setSelectFieldOptions);
+    getProfileFormOptions(setSelectFieldOptions);
     getLinkedWallets(props.profile.id, setLinkedWallets);
   }, []);
 

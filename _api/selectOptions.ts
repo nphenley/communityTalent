@@ -2,7 +2,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { firestore } from '_firebase/config';
 import { SelectOption } from '_types/SelectOption';
 
-export const getFormOptions = async (setSelectOptions: any) => {
+export const getProfileFormOptions = async (setSelectOptions: any) => {
   const languages = await getDoc(doc(firestore, 'selectOptions', 'languages'));
   const tags = await getDoc(doc(firestore, 'selectOptions', 'tags'));
   const timezones = await getDoc(doc(firestore, 'selectOptions', 'timezones'));

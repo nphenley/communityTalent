@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react';
 import { Profile } from '_types/Profile';
 import ProfileCard from '_components/Community/Content/Profile/ProfileCard';
-import EditProfileForm from '_components/ProfileForms/EditProfileForm';
+import EditProfileForm from '_components/Community/ProfileForms/EditProfileForm';
 import { ProfileContext } from '_contexts/ProfileContext';
 import { ProfileType } from '_enums/ProfileType';
 
@@ -28,15 +28,7 @@ const Profile = () => {
 
   return (
     <div className='flex flex-col items-center justify-center h-full'>
-      {!edit ? (
-        profileView
-      ) : (
-        <EditProfileForm
-          type={ProfileType.COMMUNITY}
-          profile={profile!}
-          setEdit={setEdit}
-        />
-      )}
+      {!edit ? profileView : <EditProfileForm type={ProfileType.COMMUNITY} profile={profile!} setEdit={setEdit} />}
     </div>
   );
 };

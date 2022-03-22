@@ -7,7 +7,7 @@ import { subscribeToCommunityProfile } from '_api/profiles';
 import { getOrCreateWalletGroupID } from '_api/walletGroups';
 import { useMoralis } from 'react-moralis';
 import { useRouter } from 'next/router';
-import CreateProfileForm from '_components/ProfileForms/CreateProfileForm';
+import CreateProfileForm from '_components/Community/ProfileForms/CreateProfileForm';
 import LoadingSpinner from '_styled/LoadingSpinner';
 import Head from 'next/head';
 import { Profile } from '_types/Profile';

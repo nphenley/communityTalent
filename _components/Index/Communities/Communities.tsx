@@ -159,7 +159,7 @@ const Communities = (props: CommunitiesProps) => {
 export default Communities;
 
 const styles = {
-  container: 'mx-auto flex w-full max-w-[90%] flex-col gap-12 rounded-lg pt-12 pb-20 items-center',
+  container: 'mx-auto flex w-full max-w-[90%] flex-col gap-12 rounded-lg items-center',
   heading: 'text-2xl text-primary font-bold text-center',
   toolbarContainer: 'flex flex-row-reverse gap-x-2 w-full',
   sectionsContainer: 'flex flex-col gap-12',
