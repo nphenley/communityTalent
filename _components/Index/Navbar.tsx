@@ -12,38 +12,27 @@ const NavBar = (props: NavBarProps) => {
   const { logout } = useMoralis();
 
   const profileButton = (
-    <button
-      onClick={() => props.setHomeSection(HomeSection.DEFAULTPROFILE)}
-      className={styles.profileSubContainer}
-    >
+    <button onClick={() => props.setHomeSection(HomeSection.DEFAULTPROFILE)} className={styles.profileSubContainer}>
       <FaUserAlt size={14} />
       Profile
     </button>
   );
 
   const communitiesButton = (
-    <button
-      onClick={() => props.setHomeSection(HomeSection.COMMUNITIES)}
-      className={styles.profileSubContainer}
-    >
+    <button onClick={() => props.setHomeSection(HomeSection.COMMUNITIES)} className={styles.profileSubContainer}>
       <FaUsers size={20} />
       Communities
     </button>
   );
 
   const linkWalletsButton = (
-    <button
-      onClick={() => props.setHomeSection(HomeSection.WALLETGROUPS)}
-      className={styles.profileSubContainer}
-    >
+    <button onClick={() => props.setHomeSection(HomeSection.WALLETGROUPS)} className={styles.profileSubContainer}>
       <FaLink size={14} />
       Link Wallets
     </button>
   );
 
-  const title = (
-    <div className='flex justify-center text-xl font-bold'>communityTalent</div>
-  );
+  const title = <div className='flex justify-center text-xl font-bold'>communityTalent</div>;
 
   const disconnectButton = (
     <button className='flex justify-end text-md' onClick={() => logout()}>
@@ -54,9 +43,8 @@ const NavBar = (props: NavBarProps) => {
   const connected = (
     <div className='grid grid-cols-3'>
       <div className='flex gap-4'>
-        {props.homeSection !== HomeSection.COMMUNITIES && communitiesButton}
-        {props.homeSection !== HomeSection.WALLETGROUPS && linkWalletsButton}
-        {props.homeSection !== HomeSection.DEFAULTPROFILE && profileButton}
+        {props.homeSection !== HomeSection.WALLETGROUPS ? linkWalletsButton : communitiesButton}
+        {props.homeSection !== HomeSection.DEFAULTPROFILE ? profileButton : communitiesButton}
       </div>
       {title}
       {disconnectButton}
@@ -65,11 +53,7 @@ const NavBar = (props: NavBarProps) => {
 
   const disconnected = <div className='flex justify-center'>{title}</div>;
 
-  return (
-    <div className='w-full p-8 text-primary'>
-      {props.isAuthenticated ? connected : disconnected}
-    </div>
-  );
+  return <div className='w-full p-8 text-primary'>{props.isAuthenticated ? connected : disconnected}</div>;
 };
 
 export default NavBar;

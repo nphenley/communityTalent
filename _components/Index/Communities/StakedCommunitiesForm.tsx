@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { addStakedCommunity, getStakingCommunities, removeStakedCommunity, subscribeToStakedCommunities } from '_api/communities';
+import {
+  addStakedCommunity,
+  getStakingCommunities,
+  removeStakedCommunity,
+  subscribeToStakedCommunities,
+} from '_api/communities';
 import FormField from '_styled/Forms/FormField';
 import FormSubmit from '_styled/Forms/FormSubmit';
 import SelectFieldSingle from '_styled/Forms/SelectFieldSingle';
@@ -59,23 +64,35 @@ const StakedNftsForm = (props: StakedNftsFormProps) => {
   return loadingSelectOptions || loadingStakingCommunities || loadingStakedCommunities ? (
     <LoadingSpinner />
   ) : (
-    <div className='flex flex-col gap-12 items-center p-5 max-w-screen-sm w-full'>
-      <div className='w-full flex flex-col gap-6'>
-        <div className='text-center text-primary font-bold'>Add:</div>
+    <div className='flex flex-col items-center w-full max-w-screen-sm gap-12 px-5'>
+      <div className='flex flex-col w-full gap-6'>
+        <div className='font-bold text-center text-primary'>Add:</div>
         <form className='flex flex-col w-full gap-4' onSubmit={handleSubmit(onSubmit)}>
           <FormField
             label='Community'
-            formField={<SelectFieldSingle control={control} label='Community' options={selectOptions} name='communityId' required={true} />}
+            formField={
+              <SelectFieldSingle
+                control={control}
+                label='Community'
+                options={selectOptions}
+                name='communityId'
+                required={true}
+              />
+            }
           />
           <FormSubmit text='Add' />
         </form>
       </div>
 
-      <div className='flex flex-col gap-4 w-full'>
-        <div className='text-center text-primary font-bold'>Staked Communities:</div>
+      <div className='flex flex-col w-full gap-4'>
+        <div className='font-bold text-center text-primary'>Staked Communities:</div>
         <div className='grid grid-cols-2 gap-2'>
           {stakedCommunities.map((stakedCommunity) => (
-            <StakedCommunityItem key={stakedCommunity.id} walletGroupID={props.walletGroupID} stakedCommunity={stakedCommunity} />
+            <StakedCommunityItem
+              key={stakedCommunity.id}
+              walletGroupID={props.walletGroupID}
+              stakedCommunity={stakedCommunity}
+            />
           ))}
         </div>
       </div>
@@ -91,9 +108,12 @@ type StakedCommunityItemProps = {
 
 const StakedCommunityItem = (props: StakedCommunityItemProps) => {
   return (
-    <div className='rounded-lg bg-backgroundDark px-3 py-2 flex justify-between'>
+    <div className='flex justify-between px-3 py-2 rounded-lg bg-backgroundDark'>
       {props.stakedCommunity.name}
-      <button onClick={() => removeStakedCommunity(props.walletGroupID, props.stakedCommunity.id)} className='text-grey'>
+      <button
+        onClick={() => removeStakedCommunity(props.walletGroupID, props.stakedCommunity.id)}
+        className='text-grey'
+      >
         <AiFillDelete size={18} />
       </button>
     </div>
