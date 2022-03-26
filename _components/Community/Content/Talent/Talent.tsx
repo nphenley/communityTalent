@@ -1,10 +1,11 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { getProfiles } from '_firebase/APIRequests';
+import { getProfiles } from '_api/profiles';
 import LoadingSpinner from '_styled/LoadingSpinner';
 import { Profile } from '_types/Profile';
 import ProfileCard from '_components/Community/Content/Profile/ProfileCard';
 import { filterProfiles } from '_helpers/filterProfiles';
+import SearchBar from '_styled/SearchBar';
 
 const Talent = () => {
   const router = useRouter();
@@ -35,7 +36,7 @@ const Talent = () => {
   ) : (
     <div className='flex flex-col gap-2 lg:gap-4'>
       <div className='flex justify-center lg:justify-end'>
-        <StyledInput
+        <SearchBar
           onChange={(e: any) => setSearchQuery(e.target.value)}
           placeholder='Search'
         />
@@ -52,17 +53,3 @@ const Talent = () => {
 };
 
 export default Talent;
-
-type StyledInputProps = {
-  onChange: any;
-  placeholder: string;
-};
-const StyledInput = (props: StyledInputProps) => {
-  return (
-    <input
-      className='w-full focus:outline-none lg:max-w-sm bg-backgroundDark text-white p-4 rounded-lg'
-      onChange={props.onChange}
-      placeholder={props.placeholder}
-    />
-  );
-};

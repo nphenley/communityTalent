@@ -1,22 +1,21 @@
-import { Tags } from '_enums/Tags';
 import { Timestamp } from 'firebase/firestore';
-import { Languages } from '_enums/Languages';
 
 export type Profile = {
   id: string;
-  dateCreated?: Timestamp;
-  dateLastUpdated?: Timestamp;
-  communityId: string;
-  walletAddress: string;
+  dateCreated: Timestamp;
+  dateLastUpdated: Timestamp;
   displayName: string;
-  twitterHandle?: string;
-  discordUsername?: string;
   bio: string;
   lookingForProject: boolean;
-  tags: Tags[];
-  skills?: [];
+  profilePicture?: string;
+  twitterHandle?: string;
+  discordUsername?: string;
+  tags?: string[];
+  skills?: string[];
   experience?: string;
-  languages?: Languages[];
+  languages?: string[];
+  timezone?: string;
   contacts?: string;
   relevantLinks?: string[];
+  votes?: [{ walletGroupID: string; type: 'up' | 'down' }];
 };

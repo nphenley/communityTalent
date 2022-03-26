@@ -1,36 +1,41 @@
 import { useEffect, useState, useContext } from 'react';
 import { Project } from '_types/Project';
-import { ConnectionContext } from '_contexts/ConnectionContext';
-import { getProjects, getPins, togglePinned } from '_firebase/APIRequests';
+import { getProjects } from '_api/projects';
 import ProjectCard from '_components/Community/Content/Projects/ProjectCard';
-import PlusButton from '_components/Community/Content/Projects/PlusButton';
+import CreateProjectButton from '_components/Community/Content/Projects/CreateProjectButton';
 import ProjectForm from '_components/Community/Content/Projects/ProjectForm';
+import { CommunityContext } from '_contexts/CommunityContext';
+import { WalletGroupContext } from '_contexts/WalletGroupContext';
 
 const Projects = () => {
+  const communityId = useContext(CommunityContext);
+  const walletGroupID = useContext(WalletGroupContext);
+
   const [addProject, setAddProject] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
-  const [pins, setPins] = useState<string[]>([]);
-
-  const connectionData = useContext(ConnectionContext);
 
   useEffect(() => {
-    getPins(connectionData!.address, setPins);
-    getProjects(setProjects);
-  }, [connectionData]);
+    getProjects(communityId, setProjects);
+  }, [communityId, addProject]);
+
+  const navBar = (
+    <div className='flex justify-center gap-2 mb-2'>
+      <button className={styles.tabButton.concat(' text-white')}>Looking for Projects</button>
+      <button className={styles.tabButton.concat(' text-grey')}>Looking to Hire</button>
+      <button className={styles.tabButton.concat(' text-grey')}>Your Projects</button>
+    </div>
+  );
 
   return (
     <div className={styles.container}>
+      {navBar}
       {projects.map((project) => (
-        <ProjectCard
-          key={project.id}
-          project={project}
-          isUserPinned={pins.includes(project.id)}
-          togglePinned={() => togglePinned(project.id)}
-        />
+        <ProjectCard key={project.id} project={project} walletGroupID={walletGroupID} />
       ))}
 
-      {addProject ? <ProjectForm /> : null}
-      <PlusButton onClick={() => setAddProject(!addProject)} />
+      {addProject ? <ProjectForm setAddProject={setAddProject} /> : null}
+
+      <CreateProjectButton onClick={() => setAddProject(!addProject)} />
     </div>
   );
 };
@@ -38,6 +43,6 @@ const Projects = () => {
 export default Projects;
 
 const styles = {
-  container:
-    'relative grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4',
+  container: 'relative grid gap-1 grid-cols-1',
+  tabButton: 'font-medium bg-backgroundDark px-5 py-4 rounded-lg',
 };

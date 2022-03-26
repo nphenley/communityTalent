@@ -2,10 +2,10 @@ import { Timestamp } from 'firebase/firestore';
 
 export type Project = {
   id: string;
+  dateCreated: Timestamp;
+  title: string;
   description: string;
   tags: string[];
-  title: string;
-  authors: string[];
-  dateCreated: Timestamp;
-  numberOfPins: number;
+  walletGroupID: string;
+  votes?: [{ walletGroupID: string; type: 'up' | 'down' }];
 };

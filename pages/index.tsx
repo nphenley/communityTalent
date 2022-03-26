@@ -1,62 +1,71 @@
 import { useMoralis } from 'react-moralis';
 import Head from 'next/head';
-
-import Communities from '_components/Index/Communities';
+import Communities from '_components/Index/Communities/Communities';
 import ConnectView from '_components/Index/ConnectView';
-import { Networks } from '_enums/Networks';
+import { useEffect, useState } from 'react';
+import NavBar from '_components/Index/Navbar';
+import WalletGroups from '_components/Index/WalletGroups/WalletGroups';
+import { subscribeToOrCreateWalletGroupID } from '_api/walletGroups';
+import LoadingSpinner from '_styled/LoadingSpinner';
+import DefaultProfileForm from '_components/Index/DefaultProfileForm';
 
-export default function Home() {
-  const { isAuthenticated, user } = useMoralis();
+const nextHead = (
+  <Head>
+    <title>communityTalent</title>
+    <meta name='viewport' content='initial-scale=1.0, width=device-width' />
+  </Head>
+);
 
-  const network: Networks = user?.attributes.ethAddress
-    ? Networks.ETH
-    : Networks.SOL;
-
-  const connectedWalletAddress =
-    network === Networks.ETH
-      ? user?.attributes.ethAddress
-      : user?.attributes.solAddress;
-
-  return (
-    <div className='flex flex-col h-screen bg-background text-primary'>
-      <Head>
-        <title>Web 3 Talent</title>
-        <meta name='viewport' content='initial-scale=1.0, width=device-width' />
-      </Head>
-      <NavBar />
-      <div className='overflow-y-scroll grow'>
-        {isAuthenticated ? (
-          <>
-            <DisconnectButton />
-            <Communities
-              network={network}
-              connectedWalletAddress={connectedWalletAddress}
-            />
-          </>
-        ) : (
-          <ConnectView />
-        )}
-      </div>
-    </div>
-  );
+export enum HomeSection {
+  COMMUNITIES,
+  DEFAULTPROFILE,
+  WALLETGROUPS,
 }
 
-const NavBar = () => {
+const Home = () => {
+  const { isAuthenticated, user } = useMoralis();
+
+  const [homeSection, setHomeSection] = useState<HomeSection>(HomeSection.COMMUNITIES);
+
+  const [loadingWalletGroupID, setLoadingWalletGroupID] = useState(true);
+  const [walletGroupID, setWalletGroupID] = useState<string>();
+
+  useEffect(() => {
+    if (!isAuthenticated || !user) return;
+
+    subscribeToOrCreateWalletGroupID(
+      user.attributes.ethAddress ? user.attributes.ethAddress : user.attributes.solAddress,
+      (walletGroupID: string) => {
+        setWalletGroupID(walletGroupID);
+        setLoadingWalletGroupID(false);
+      }
+    );
+  }, [isAuthenticated, user]);
+
+  const connectedView = loadingWalletGroupID ? (
+    <LoadingSpinner />
+  ) : homeSection === HomeSection.COMMUNITIES ? (
+    <Communities walletGroupID={walletGroupID!} />
+  ) : homeSection === HomeSection.WALLETGROUPS ? (
+    <WalletGroups walletGroupID={walletGroupID!} />
+  ) : (
+    <DefaultProfileForm walletGroupID={walletGroupID!} />
+  );
+
   return (
-    <div className='w-full p-8 text-xl font-bold text-center uppercase'>
-      Web 3 Talent
+    <div className={styles.container}>
+      {nextHead}
+
+      <NavBar isAuthenticated={isAuthenticated} homeSection={homeSection} setHomeSection={setHomeSection} />
+
+      <div className={styles.contentContainer}>{isAuthenticated ? connectedView : <ConnectView />}</div>
     </div>
   );
 };
 
-const DisconnectButton = () => {
-  const { logout } = useMoralis();
+export default Home;
 
-  return (
-    <div className='absolute right-3 top-6'>
-      <button onClick={() => logout()} className='p-2 rounded-full'>
-        Disconnect
-      </button>
-    </div>
-  );
+const styles = {
+  container: 'flex flex-col h-screen bg-background text-white',
+  contentContainer: 'overflow-y-scroll grow lg:max-w-[96%] mx-auto w-full py-12',
 };

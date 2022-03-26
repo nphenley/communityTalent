@@ -1,10 +1,6 @@
 module.exports = {
   mode: 'jit',
-  content: [
-    './pages/**/*.{js,ts,jsx,tsx}',
-    './_components/**/*.{js,ts,jsx,tsx}',
-    './_styled/**/*.{js,ts,jsx,tsx}',
-  ],
+  content: ['./pages/**/*.{js,ts,jsx,tsx}', './_components/**/*.{js,ts,jsx,tsx}', './_styled/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       colors: {
@@ -19,6 +15,7 @@ module.exports = {
         secondary: 'rgb(122, 11, 192)',
 
         grey: '#6b7280',
+        red: 'hsl(360, 56%, 52%)',
       },
       screens: {
         '3xl': '1900px',

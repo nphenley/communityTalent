@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* LOADING SPINNER  */
+/* ======================== LOADING SPINNER ========================  */
 
 .loadingSpinner {
   border: 8px solid rgba(255, 255, 255, 0.2);
@@ -33,9 +33,9 @@
   }
 }
 
-/* REACT-SELECT  */
+/* ======================== REACT-SELECT ========================  */
 
-.profile-form__control {
+.select-field__control {
   border: 0px !important;
   background-color: hsl(240, 41%, 10%) !important;
   color: white !important;
@@ -43,50 +43,50 @@
   padding: 12px !important;
 }
 
-.profile-form__value-container {
+.select-field__value-container {
   color: white !important;
   border-radius: 10px !important;
 }
 
-.profile-form__indicators {
+.select-field__indicators {
   display: none !important;
 }
 
-.profile-form__menu {
+.select-field__menu {
   color: white !important;
 }
 
-.profile-form__menu-list {
-  color: white !important;
-  background-color: hsl(240, 41%, 10%) !important;
-}
-
-.profile-form__option {
+.select-field__menu-list {
   color: white !important;
   background-color: hsl(240, 41%, 10%) !important;
 }
 
-.profile-form__multi-value {
+.select-field__option {
+  color: white !important;
+  background-color: hsl(240, 41%, 10%) !important;
+}
+
+.select-field__multi-value {
   background-color: hsl(325, 94%, 66%) !important;
   padding: 4px !important;
   margin-right: 4px !important;
   border-radius: 8px !important;
 }
 
-.profile-form__multi-value__label {
+.select-field__multi-value__label {
   color: white !important;
 }
 
-.profile-form__multi-value__remove:hover {
+.select-field__multi-value__remove:hover {
   background-color: hsl(325, 94%, 66%) !important;
 }
 
-.profile-form__input-container {
+.select-field__input-container {
   margin-left: 10px !important;
   color: white !important;
 }
 
-/* SCROLLBAR  */
+/* ======================== SCROLLBAR ======================== */
 
 /* width */
 ::-webkit-scrollbar {

@@ -1,51 +1,92 @@
-import { createProject } from '_firebase/APIRequests';
+import { createProject } from '_api/projects';
 import { useForm } from 'react-hook-form';
 import { Project } from '_types/Project';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { ProfileContext } from '_contexts/ProfileContext';
+import { CommunityContext } from '_contexts/CommunityContext';
+import SelectField from '_styled/Forms/SelectField';
+import { getFormOptions } from '_api/profiles';
+import FormSubmit from '_styled/Forms/FormSubmit';
 
-const ProjectForm = () => {
-  const { register, handleSubmit } = useForm();
+type ProjectFormProps = {
+  setAddProject: any;
+};
 
+const ProjectForm = (props: ProjectFormProps) => {
+  const communityId = useContext(CommunityContext);
   const profile = useContext(ProfileContext);
 
+  const { control, register, handleSubmit } = useForm();
+
   const onSubmit = (data: any) => {
-    createProject({
+    createProject(communityId, {
       ...data,
-      tags: ['dev', 'marketing'],
-      authors: [profile!.id],
+      walletGroupID: profile!.id,
     } as Project);
+    props.setAddProject(false);
   };
 
-  return (
-    <div className='absolute left-0 right-0 z-40 w-3/4 mx-auto bg-gray-700 rounded shadow-lg h-3/5 top-14 opacity-95'>
-      <form onSubmit={handleSubmit(onSubmit)} className='px-6 py-8 '>
-        <div className='flex flex-col items-center mb-8'>
-          <label className='block mb-1 text-lg font-medium text-gray-300'>
-            Title
-          </label>
-          <input
-            {...register('title')}
-            className='block w-1/2 p-2 text-white placeholder-gray-400 bg-gray-700 border border-gray-600 rounded-lg sm:text-xs focus:ring-blue-500 focus:border-blue-500'
-          ></input>
-        </div>
-        <div className='flex flex-col items-center mb-8 '>
-          <label className='block mb-1 text-lg font-medium text-gray-300'>
-            Description
-          </label>
-          <textarea
-            {...register('description')}
-            className='block w-full h-64 p-2 text-lg text-white placeholder-gray-400 align-text-top bg-gray-700 border border-gray-600 rounded-lg focus:ring-blue-500 focus:border-blue-500'
-          ></textarea>
-        </div>
+  const [selectFieldOptions, setSelectFieldOptions] = useState<any>();
 
-        <div className='flex flex-col items-center '>
-          <button className='px-4 py-2 font-bold bg-gray-900 border-b-4 border-gray-800 rounded text-md'>
-            Add
-          </button>
-        </div>
-      </form>
+  useEffect(() => {
+    if (selectFieldOptions) return;
+    getFormOptions(setSelectFieldOptions);
+  }, []);
+
+  const title = <h1 className='mb-4 text-center text-3xl font-bold text-primary'>Create Project Posting</h1>;
+
+  return (
+    <div className='fixed'>
+      <div className='flex grow flex-col items-center overflow-y-scroll rounded-lg border-4 border-backgroundDark bg-background px-4 pt-12 pb-16 shadow-lg'>
+        <form className='flex w-full max-w-screen-sm flex-col gap-8 px-10 sm:px-0' onSubmit={handleSubmit(onSubmit)}>
+          {title}
+          <InputField register={register} label='Title' name='title' required={true} maxLength={34} />
+          <LargeInputField register={register} label='Description' name='description' required={true} maxLength={160} />
+          <SelectField control={control} label='Tags' options={selectFieldOptions?.tags} name='tags' />
+
+          <FormSubmit />
+        </form>
+      </div>
     </div>
   );
 };
 export default ProjectForm;
+
+type InputFieldProps = {
+  register: any;
+  label: string;
+  name: string;
+  required: boolean;
+  maxLength: number;
+};
+
+const InputField = (props: InputFieldProps) => {
+  return (
+    <div className='flex flex-col items-center gap-4 px-2 focus:outline-none sm:flex-row sm:gap-0'>
+      <label className='text-center text-primary sm:w-1/3'>{props.label}</label>
+      <input className='w-full grow rounded-lg bg-backgroundDark p-3 sm:w-fit' placeholder={props.label} {...props.register(props.name)} />
+    </div>
+  );
+};
+
+type LargeInputFieldProps = {
+  register: any;
+  label: string;
+  name: string;
+  required: boolean;
+  maxLength?: number;
+};
+
+const LargeInputField = (props: LargeInputFieldProps) => {
+  return (
+    <div className='flex flex-col items-center gap-4 px-2 sm:flex-row sm:gap-0'>
+      <label className='text-center text-primary sm:w-1/3'>{props.label}</label>
+      <textarea
+        className='h-60 w-full grow resize-none rounded-lg bg-backgroundDark p-5 sm:h-40 sm:w-fit'
+        placeholder={props.label}
+        maxLength={props.maxLength ? props.maxLength : 300}
+        {...props.register(props.name)}
+      />
+    </div>
+  );
+};

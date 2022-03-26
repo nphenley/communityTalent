@@ -1,6 +1,6 @@
 import { useMoralis } from 'react-moralis';
 import { useState } from 'react';
-import StyledButton from '_styled/StyledButton';
+import Button from '_styled/Button';
 
 const ConnectView = () => {
   const { authenticate } = useMoralis();
@@ -9,7 +9,7 @@ const ConnectView = () => {
 
   const connect = (chain: string) => {
     setShowOptions(false);
-    const signingMessage = 'Please authenticate with web3Talent.';
+    const signingMessage = 'Please authenticate with communityTalent.';
     chain == 'sol'
       ? authenticate({ type: 'sol', signingMessage: signingMessage })
       : authenticate({ type: 'evm', signingMessage: signingMessage });
@@ -36,10 +36,7 @@ const ConnectView = () => {
 
   return (
     <div className='flex items-center justify-center w-full h-full'>
-      <StyledButton
-        text={'Connect Wallet'}
-        onClick={() => setShowOptions(true)}
-      />
+      <Button text={'Connect Wallet'} onClick={() => setShowOptions(true)} />
       {showOptions ? connectOptions : null}
     </div>
   );
