@@ -18,8 +18,6 @@ export const ImageSelectField = (props: ProfilePicProps) => {
     setActive(props.defaultValue);
   }, []);
 
-  console.log(props);
-
   return (
     <div className='p-3 rounded-lg grow sm:w-fit bg-backgroundDark focus:outline-none'>
       <Controller

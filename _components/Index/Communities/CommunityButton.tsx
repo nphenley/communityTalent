@@ -27,7 +27,7 @@ const CommunityButton = (props: CommunityButtonProps) => {
   return (
     <div className={styles.container}>
       <Link href={`community/${props.community.id}`}>
-        <button className='flex flex-col items-center mx-auto space-y-3'>
+        <button className='flex flex-col items-center mx-auto space-y-4'>
           <div className='flex justify-center overflow-hidden rounded-full'>
             <Image
               src={props.community.image}
@@ -38,7 +38,7 @@ const CommunityButton = (props: CommunityButtonProps) => {
               unoptimized={true}
             />
           </div>
-          <div className='font-medium break-all'>{props.community.name}</div>
+          <div className='font-bold break-all text-primary'>{props.community.name}</div>
         </button>
       </Link>
 

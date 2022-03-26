@@ -120,3 +120,19 @@ export const getStakingCommunities = async (updateStakingCommunities: (stakingCo
   });
   updateStakingCommunities(communities);
 };
+
+export const getTokenAddressesForCommunity = async (communityId: string): Promise<string[]> => {
+  let tokenAddresses: string[] = [];
+  await getDocs(collection(firestore, 'communities', communityId, 'tokenAddresses')).then((query) => {
+    query.forEach((doc) => tokenAddresses.push(doc.id));
+  });
+  return tokenAddresses;
+};
+
+export const getStakingAddressesForCommunity = async (communityId: string): Promise<string[]> => {
+  let stakingAddresses: string[] = [];
+  await getDocs(collection(firestore, 'communities', communityId, 'stakingAddresses')).then((query) => {
+    query.forEach((doc) => stakingAddresses.push(doc.id));
+  });
+  return stakingAddresses;
+};

@@ -14,7 +14,6 @@ import { ProfileContext } from '_contexts/ProfileContext';
 import { useNFTBalances } from 'react-moralis';
 import { Sections } from '_enums/Sections';
 import { CommunityContext } from '_contexts/CommunityContext';
-import { ProfileType } from '_enums/ProfileType';
 import { WalletGroupContext } from '_contexts/WalletGroupContext';
 import { doesWalletGroupOwnNFT } from '_helpers/doesWalletGroupOwnNFT';
 import ProfileForm from '_components/Community/Content/Profile/ProfileForm';
@@ -32,7 +31,7 @@ const Community = () => {
   const [profile, setProfile] = useState<Profile>();
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [toggleState, setToggleState] = useState<Sections>(Sections.TALENT);
+  const [toggleState, setToggleState] = useState<Sections>(Sections.PROFILE);
 
   const [walletGroupID, setWalletGroupID] = useState('');
 

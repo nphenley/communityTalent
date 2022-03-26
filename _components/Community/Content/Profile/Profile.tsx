@@ -5,7 +5,7 @@ import { ProfileContext } from '_contexts/ProfileContext';
 import ProfileForm from '_components/Community/Content/Profile/ProfileForm';
 
 const Profile = () => {
-  const [edit, setEdit] = useState(false);
+  const [edit, setEdit] = useState(true);
 
   const profile = useContext(ProfileContext);
 

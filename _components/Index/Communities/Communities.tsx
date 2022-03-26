@@ -163,9 +163,9 @@ const styles = {
   heading: 'text-2xl text-primary font-bold text-center',
   toolbarContainer: 'flex flex-row-reverse gap-x-2 w-full',
   sectionsContainer: 'flex flex-col gap-12',
-  sectionContainer: 'flex flex-col gap-8',
-  sectionHeading: 'text-xl font-bold',
+  sectionContainer: 'flex flex-col gap-14',
+  sectionHeading: 'text-xl font-bold text-primary',
   communitiesContainer:
-    'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 3xl:grid-cols-8 4xl:grid-cols-9 gap-x-4 gap-y-12',
+    'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 3xl:grid-cols-8 4xl:grid-cols-9 gap-x-24 gap-y-12',
   buttonContainer: 'rounded-lg px-5 font-bold ',
 };
