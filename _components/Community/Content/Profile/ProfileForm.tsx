@@ -17,7 +17,7 @@ import { SelectOption } from '_types/SelectOption';
 import { CommunityContext } from '_contexts/CommunityContext';
 import { ImageSelectField } from '_styled/Forms/ImageSelectField';
 import { WalletGroupContext } from '_contexts/WalletGroupContext';
-import { getCommunityNFTImagesForWalletGroup } from '_helpers/getNFTImages';
+import { NFTImagesContext } from '_contexts/NFTImagesContext';
 
 type ProfileFormProps = {
   profile?: Profile;
@@ -31,16 +31,14 @@ type ProfileFormSelectOptions = {
 };
 
 const ProfileForm = (props: ProfileFormProps) => {
-  const communityId = useContext(CommunityContext);
   const walletGroupID = useContext(WalletGroupContext);
+  const communityId = useContext(CommunityContext);
+  const imageOptions = useContext(NFTImagesContext);
 
   const { control, register, unregister, handleSubmit, reset } = useForm<any>();
 
   const [loadingProfileFormSelectOptions, setLoadingProfileFormSelectOptions] = useState(true);
   const [profileFormSelectOptions, setProfileFormSelectOptions] = useState<ProfileFormSelectOptions>();
-
-  const [loadingImageOptions, setLoadingImageOptions] = useState(true);
-  const [imageOptions, setImageOptions] = useState<string[]>([]);
 
   const {
     fields: skillsFields,
@@ -73,11 +71,6 @@ const ProfileForm = (props: ProfileFormProps) => {
     getProfileFormOptions((profileFormSelectOptions: ProfileFormSelectOptions) => {
       setProfileFormSelectOptions(profileFormSelectOptions);
       setLoadingProfileFormSelectOptions(false);
-    });
-
-    getCommunityNFTImagesForWalletGroup(walletGroupID, communityId, (images: string[]) => {
-      setImageOptions(images);
-      setLoadingImageOptions(false);
     });
   }, []);
 
@@ -116,7 +109,7 @@ const ProfileForm = (props: ProfileFormProps) => {
 
   return (
     <div className='flex flex-col items-center'>
-      {loadingProfileFormSelectOptions || loadingImageOptions ? (
+      {loadingProfileFormSelectOptions ? (
         <LoadingSpinner />
       ) : (
         <form className='flex flex-col w-full max-w-screen-sm gap-8 px-10 sm:px-0' onSubmit={handleSubmit(onSubmit)}>

@@ -33,40 +33,16 @@ const ProjectForm = (props: ProjectFormProps) => {
     getFormOptions(setSelectFieldOptions);
   }, []);
 
-  const title = (
-    <h1 className='mb-4 text-center text-3xl font-bold text-primary'>
-      Create Project Posting
-    </h1>
-  );
+  const title = <h1 className='mb-4 text-center text-3xl font-bold text-primary'>Create Project Posting</h1>;
 
   return (
     <div className='fixed'>
       <div className='flex grow flex-col items-center overflow-y-scroll rounded-lg border-4 border-backgroundDark bg-background px-4 pt-12 pb-16 shadow-lg'>
-        <form
-          className='flex w-full max-w-screen-sm flex-col gap-8 px-10 sm:px-0'
-          onSubmit={handleSubmit(onSubmit)}
-        >
+        <form className='flex w-full max-w-screen-sm flex-col gap-8 px-10 sm:px-0' onSubmit={handleSubmit(onSubmit)}>
           {title}
-          <InputField
-            register={register}
-            label='Title'
-            name='title'
-            required={true}
-            maxLength={34}
-          />
-          <LargeInputField
-            register={register}
-            label='Description'
-            name='description'
-            required={true}
-            maxLength={160}
-          />
-          <SelectField
-            control={control}
-            label='Tags'
-            options={selectFieldOptions?.tags}
-            name='tags'
-          />
+          <InputField register={register} label='Title' name='title' required={true} maxLength={34} />
+          <LargeInputField register={register} label='Description' name='description' required={true} maxLength={160} />
+          <SelectField control={control} label='Tags' options={selectFieldOptions?.tags} name='tags' />
 
           <FormSubmit />
         </form>
@@ -88,11 +64,7 @@ const InputField = (props: InputFieldProps) => {
   return (
     <div className='flex flex-col items-center gap-4 px-2 focus:outline-none sm:flex-row sm:gap-0'>
       <label className='text-center text-primary sm:w-1/3'>{props.label}</label>
-      <input
-        className='w-full grow rounded-lg bg-backgroundDark p-3 sm:w-fit'
-        placeholder={props.label}
-        {...props.register(props.name)}
-      />
+      <input className='w-full grow rounded-lg bg-backgroundDark p-3 sm:w-fit' placeholder={props.label} {...props.register(props.name)} />
     </div>
   );
 };
