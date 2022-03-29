@@ -37,6 +37,9 @@ const serverUrl = process.env.NEXT_PUBLIC_MORALIS_SERVER_URL;
 const appId = process.env.NEXT_PUBLIC_MORALIS_APPLICATION_ID;
 Moralis.start({ serverUrl, appId });
 
+// TODO:
+// might need to add programID
+// transfer over 1000 redo
 export const solStakingWithToken = async (walletAddress: string, communityId: string) => {
   const stakingInfo = await getStakingInfoForCommunity(communityId);
   let allStakedNfts: string[] = [];
@@ -53,7 +56,6 @@ export const solStakingWithToken = async (walletAddress: string, communityId: st
   );
   console.log(allStakedNfts);
 };
-// might need to add programID
 
 const getSolStakedNfts = async (transfers: any, collectionHashList: string[], stakingInfo: any) => {
   const connection = new Connection('https://ssc-dao.genesysgo.net/');
@@ -73,8 +75,7 @@ const getSolStakedNfts = async (transfers: any, collectionHashList: string[], st
           tx.transaction.message.instructions.map(async (instruction) => {
             if (instruction.data === stakingInfo.unstakeID) {
               unstakedNfts.push(transfer.tokenAddress);
-            }
-            if (
+            } else if (
               !unstakedNfts.includes(transfer.tokenAddress) &&
               !stakedNfts.has(transfer.tokenAddress) &&
               instruction.data === stakingInfo.stakeID
