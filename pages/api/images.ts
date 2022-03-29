@@ -37,16 +37,22 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   const images: string[] = [];
   const imageRequests: Promise<void>[] = walletAddresses.map(async (walletAddress: string) =>
     Web3.utils.isAddress(walletAddress)
-      ? (await getETHImagesViaOpensea(walletAddress, ethTokenAddresses)).forEach((image) => !images.includes(image) && images.push(image))
-      : (await getSolImages(walletAddress, solTokenAddresses)).forEach((image) => !images.includes(image) && images.push(image))
+      ? (await getETHImagesViaOpensea(walletAddress, ethTokenAddresses)).forEach(
+          (image) => !images.includes(image) && images.push(image)
+        )
+      : (await getSolImages(walletAddress, solTokenAddresses)).forEach(
+          (image) => !images.includes(image) && images.push(image)
+        )
   );
   stakingAddresses.forEach((stakingAddress: string) => {
     tokenAddresses.forEach((tokenAddress: string) => {
       walletAddresses.forEach((walletAddress: string) => {
         if (!Web3.utils.isAddress(walletAddress) || !Web3.utils.isAddress(tokenAddress)) return;
-        const asyncFunc = getStakedEthImagesViaOpensea(walletAddress, tokenAddress, stakingAddress).then((imagesArray: string[]) => {
-          images.push(...imagesArray);
-        });
+        const asyncFunc = getStakedEthImagesViaOpensea(walletAddress, tokenAddress, stakingAddress).then(
+          (imagesArray: string[]) => {
+            images.push(...imagesArray);
+          }
+        );
         return imageRequests.push(asyncFunc);
       });
     });
@@ -99,16 +105,24 @@ const getSolImages = async (walletAddress: string, tokenAddresses: string[]): Pr
 
 // TODO:
 // Could improve this via just push and remove.
-const getStakedEthImagesViaOpensea = async (walletAddress: string, tokenAddress: string, stakingAddress: string): Promise<string[]> => {
+const getStakedEthImagesViaOpensea = async (
+  walletAddress: string,
+  tokenAddress: string,
+  stakingAddress: string
+): Promise<string[]> => {
   const userTransfersOfNft = await getNFTTransfers(walletAddress, tokenAddress);
   if (!userTransfersOfNft.forEach) return []; // If rate limit, userTransfersOfNft is not an array.
-  let unstakedNftIds: string[] = [];
+  let unstakedNftIds: string[] = []; // use moralis to get transfers
   let stakedNftIds: string[] = [];
   userTransfersOfNft.forEach((transfer: any) => {
     if (transfer.from === stakingAddress && transfer.to === walletAddress) {
       unstakedNftIds.push(transfer.tokenID);
     }
-    if (transfer.to === stakingAddress && transfer.from === walletAddress && !unstakedNftIds.includes(transfer.tokenID)) {
+    if (
+      transfer.to === stakingAddress &&
+      transfer.from === walletAddress &&
+      !unstakedNftIds.includes(transfer.tokenID)
+    ) {
       stakedNftIds.push(transfer.tokenID);
     }
   });
@@ -142,5 +156,6 @@ const getNFTTransfers = async (walletAddress: string, tokenAddress: string) => {
     '&page=1&offset=10000&sort=desc&apikey=UU7BPMNMSJAP95U8JT7NN6HVD2ZTH7ZVHE';
   const response = await fetch(apiUrl);
   const transfers = await response.json();
+  console.log(transfers);
   return transfers.result;
 };
