@@ -12,36 +12,22 @@ const firebaseConfig = {
 
 admin.initializeApp(firebaseConfig);
 
-export const handleWalletGroupDeletion = functions.firestore
-  .document('walletGroups/{docID}')
-  .onDelete(async (snapshot) => {
-    const requests: Promise<any>[] = [
-      admin
-        .firestore()
-        .collection('linkRequests')
-        .where('requestedWalletGroupID', '==', snapshot.id)
-        .get()
-        .then((querySnapshot) =>
-          querySnapshot.forEach((doc) => doc.ref.delete())
-        ),
-      admin
-        .firestore()
-        .collection('linkRequests')
-        .where('requestingWalletGroupID', '==', snapshot.id)
-        .get()
-        .then((querySnapshot) =>
-          querySnapshot.forEach((doc) => doc.ref.delete())
-        ),
-      admin
-        .firestore()
-        .collection('stakedCommunities')
-        .doc(snapshot.id)
-        .delete(),
-      admin
-        .firestore()
-        .collection('pinnedCommunities')
-        .doc(snapshot.id)
-        .delete(),
-    ];
-    return Promise.all(requests);
-  });
+export const handleWalletGroupDeletion = functions.firestore.document('walletGroups/{docID}').onDelete(async (snapshot) => {
+  const requests: Promise<any>[] = [
+    admin
+      .firestore()
+      .collection('linkRequests')
+      .where('requestedWalletGroupID', '==', snapshot.id)
+      .get()
+      .then((querySnapshot) => querySnapshot.forEach((doc) => doc.ref.delete())),
+    admin
+      .firestore()
+      .collection('linkRequests')
+      .where('requestingWalletGroupID', '==', snapshot.id)
+      .get()
+      .then((querySnapshot) => querySnapshot.forEach((doc) => doc.ref.delete())),
+    admin.firestore().collection('stakedCommunities').doc(snapshot.id).delete(),
+    admin.firestore().collection('pinnedCommunities').doc(snapshot.id).delete(),
+  ];
+  return Promise.all(requests);
+});
