@@ -31,7 +31,7 @@ const Community = () => {
   const [profile, setProfile] = useState<Profile>();
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [toggleState, setToggleState] = useState<Sections>(Sections.PROFILE);
+  const [toggleState, setToggleState] = useState<Sections>(Sections.TALENT);
 
   const [walletGroupID, setWalletGroupID] = useState('');
 
@@ -58,10 +58,10 @@ const Community = () => {
     getCommunityNFTImagesForWalletGroup(walletGroupID, communityId, (images: string[]) => {
       !images.length
         ? router.push('/')
-        : () => {
+        : (() => {
             setNFTImages(images);
             setLoadingNFTImages(false);
-          };
+          })();
     });
 
     const unsubToProfile = subscribeToCommunityProfile(communityId, walletGroupID, (profile: Profile) => {
