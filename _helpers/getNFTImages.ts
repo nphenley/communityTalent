@@ -38,8 +38,9 @@ const appId = process.env.NEXT_PUBLIC_MORALIS_APPLICATION_ID;
 Moralis.start({ serverUrl, appId });
 
 // TODO:
-// might need to add programID
+// add programID
 // transfer over 1000 redo
+// set staked/unstaked efficiency
 export const solStakingWithToken = async (walletAddress: string, communityId: string) => {
   const stakingInfo = await getStakingInfoForCommunity(communityId);
   let allStakedNfts: string[] = [];
@@ -70,7 +71,6 @@ const getSolStakedNfts = async (transfers: any, collectionHashList: string[], st
         while (!tx) {
           tx = await connection.getTransaction(transfer.signature[0]);
         }
-
         await Promise.all(
           tx.transaction.message.instructions.map(async (instruction) => {
             if (instruction.data === stakingInfo.unstakeID) {
