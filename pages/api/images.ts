@@ -34,7 +34,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       });
       ethTokenAddresses.forEach((tokenAddress: EthTokenAddress) => {
         if (!tokenAddress.stakingAddress) return;
-        console.log(tokenAddress);
         imageRequests.push(async () => {
           const imagesArray = await getEthStakedImagesViaOpensea(walletAddress, tokenAddress);
           images.push(...imagesArray);
@@ -138,34 +137,24 @@ const getSolImagesOwnedByWallet = async (walletAddress: string, solTokenAddresse
 // Currently blocked by solscan lol
 const getSolStakedImages = async (walletAddress: string, solTokenAddresses: SolTokenAddress[]): Promise<string[]> => {
   // const transfers = await getSolAllTransfersByWallet(walletAddress);
-
-  const unstakedNfts: string[] = [];
-  const stakedNfts = new Set('');
+  const transfers: any[] = [];
+  const stakedNFTs: Set<string> = new Set();
   const images: string[] = [];
-
-  // await Promise.all(
-  //   transfers.map(async (transfer: any) => {
-  //     if (tokenAddresses.includes(transfer.tokenAddress)) {
-  //       let tx;
-  //       while (!tx) tx = await connection.getTransaction(transfer.signature[0]);
-
-  //       await Promise.all(
-  //         tx.transaction.message.instructions.map(async (instruction) => {
-  //           if (tokenAddresses.find((elem) => instruction.data === elem.unstakeID)) {
-  //             unstakedNfts.push(transfer.tokenAddress);
-  //           } else if (
-  //             !unstakedNfts.includes(transfer.tokenAddress) &&
-  //             !stakedNfts.has(transfer.tokenAddress) &&
-  //             tokenAddresses.find((elem) => instruction.data === elem.stakeID)
-  //           ) {
-  //             stakedNfts.add(transfer.tokenAddress);
-  //             images.push(await getSolImageByTokenAddress(transfer.tokenAddress));
-  //           }
-  //         })
-  //       );
-  //     }
-  //   })
-  // );
+  await Promise.all(
+    transfers.map(async (transfer: { tokenAddress: string; signature: string[] }) => {
+      if (!solTokenAddresses.map((elem) => elem.tokenAddress).includes(transfer.tokenAddress)) return;
+      let tx;
+      while (!tx) tx = await connection.getTransaction(transfer.signature[0]);
+      tx.transaction.message.instructions.map(async (instruction) => {
+        if (solTokenAddresses.find((elem) => instruction.data === elem.unstakeID)) {
+          stakedNFTs.delete(transfer.tokenAddress);
+        } else if (solTokenAddresses.find((elem) => instruction.data === elem.stakeID)) {
+          stakedNFTs.add(transfer.tokenAddress);
+        }
+      });
+      await Promise.all(Array.from(stakedNFTs.values()).map(async (stakedNFT) => images.push(await getSolImageByTokenAddress(stakedNFT))));
+    })
+  );
   return images;
 };
 
