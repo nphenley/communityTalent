@@ -12,56 +12,20 @@ import {
   Unsubscribe,
   query,
   where,
-  addDoc,
 } from 'firebase/firestore';
 import { Community } from '_types/Community';
-
-export const checkCommunityIdMatchesAddress = async (communityId: string, tokenAddress: string) => {
-  const tokenAddresses = await getDocs(collection(firestore, 'communities', communityId, 'tokenAddresses'));
-  let matchFound = false;
-  tokenAddresses.forEach((communityTokenAddress) => {
-    if (communityTokenAddress.id == tokenAddress) matchFound = true;
-  });
-  return matchFound;
-};
-
-export const checkForStakingAddresses = async (communityId: string) => {
-  const tokenAddressDocs = await getDocs(collection(firestore, 'communities', communityId, 'tokenAddresses'));
-  const stakingAddressDocs = await getDocs(collection(firestore, 'communities', communityId, 'stakingAddresses'));
-  if (stakingAddressDocs.empty) return [];
-  let stakingCommunityInfo: { tokenAddress: string; stakingAddress: string }[] = [];
-  for (let i = 0; i < stakingAddressDocs.size; i++) {
-    stakingCommunityInfo.push({
-      tokenAddress: tokenAddressDocs.docs[i].id,
-      stakingAddress: stakingAddressDocs.docs[i].id,
-    });
-  }
-
-  return stakingCommunityInfo;
-};
-
-// ==================== REWORK ====================
+import { EthTokenAddress } from '_types/EthTokenAddress';
+import { SolTokenAddress } from '_types/SolTokenAddress';
 
 export const unpinCommunity = async (walletGroupID: string, communityId: string) => {
-  return setDoc(
-    doc(firestore, 'pinnedCommunities', walletGroupID),
-    { array: arrayRemove(communityId) },
-    { merge: true }
-  );
+  return setDoc(doc(firestore, 'pinnedCommunities', walletGroupID), { array: arrayRemove(communityId) }, { merge: true });
 };
 
 export const pinCommunity = async (walletGroupID: string, communityId: string) => {
-  return setDoc(
-    doc(firestore, 'pinnedCommunities', walletGroupID),
-    { array: arrayUnion(communityId) },
-    { merge: true }
-  );
+  return setDoc(doc(firestore, 'pinnedCommunities', walletGroupID), { array: arrayUnion(communityId) }, { merge: true });
 };
 
-export const subscribeToPinnedCommunityIds = (
-  walletGroupID: string,
-  updatePinnedCommunityIds: (ids: string[]) => void
-): Unsubscribe => {
+export const subscribeToPinnedCommunityIds = (walletGroupID: string, updatePinnedCommunityIds: (ids: string[]) => void): Unsubscribe => {
   return onSnapshot(doc(firestore, 'pinnedCommunities', walletGroupID), (snapshot) => {
     updatePinnedCommunityIds(snapshot.exists() ? snapshot.data().array : []);
   });
@@ -90,25 +54,17 @@ export const subscribeToStakedCommunities = (
 };
 
 export const addStakedCommunity = async (walletGroupID: string, communityId: string) => {
-  return setDoc(
-    doc(firestore, 'stakedCommunities', walletGroupID),
-    { array: arrayUnion(communityId) },
-    { merge: true }
-  );
+  return setDoc(doc(firestore, 'stakedCommunities', walletGroupID), { array: arrayUnion(communityId) }, { merge: true });
 };
 
 export const removeStakedCommunity = async (walletGroupID: string, communityId: string) => {
-  return setDoc(
-    doc(firestore, 'stakedCommunities', walletGroupID),
-    { array: arrayRemove(communityId) },
-    { merge: true }
-  );
+  return setDoc(doc(firestore, 'stakedCommunities', walletGroupID), { array: arrayRemove(communityId) }, { merge: true });
 };
 
 export const getCommunitiesByTokenAddress = async (tokenAddress: string): Promise<Community[]> => {
   let communities: Community[] = [];
-  await getDocs(query(collectionGroup(firestore, 'tokenAddresses'), where('tokenAddress', '==', tokenAddress))).then(
-    async (querySnap) => {
+  await Promise.all([
+    getDocs(query(collectionGroup(firestore, 'solTokenAddresses'), where('tokenAddress', '==', tokenAddress))).then(async (querySnap) => {
       return Promise.all(
         querySnap.docs.map(async (doc) => {
           return getDoc(doc.ref.parent.parent!).then((docSnap) => {
@@ -120,12 +76,26 @@ export const getCommunitiesByTokenAddress = async (tokenAddress: string): Promis
           });
         })
       );
-    }
-  );
+    }),
+    ,
+    getDocs(query(collectionGroup(firestore, 'ethTokenAddresses'), where('tokenAddress', '==', tokenAddress))).then(async (querySnap) => {
+      return Promise.all(
+        querySnap.docs.map(async (doc) => {
+          return getDoc(doc.ref.parent.parent!).then((docSnap) => {
+            communities.push({
+              id: docSnap.id,
+              name: docSnap.data()!.name,
+              image: docSnap.data()!.image,
+            });
+          });
+        })
+      );
+    }),
+  ]);
   return communities;
 };
 
-export const getStakingCommunities = async (updateStakingCommunities: (stakingCommunities: Community[]) => void) => {
+export const getStakingCommunities = async (updateStakingCommunities: (stakingCommunities: Community[]) => void): Promise<void> => {
   let communities: Community[] = [];
   await getDocs(collectionGroup(firestore, 'stakingAddresses')).then(async (querySnap) => {
     await Promise.all(
@@ -143,35 +113,20 @@ export const getStakingCommunities = async (updateStakingCommunities: (stakingCo
   updateStakingCommunities(communities);
 };
 
-export const getTokenAddressesForCommunity = async (communityId: string): Promise<string[]> => {
-  let tokenAddresses: string[] = [];
-  await getDocs(collection(firestore, 'communities', communityId, 'tokenAddresses')).then((query) => {
-    query.forEach((doc) => tokenAddresses.push(doc.id));
-  });
-  return tokenAddresses;
-};
+export const getTokenAddressesForCommunity = async (
+  communityId: string
+): Promise<{ solTokenAddresses: SolTokenAddress[]; ethTokenAddresses: EthTokenAddress[] }> => {
+  let solTokenAddresses: SolTokenAddress[] = [];
+  let ethTokenAddresses: EthTokenAddress[] = [];
 
-export const getStakingAddressesForCommunity = async (communityId: string): Promise<string[]> => {
-  let stakingAddresses: string[] = [];
-  await getDocs(collection(firestore, 'communities', communityId, 'stakingAddresses')).then((query) => {
-    query.forEach((doc) => stakingAddresses.push(doc.id));
-  });
-  return stakingAddresses;
-};
+  await Promise.all([
+    getDocs(collection(firestore, 'communities', communityId, 'solTokenAddresses')).then((query) => {
+      query.forEach((doc) => solTokenAddresses.push(doc.data() as SolTokenAddress));
+    }),
+    getDocs(collection(firestore, 'communities', communityId, 'ethTokenAddresses')).then((query) => {
+      query.forEach((doc) => ethTokenAddresses.push(doc.data() as EthTokenAddress));
+    }),
+  ]);
 
-export const getStakingInfoForCommunity = async (communityId: string) => {
-  let stakingInfo: { stakingTokenAddress: string; unstakeID: string; stakeID: string }[] = [];
-  await getDocs(collection(firestore, 'communities', communityId, 'stakingAddresses')).then((query) => {
-    query.forEach((doc) =>
-      stakingInfo.push({ stakingTokenAddress: doc.id, unstakeID: doc.data().unstakeID, stakeID: doc.data().stakeID })
-    );
-  });
-  return stakingInfo;
-};
-
-export const addTokenAddresses = async (communityId: string) => {
-  const collectionHashList: string[] = [];
-  collectionHashList.forEach((tokenAddress) => {
-    setDoc(doc(firestore, 'communities', communityId, 'tokenAddresses', tokenAddress), {});
-  });
+  return { solTokenAddresses, ethTokenAddresses };
 };

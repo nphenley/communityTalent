@@ -5,7 +5,7 @@ import { useContext, useEffect, useState } from 'react';
 import { ProfileContext } from '_contexts/ProfileContext';
 import { CommunityContext } from '_contexts/CommunityContext';
 import SelectField from '_styled/Forms/SelectField';
-import { getFormOptions } from '_api/profiles';
+// import { getFormOptions } from '_api/profiles';
 import FormSubmit from '_styled/Forms/FormSubmit';
 
 type ProjectFormProps = {
@@ -30,7 +30,7 @@ const ProjectForm = (props: ProjectFormProps) => {
 
   useEffect(() => {
     if (selectFieldOptions) return;
-    getFormOptions(setSelectFieldOptions);
+    // getFormOptions(setSelectFieldOptions);
   }, []);
 
   const title = <h1 className='mb-4 text-center text-3xl font-bold text-primary'>Create Project Posting</h1>;

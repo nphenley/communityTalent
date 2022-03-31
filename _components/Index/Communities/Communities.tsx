@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { addTokenAddresses, subscribeToPinnedCommunityIds, subscribeToStakedCommunities } from '_api/communities';
+import { subscribeToPinnedCommunityIds, subscribeToStakedCommunities } from '_api/communities';
 import { Community } from '_types/Community';
 import { useNFTBalances } from 'react-moralis';
 import LoadingSpinner from '_styled/LoadingSpinner';
@@ -8,7 +8,6 @@ import { filterCommunities } from '_helpers/filterCommunities';
 import StakedCommunitiesForm from '_components/Index/Communities/StakedCommunitiesForm';
 import CommunityButton from '_components/Index/Communities/CommunityButton';
 import { getWalletCommunities } from '_helpers/getWalletCommunities';
-import { solStakingWithToken } from '_helpers/getNFTImages';
 
 type CommunitiesProps = {
   walletGroupID: string;
@@ -36,22 +35,15 @@ const Communities = (props: CommunitiesProps) => {
   const [filteredCommunities, setFilteredCommunities] = useState<Community[]>([]);
 
   useEffect(() => {
-    solStakingWithToken('8ysBSwG9d6Rnt4zE5RERh8XmfKNGWhakoJa93sVx5DM9', 'ssc');
-  }, []);
-
-  useEffect(() => {
     const unsubToPinnedCommunityIds = subscribeToPinnedCommunityIds(props.walletGroupID, (ids: string[]) => {
       setPinnedCommunityIds(ids);
       setLoadingPinnedCommunityIds(false);
     });
 
-    const unsubToStakedCommunities = subscribeToStakedCommunities(
-      props.walletGroupID,
-      (stakedCommunities: Community[]) => {
-        setStakedCommunities(stakedCommunities);
-        setLoadingStakedCommunities(false);
-      }
-    );
+    const unsubToStakedCommunities = subscribeToStakedCommunities(props.walletGroupID, (stakedCommunities: Community[]) => {
+      setStakedCommunities(stakedCommunities);
+      setLoadingStakedCommunities(false);
+    });
 
     (async () => {
       setLoadingWalletCommunities(true);
@@ -78,9 +70,7 @@ const Communities = (props: CommunitiesProps) => {
 
   const showAllButton = (
     <button
-      className={styles.buttonContainer.concat(
-        showAll ? ' bg-primary text-white' : ' bg-backgroundDark text-backgroundLight'
-      )}
+      className={styles.buttonContainer.concat(showAll ? ' bg-primary text-white' : ' bg-backgroundDark text-backgroundLight')}
       onClick={() => setShowAll(!showAll)}
     >
       Show All
@@ -90,9 +80,7 @@ const Communities = (props: CommunitiesProps) => {
   const isPinningButton = (
     <button
       onClick={() => setIsPinning(!isPinning)}
-      className={styles.buttonContainer.concat(
-        isPinning ? ' bg-primary text-white' : ' bg-backgroundDark text-backgroundLight'
-      )}
+      className={styles.buttonContainer.concat(isPinning ? ' bg-primary text-white' : ' bg-backgroundDark text-backgroundLight')}
     >
       Pin
     </button>
@@ -162,9 +150,7 @@ const Communities = (props: CommunitiesProps) => {
 
       <div className={styles.sectionsContainer}>
         {pinnedCommunities.length ? pinnedCommunitiesDisplay : null}
-        {(showAll || isPinning || !pinnedCommunities.length) && filteredCommunities.length
-          ? allCommunitiesDisplay
-          : null}
+        {(showAll || isPinning || !pinnedCommunities.length) && filteredCommunities.length ? allCommunitiesDisplay : null}
       </div>
     </div>
   );

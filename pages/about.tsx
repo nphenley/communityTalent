@@ -10,11 +10,6 @@ const nextHead = (
 );
 
 export default function About() {
-  const title = 'communityTalent';
-
-  const about =
-    'communityTalent is a public service platform that aims to improve the networking, recruiting and community-building abilities of web3 communities. Built by two devs passionate about web3, it allows people offering web3 skills to create their own extended profiles and the people seeking those skills to describe exactly what they are looking for. communityTalent provides the social layer missing from web3 and should benefit all its communities by making it easier for builders and people with common interests to find each other. ';
-
   return (
     <>
       {nextHead}
@@ -60,6 +55,11 @@ const styles = {
   question: 'text-md font-bold text-primary',
   answer: 'text-sm font-semibold text-grey',
 };
+
+const title = 'communityTalent';
+
+const about =
+  'communityTalent is a public service platform that aims to improve the networking, recruiting and community-building abilities of web3 communities. Built by two devs passionate about web3, it allows people offering web3 skills to create their own extended profiles and the people seeking those skills to describe exactly what they are looking for. communityTalent provides the social layer missing from web3 and should benefit all its communities by making it easier for builders and people with common interests to find each other. ';
 
 const qAndAs: { question: string; answer: string }[] = [
   {
