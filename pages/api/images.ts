@@ -136,8 +136,8 @@ const getSolImagesOwnedByWallet = async (walletAddress: string, solTokenAddresse
 // set staked/unstaked efficiency
 // Currently blocked by solscan lol
 const getSolStakedImages = async (walletAddress: string, solTokenAddresses: SolTokenAddress[]): Promise<string[]> => {
-  // const transfers = await getSolAllTransfersByWallet(walletAddress);
-  const transfers: any[] = [];
+  const transfers = await getSolAllTransfersByWallet(walletAddress);
+  // const transfers: any[] = [];
   const stakedNFTs: Set<string> = new Set();
   const images: string[] = [];
   await Promise.all(
