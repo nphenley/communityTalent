@@ -1,4 +1,4 @@
-import { Connection } from '@solana/web3.js';
+import { ConfirmedSignatureInfo, Connection, PublicKey } from '@solana/web3.js';
 import Moralis from 'moralis';
 import { NextApiRequest, NextApiResponse } from 'next';
 import Web3 from 'web3';
@@ -21,6 +21,7 @@ const connection = new Connection('https://ssc-dao.genesysgo.net/');
 
 // TODO:
 // rate-limiting might be an issue.
+// Move staking code to new API.
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method != 'POST') res.status(400).end();
   const { walletAddresses, solTokenAddresses, ethTokenAddresses } = JSON.parse(req.body);
@@ -131,30 +132,42 @@ const getSolImagesOwnedByWallet = async (walletAddress: string, solTokenAddresse
 };
 
 // TODO:
+// Move this code to new API.
 // add programID
 // transfer over 1000 redo
-// set staked/unstaked efficiency
 // Currently blocked by solscan lol
 const getSolStakedImages = async (walletAddress: string, solTokenAddresses: SolTokenAddress[]): Promise<string[]> => {
-  const transfers = await getSolAllTransfersByWallet(walletAddress);
-  // const transfers: any[] = [];
-  const stakedNFTs: Set<string> = new Set();
   const images: string[] = [];
-  await Promise.all(
-    transfers.map(async (transfer: { tokenAddress: string; signature: string[] }) => {
-      if (!solTokenAddresses.map((elem) => elem.tokenAddress).includes(transfer.tokenAddress)) return;
-      let tx;
-      while (!tx) tx = await connection.getTransaction(transfer.signature[0]);
-      tx.transaction.message.instructions.map(async (instruction) => {
-        if (solTokenAddresses.find((elem) => instruction.data === elem.unstakeID)) {
-          stakedNFTs.delete(transfer.tokenAddress);
-        } else if (solTokenAddresses.find((elem) => instruction.data === elem.stakeID)) {
-          stakedNFTs.add(transfer.tokenAddress);
-        }
-      });
-      await Promise.all(Array.from(stakedNFTs.values()).map(async (stakedNFT) => images.push(await getSolImageByTokenAddress(stakedNFT))));
-    })
-  );
+
+  const confirmedSignatures: ConfirmedSignatureInfo[] = await connection.getConfirmedSignaturesForAddress2(new PublicKey(walletAddress));
+  const signatureSet: Set<string> = new Set(confirmedSignatures.map((elem) => elem.signature));
+
+  while (signatureSet.size) {
+    await Promise.all(
+      Array.from(signatureSet.values()).map(async (signature) => {
+        const transaction = await connection.getParsedTransaction(signature);
+        if (!transaction) return;
+        transaction.transaction.message.instructions.map((instruction) => console.log(instruction));
+        signatureSet.delete(signature);
+      })
+    );
+  }
+
+  // await Promise.all(
+  //   transfers.map(async (transfer: { tokenAddress: string; signature: string[] }) => {
+  //     if (!solTokenAddresses.map((elem) => elem.tokenAddress).includes(transfer.tokenAddress)) return;
+  //     let tx;
+  //     while (!tx) tx = await connection.getTransaction(transfer.signature[0]);
+  // tx.transaction.message.instructions.map(async (instruction) => {
+  //   if (solTokenAddresses.find((elem) => instruction.data === elem.unstakeID)) {
+  //     stakedNFTs.delete(transfer.tokenAddress);
+  //   } else if (solTokenAddresses.find((elem) => instruction.data === elem.stakeID)) {
+  //     stakedNFTs.add(transfer.tokenAddress);
+  //   }
+  // });
+  // await Promise.all(Array.from(stakedNFTs.values()).map(async (stakedNFT) => images.push(await getSolImageByTokenAddress(stakedNFT))));
+  //   })
+  // );
   return images;
 };
 
@@ -165,11 +178,4 @@ const getSolImageByTokenAddress = async (tokenAddress: string) => {
   };
   const nftMetadata = await Moralis.SolanaAPI.nft.getNFTMetadata(nftOptions);
   return (await (await fetch(nftMetadata.metaplex.metadataUri)).json()).image;
-};
-
-const getSolAllTransfersByWallet = async (walletAddress: string) => {
-  const apiUrl = 'https://public-api.solscan.io/account/splTransfers?account=' + walletAddress + '&offset=0&limit=1000';
-  const response = await fetch(apiUrl);
-  const transfers = await response.json();
-  return transfers.data;
 };
