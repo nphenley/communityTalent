@@ -14,6 +14,7 @@ import InputField from '_styled/Forms/InputField';
 
 type ProjectFormProps = {
   setAddProject: any;
+  setProjects: any;
 };
 
 const ProjectForm = (props: ProjectFormProps) => {
@@ -23,10 +24,15 @@ const ProjectForm = (props: ProjectFormProps) => {
   const { control, register, handleSubmit } = useForm();
 
   const onSubmit = (data: any) => {
-    createProject(communityId, {
-      ...data,
-      walletGroupID: profile!.id,
-    } as Project);
+    createProject(
+      communityId,
+      {
+        ...data,
+        walletGroupID: profile!.id,
+        displayName: profile?.displayName,
+      } as Project,
+      props.setProjects
+    );
     props.setAddProject(false);
   };
 

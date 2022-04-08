@@ -8,16 +8,18 @@ import { CommunityContext } from '_contexts/CommunityContext';
 import { WalletGroupContext } from '_contexts/WalletGroupContext';
 import LoadingSpinner from '_styled/LoadingSpinner';
 import { ProjectSection } from '_enums/ProjectSection';
+import { ProfileContext } from '_contexts/ProfileContext';
 
 const Projects = () => {
   const communityId = useContext(CommunityContext);
   const walletGroupID = useContext(WalletGroupContext);
+  const userProfile = useContext(ProfileContext);
 
   const [addProject, setAddProject] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
   const [lfProjects, setLfProjects] = useState<Project[]>([]);
   const [lfHire, setLfHire] = useState<Project[]>([]);
-
+  const [isYourProjects, setIsYourProjects] = useState(false);
   const [projectSection, setProjectSection] = useState<ProjectSection>(ProjectSection.LFPROJECTS);
 
   useEffect(() => {
@@ -47,33 +49,81 @@ const Projects = () => {
   };
 
   const navBar = (
-    <div className='flex justify-center gap-2 mb-2'>
-      {projectSectionButton(ProjectSection.LFPROJECTS, 'Looking For Projects')}
-      {projectSectionButton(ProjectSection.LFHIRE, 'Looking to Hire')}
+    <div className='flex'>
+      <div className='flex flex-row justify-center gap-2 mb-2 grow'>
+        {projectSectionButton(ProjectSection.LFPROJECTS, 'Looking For Projects')}
+        {projectSectionButton(ProjectSection.LFHIRE, 'Looking to Hire')}
+      </div>
+      <button className='px-3 mb-2 font-medium rounded-lg py-auto bg-backgroundDark'>
+        <div className='flex flex-col items-center'>
+          <label className=''>Yours</label>
+          <input className='' type='checkbox' onChange={() => setIsYourProjects(!isYourProjects)} name='yours' />
+        </div>
+      </button>
     </div>
   );
 
   return (
     <div className={styles.container}>
-      {projects ? (
+      {projects && userProfile ? (
         <>
           {navBar}
 
           {projectSection === ProjectSection.LFPROJECTS ? (
             <>
               {lfProjects.map((project) => (
-                <ProjectCard key={project.id} project={project} walletGroupID={walletGroupID} />
+                <>
+                  {isYourProjects ? (
+                    project.walletGroupID === walletGroupID ? (
+                      <ProjectCard
+                        key={project.id}
+                        project={project}
+                        walletGroupID={walletGroupID}
+                        admin={userProfile.admin}
+                        setProjects={setProjects}
+                      />
+                    ) : null
+                  ) : (
+                    <ProjectCard
+                      key={project.id}
+                      project={project}
+                      walletGroupID={walletGroupID}
+                      admin={userProfile.admin}
+                      setProjects={setProjects}
+                    />
+                  )}
+                </>
               ))}
             </>
           ) : projectSection === ProjectSection.LFHIRE ? (
             <>
               {lfHire.map((project) => (
-                <ProjectCard key={project.id} project={project} walletGroupID={walletGroupID} />
+                <>
+                  {isYourProjects ? (
+                    project.walletGroupID === walletGroupID ? (
+                      <ProjectCard
+                        key={project.id}
+                        project={project}
+                        walletGroupID={walletGroupID}
+                        admin={userProfile.admin}
+                        setProjects={setProjects}
+                      />
+                    ) : null
+                  ) : (
+                    <ProjectCard
+                      key={project.id}
+                      project={project}
+                      walletGroupID={walletGroupID}
+                      admin={userProfile.admin}
+                      setProjects={setProjects}
+                    />
+                  )}
+                </>
               ))}
             </>
           ) : null}
 
-          {addProject ? <ProjectForm setAddProject={setAddProject} /> : null}
+          {addProject ? <ProjectForm setAddProject={setAddProject} setProjects={setProjects} /> : null}
 
           <CreateProjectButton onClick={() => setAddProject(!addProject)} />
         </>

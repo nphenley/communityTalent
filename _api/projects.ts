@@ -14,14 +14,15 @@ import {
   deleteDoc,
 } from 'firebase/firestore';
 import { Project } from '_types/Project';
-export const createProject = async (communityId: string, project: Project) => {
+export const createProject = async (communityId: string, project: Project, setProjects: any) => {
   const docRef = await addDoc(collection(firestore, 'projectUpvotes'), {});
 
-  setDoc(doc(firestore, 'communities', communityId, 'projects', docRef.id), {
+  await setDoc(doc(firestore, 'communities', communityId, 'projects', docRef.id), {
     ...project,
     dateCreated: Timestamp.now(),
     dateLastUpdated: Timestamp.now(),
   });
+  await getProjects(communityId, setProjects);
 };
 
 export const updateProject = async (
@@ -82,4 +83,12 @@ export const toggleProjectUpvote = async (
 export const getUserVote = async (projectId: string, walletGroupID: string, setUserVote: any) => {
   const upvote = await getDoc(doc(firestore, 'projectUpvotes', projectId, 'upvotes', walletGroupID));
   setUserVote(upvote.exists());
+};
+
+export const deleteProject = async (communityId: string, projectId: string, setProjects: any) => {
+  await Promise.all([
+    deleteDoc(doc(firestore, 'communities', communityId, 'projects', projectId)),
+    deleteDoc(doc(firestore, 'projectUpvotes', projectId)),
+  ]);
+  getProjects(communityId, setProjects);
 };

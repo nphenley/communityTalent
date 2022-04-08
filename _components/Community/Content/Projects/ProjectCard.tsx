@@ -1,14 +1,16 @@
 import { useContext, useEffect, useState } from 'react';
-import { FaThumbtack, FaSkull, FaCaretDown, FaPen, FaArrowUp, FaArrowDown, FaCaretUp } from 'react-icons/fa';
+import { FaThumbtack, FaSkull, FaCaretDown, FaPen, FaArrowUp, FaArrowDown, FaCaretUp, FaBan } from 'react-icons/fa';
 import EmoteIcon from '_components/Community/SideBar/EmoteIcon';
 import { Project } from '_types/Project';
 import EditProjectForm from './EditProjectForm';
 import moment from 'moment';
-import { getUserVote, toggleProjectUpvote } from '_api/projects';
+import { deleteProject, getUserVote, toggleProjectUpvote } from '_api/projects';
 import { CommunityContext } from '_contexts/CommunityContext';
 type ProjectCardProps = {
   project: Project;
   walletGroupID: string;
+  admin: boolean | undefined;
+  setProjects: any;
 };
 
 const ProjectCard = (props: ProjectCardProps) => {
@@ -27,8 +29,8 @@ const ProjectCard = (props: ProjectCardProps) => {
   // Technically shouldn't use toLowerCase() here, instead use checksum converter or whatever.
   const postedByUser = project.walletGroupID.toLowerCase() === props.walletGroupID.toLowerCase();
   let containerClassName =
-    'relative bg-backgroundDark rounded-lg shadow-lg w-full py-4 flex gap-3 overflow-y-scroll mx-auto';
-  containerClassName += isExpanded ? ' max-h-[400px] min-h-[250px]' : '';
+    'relative bg-backgroundDark rounded-lg shadow-lg w-full py-3 flex gap-3 overflow-y-scroll mx-auto';
+  containerClassName += isExpanded ? ' max-h-[400px] min-h-[150px]' : '';
 
   const expandButton = (
     <button
@@ -44,37 +46,29 @@ const ProjectCard = (props: ProjectCardProps) => {
   return (
     <div className={containerClassName}>
       {!isExpanded ? (
-        <div className='grid w-full grid-rows-2 px-3'>
-          <div className='flex row-span-2'>
-            <div className='flex col-span-1 row-span-2 pr-1.5'>
-              <div className='flex items-center'>
-                <EmoteIcon
-                  onClick={() =>
-                    toggleProjectUpvote(
-                      communityId,
-                      project.id,
-                      project.walletGroupID,
-                      userVote,
-                      setProject,
-                      setUserVote
-                    )
-                  }
-                  active={userVote}
-                  number={project.votes ? project.votes : 0}
-                  icon={<FaArrowUp size={12} />}
-                />
-              </div>
+        <div className='flex-row w-full px-3'>
+          <div className='flex h-full'>
+            <div className='flex items-center pr-2'>
+              <EmoteIcon
+                onClick={() =>
+                  toggleProjectUpvote(communityId, project.id, project.walletGroupID, userVote, setProject, setUserVote)
+                }
+                active={userVote}
+                number={project.votes ? project.votes : 0}
+                icon={<FaArrowUp size={12} />}
+              />
             </div>
 
-            <div className='row-span-2 '>
-              <div className='flex flex-row '>
-                <div className='flex-row'>
-                  <div className='w-full'>{project.title}</div>
-                  <div className='text-sm text-grey'>{project.walletGroupID}</div>
+            <div className='flex-col gap-2 grow'>
+              <div>
+                <div>{project.title}</div>
+                <div className='flex justify-between text-sm text-grey'>
+                  <div>{project.displayName}</div>
+                  <div>{moment(project.dateCreated.toDate()).fromNow()}</div>
                 </div>
               </div>
 
-              <div className='pt-2'>
+              <div className='pt-2 '>
                 {project.tags && project.tags.length ? (
                   <>
                     <div className={styles.sectionContainer}>
@@ -91,70 +85,63 @@ const ProjectCard = (props: ProjectCardProps) => {
               </div>
             </div>
           </div>
-
-          <div className='absolute text-sm right-4 top-6 text-grey'>
-            {moment(project.dateCreated.toDate()).fromNow()}
-          </div>
-
-          {expandButton}
         </div>
       ) : (
-        <div className='grid w-full grid-rows-3 px-3 '>
-          <div className='flex row-span-3'>
-            <div className='flex col-span-1 row-span-3 pr-1.5'>
-              <div className='my-auto'>
-                <EmoteIcon
-                  onClick={() =>
-                    toggleProjectUpvote(
-                      communityId,
-                      project.id,
-                      project.walletGroupID,
-                      userVote,
-                      setProject,
-                      setUserVote
-                    )
-                  }
-                  active={userVote}
-                  number={project.votes ? project.votes : 0}
-                  icon={<FaArrowUp size={12} />}
-                />
-                <EmoteIcon number={0} active={false} icon={<FaArrowDown size={12} />} />
-              </div>
+        <div className='flex-row w-full px-3'>
+          <div className='flex h-full'>
+            <div className='flex items-center pr-2'>
+              <EmoteIcon
+                onClick={() =>
+                  toggleProjectUpvote(communityId, project.id, project.walletGroupID, userVote, setProject, setUserVote)
+                }
+                active={userVote}
+                number={project.votes ? project.votes : 0}
+                icon={<FaArrowUp size={12} />}
+              />
             </div>
 
-            <div className='col-span-19'>
-              <div className='flex-row mb-5'>
-                <div className='w-full'>{project.title}</div>
-                <div className='text-sm text-grey'>{project.walletGroupID}</div>
-              </div>
+            <div className='grow'>
+              <div className='flex flex-col gap-3'>
+                <div>
+                  <div>{project.title}</div>
+                  <div className='flex justify-between text-sm text-grey'>
+                    <div>{project.displayName}</div>
+                    <div>{moment(project.dateCreated.toDate()).fromNow()}</div>
+                  </div>
+                </div>
 
-              <div className='break-all col-span-19'>{project.description}</div>
+                <div className='break-all'>{project.description}</div>
 
-              <div className='flex pt-2 '>
-                {project.tags && project.tags.length ? (
-                  <>
-                    <div className={styles.sectionContainer}>
-                      <div className='flex flex-wrap gap-2'>
-                        {project.tags.map((tag) => (
-                          <div key={tag} className={styles.sectionTags}>
-                            {tag}
-                          </div>
-                        ))}
+                <div className='flex'>
+                  {project.tags && project.tags.length ? (
+                    <>
+                      <div className={styles.sectionContainer}>
+                        <div className='flex flex-wrap gap-2'>
+                          {project.tags.map((tag) => (
+                            <div key={tag} className={styles.sectionTags}>
+                              {tag}
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  </>
-                ) : null}
+                    </>
+                  ) : null}
+                </div>
               </div>
             </div>
           </div>
-
-          <div className='absolute text-sm right-4 top-6 text-grey'>
-            {moment(project.dateCreated.toDate()).fromNow()}
-          </div>
-
-          {expandButton}
         </div>
       )}
+
+      {props.admin ? (
+        <button
+          className='absolute top-2 right-5 p-0.5'
+          onClick={() => deleteProject(communityId, project.id, props.setProjects)}
+        >
+          <FaBan size={12} />
+        </button>
+      ) : null}
+      {expandButton}
 
       {postedByUser ? (
         <button
