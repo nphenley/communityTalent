@@ -15,7 +15,7 @@
     "@solana/web3.js": "^1.36.0",
     "@walletconnect/web3-provider": "^1.7.5",
     "@web3auth/web3auth": "^0.6.3",
-    "firebase": "^9.6.6",
+    "firebase": "^9.6.10",
     "magic-sdk": "^8.1.0",
     "moment": "^2.29.1",
     "moralis": "^1.5.6",

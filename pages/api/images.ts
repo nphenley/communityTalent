@@ -45,17 +45,20 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         const imagesArray = await getSolImagesOwnedByWallet(walletAddress, solTokenAddresses);
         imagesArray.forEach((image) => !images.includes(image) && images.push(image));
       });
-      imageRequests.push(async () => {
-        const imagesArray = await getSolStakedImages(walletAddress, solTokenAddresses);
-        images.push(...imagesArray);
-      });
+      // imageRequests.push(async () => {
+      //   const imagesArray = await getSolStakedImages(walletAddress, solTokenAddresses);
+      //   images.push(...imagesArray);
+      // });
     }
   });
   await Promise.all(imageRequests.map((fn) => fn()));
   res.status(200).json(images);
 };
 
-const getEthImagesOwnedByWalletViaOpensea = async (walletAddress: string, ethTokenAddresses: EthTokenAddress[]): Promise<string[]> => {
+const getEthImagesOwnedByWalletViaOpensea = async (
+  walletAddress: string,
+  ethTokenAddresses: EthTokenAddress[]
+): Promise<string[]> => {
   const images: string[] = [];
   let apiUrl =
     'https://api.opensea.io/api/v1/assets?owner=' +
@@ -74,7 +77,10 @@ const getEthImagesOwnedByWalletViaOpensea = async (walletAddress: string, ethTok
   return images;
 };
 
-const getEthStakedImagesViaOpensea = async (walletAddress: string, ethTokenAddress: EthTokenAddress): Promise<string[]> => {
+const getEthStakedImagesViaOpensea = async (
+  walletAddress: string,
+  ethTokenAddress: EthTokenAddress
+): Promise<string[]> => {
   const userTransfersOfNft = await getEthTransfersOfTokenByWallet(walletAddress, ethTokenAddress.tokenAddress);
   if (!userTransfersOfNft.forEach) return []; // If rate limit, userTransfersOfNft is not an array.
   let stakedNFTIds: Set<string> = new Set();
@@ -118,7 +124,10 @@ const getEthTransfersOfTokenByWallet = async (walletAddress: string, tokenAddres
   return transfers.result;
 };
 
-const getSolImagesOwnedByWallet = async (walletAddress: string, solTokenAddresses: SolTokenAddress[]): Promise<string[]> => {
+const getSolImagesOwnedByWallet = async (
+  walletAddress: string,
+  solTokenAddresses: SolTokenAddress[]
+): Promise<string[]> => {
   const walletOptions = {
     network: 'mainnet' as 'mainnet',
     address: walletAddress,
@@ -126,9 +135,12 @@ const getSolImagesOwnedByWallet = async (walletAddress: string, solTokenAddresse
   const nftBalance = await Moralis.SolanaAPI.account.getNFTs(walletOptions);
   const ownedNFTTokenAddressesInCommunity: string[] = [];
   nftBalance.forEach((nft) => {
-    solTokenAddresses.map((elem) => elem.tokenAddress).includes(nft.mint) && ownedNFTTokenAddressesInCommunity.push(nft.mint);
+    solTokenAddresses.map((elem) => elem.tokenAddress).includes(nft.mint) &&
+      ownedNFTTokenAddressesInCommunity.push(nft.mint);
   });
-  return Promise.all(ownedNFTTokenAddressesInCommunity.map(async (tokenAddress) => getSolImageByTokenAddress(tokenAddress)));
+  return Promise.all(
+    ownedNFTTokenAddressesInCommunity.map(async (tokenAddress) => getSolImageByTokenAddress(tokenAddress))
+  );
 };
 
 // TODO:
@@ -139,7 +151,9 @@ const getSolImagesOwnedByWallet = async (walletAddress: string, solTokenAddresse
 const getSolStakedImages = async (walletAddress: string, solTokenAddresses: SolTokenAddress[]): Promise<string[]> => {
   const images: string[] = [];
 
-  const confirmedSignatures: ConfirmedSignatureInfo[] = await connection.getConfirmedSignaturesForAddress2(new PublicKey(walletAddress));
+  const confirmedSignatures: ConfirmedSignatureInfo[] = await connection.getConfirmedSignaturesForAddress2(
+    new PublicKey(walletAddress)
+  );
   const signatureSet: Set<string> = new Set(confirmedSignatures.map((elem) => elem.signature));
 
   while (signatureSet.size) {

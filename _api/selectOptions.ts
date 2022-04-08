@@ -31,3 +31,18 @@ export const getProfileFormOptions = async (setSelectOptions: any) => {
     timezones: timezoneOptions,
   });
 };
+
+export const getProjectFormOptions = async (setSelectOptions: any) => {
+  const tags = await getDoc(doc(firestore, 'selectOptions', 'tags'));
+
+  const tagOptions: SelectOption[] = tags.data()!.array.map((key: string) => {
+    return {
+      label: key,
+      value: key,
+    };
+  });
+
+  setSelectOptions({
+    tags: tagOptions,
+  });
+};

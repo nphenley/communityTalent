@@ -4,14 +4,14 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        backgroundDarker: 'hsl(240, 41%, 5%)',
-        backgroundDark: 'hsl(240, 41%, 10%)',
-        background: 'hsl(240, 41%, 16%)',
-        backgroundLight: 'hsl(240, 41%, 55%)',
+        backgroundDarker: 'hsl(240, 31%, 5%)',
+        backgroundDark: 'hsl(240, 31%, 10%)',
+        background: 'hsl(240, 31%, 16%)',
+        backgroundLight: 'hsl(240, 31%, 55%)',
 
-        primaryDark: 'hsl(325, 94%, 16%)',
-        primary: 'hsl(325, 94%, 66%)',
-        primaryLight: 'hsl(325, 94%, 76%)',
+        primaryDark: 'hsl(325, 80%, 16%)',
+        primary: 'hsl(325, 80%, 66%)',
+        primaryLight: 'hsl(325, 80%, 76%)',
         secondary: 'rgb(122, 11, 192)',
 
         grey: '#6b7280',
