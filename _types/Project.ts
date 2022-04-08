@@ -10,4 +10,5 @@ export type Project = {
   walletGroupID: string;
   hiring: boolean;
   votes?: number;
+  admin?: boolean;
 };

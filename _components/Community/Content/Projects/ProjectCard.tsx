@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { FaThumbtack, FaSkull, FaCaretDown, FaPen, FaArrowUp, FaArrowDown, FaCaretUp, FaBan } from 'react-icons/fa';
+import { FaCaretDown, FaPen, FaArrowUp, FaCaretUp, FaBan, FaUserCheck } from 'react-icons/fa';
 import EmoteIcon from '_components/Community/SideBar/EmoteIcon';
 import { Project } from '_types/Project';
 import EditProjectForm from './EditProjectForm';
@@ -39,7 +39,7 @@ const ProjectCard = (props: ProjectCardProps) => {
       }}
       className='absolute right-5 bottom-4'
     >
-      {!isExpanded ? <FaCaretDown size={26} /> : <FaCaretUp size={26} />}
+      {!isExpanded ? <FaCaretDown size={24} /> : <FaCaretUp size={24} />}
     </button>
   );
 
@@ -142,6 +142,13 @@ const ProjectCard = (props: ProjectCardProps) => {
         </button>
       ) : null}
       {expandButton}
+
+      {project.admin ? (
+        <div className='flex flex-row items-center gap-1 absolute top-1.5 p-0.5 right-10'>
+          <div className='text-xs'>Admin</div>
+          <FaUserCheck size={16} />
+        </div>
+      ) : null}
 
       {postedByUser ? (
         <button

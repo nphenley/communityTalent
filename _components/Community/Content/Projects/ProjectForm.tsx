@@ -30,6 +30,7 @@ const ProjectForm = (props: ProjectFormProps) => {
         ...data,
         walletGroupID: profile!.id,
         displayName: profile?.displayName,
+        admin: profile?.admin,
       } as Project,
       props.setProjects
     );
