@@ -8,7 +8,7 @@ type EmoteIconProps = {
 const EmoteIcon = (props: EmoteIconProps) => {
   let className = 'flex flex-col items-center h-10 shadow-xl w-7 hover:invert';
 
-  className += props.active ? ' bg-cyan-900 rounded-md' : '';
+  className += props.active ? ' bg-backgroundDarker rounded-md' : '';
 
   return (
     <div onClick={props.onClick} className={className}>

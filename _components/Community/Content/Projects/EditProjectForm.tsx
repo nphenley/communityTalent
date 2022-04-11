@@ -4,12 +4,14 @@ import { Project } from '_types/Project';
 import { useContext, useEffect, useState } from 'react';
 import { CommunityContext } from '_contexts/CommunityContext';
 import SelectField from '_styled/Forms/SelectField';
+import { getProjectFormOptions } from '_api/selectOptions';
 // import { getFormOptions } from '_api/profiles';
 
 type EditProjectFormProps = {
   project: Project;
   setEditProject: any;
   editProject: boolean;
+  setProject: any;
 };
 
 const EditProjectForm = (props: EditProjectFormProps) => {
@@ -23,25 +25,25 @@ const EditProjectForm = (props: EditProjectFormProps) => {
 
   const onSubmit: SubmitHandler<Partial<Project>> = async (data: any) => {
     for (const property in data) if (!dirtyFields[property]) delete data[property];
-    await updateProject(communityId, props.project.id!, data);
+    await updateProject(communityId, props.project.id!, data, props.setProject);
     props.setEditProject(false);
   };
   const [selectFieldOptions, setSelectFieldOptions] = useState<any>();
 
   useEffect(() => {
     if (selectFieldOptions) return;
-    // getFormOptions(setSelectFieldOptions);
+    getProjectFormOptions(setSelectFieldOptions);
   }, []);
 
-  const title = <h1 className='mb-4 text-center text-3xl font-bold text-primary'>Edit Project Posting</h1>;
+  const title = <h1 className='mb-4 text-3xl font-bold text-center text-primary'>Edit Project Posting</h1>;
 
   return (
-    <div className='fixed top-1/2 left-1/2 z-50 w-2/3 -translate-x-1/2 -translate-y-1/2 '>
-      <div className='flex grow flex-col items-center overflow-y-scroll rounded-lg border-4 border-backgroundDark bg-background pt-12 pb-16 shadow-lg'>
+    <div className='fixed z-50 w-2/3 -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 '>
+      <div className='flex flex-col items-center pt-12 pb-16 overflow-y-scroll border-4 rounded-lg shadow-lg grow border-backgroundDark bg-background'>
         <button type='button' onClick={() => props.setEditProject(false)} className='absolute top-0 right-0'>
           x
         </button>
-        <form className='flex w-full max-w-screen-sm flex-col gap-8 px-10 sm:px-0' onSubmit={handleSubmit(onSubmit)}>
+        <form className='flex flex-col w-full max-w-screen-sm gap-8 px-10 sm:px-0' onSubmit={handleSubmit(onSubmit)}>
           {title}
           <InputField register={register} label='Title' name='title' required={true} defaultValue={props.project.title} maxLength={34} />
           <LargeInputField
@@ -60,7 +62,7 @@ const EditProjectForm = (props: EditProjectFormProps) => {
             defaultValues={props.project.tags ? props.project.tags : []}
           />
 
-          <input className='rounded-lg bg-primary p-4 hover:cursor-pointer hover:bg-primaryLight' type='submit' />
+          <input className='p-4 rounded-lg bg-primary hover:cursor-pointer hover:bg-primaryLight' type='submit' />
         </form>
       </div>
     </div>
@@ -82,7 +84,7 @@ const InputField = (props: InputFieldProps) => {
     <div className='flex flex-col items-center gap-4 px-2 sm:flex-row sm:gap-0'>
       <label className='text-center text-primary sm:w-1/3'>{props.label}</label>
       <input
-        className='w-full grow rounded-lg bg-backgroundDark p-3 sm:w-fit'
+        className='w-full p-3 rounded-lg grow bg-backgroundDark sm:w-fit'
         placeholder={props.label}
         {...props.register(props.name)}
         defaultValue={props.defaultValue}
@@ -106,7 +108,7 @@ const LargeInputField = (props: LargeInputFieldProps) => {
     <div className='flex flex-col items-center gap-4 px-2 sm:flex-row sm:gap-0'>
       <label className='text-center text-primary sm:w-1/3'>{props.label}</label>
       <textarea
-        className='h-60 w-full grow resize-none rounded-lg bg-backgroundDark p-5 sm:h-40 sm:w-fit'
+        className='w-full p-5 rounded-lg resize-none h-60 grow bg-backgroundDark sm:h-40 sm:w-fit'
         placeholder={props.label}
         maxLength={props.maxLength ? props.maxLength : 300}
         {...props.register(props.name)}

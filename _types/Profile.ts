@@ -18,4 +18,5 @@ export type Profile = {
   contacts?: string;
   relevantLinks?: string[];
   votes?: [{ walletGroupID: string; type: 'up' | 'down' }];
+  admin?: boolean;
 };

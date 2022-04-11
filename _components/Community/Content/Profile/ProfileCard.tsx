@@ -4,6 +4,7 @@ import { profileNFTImages } from '_constants/dev';
 import { Profile } from '_types/Profile';
 import { GiPlainCircle } from 'react-icons/gi';
 import { MdWork } from 'react-icons/md';
+import { FaUserCheck } from 'react-icons/fa';
 
 type ProfileCardProps = {
   profile: Profile;
@@ -16,7 +17,10 @@ const ProfileCard = (props: ProfileCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const expandButton = (
-    <button className='absolute text-2xl font-bold top-1 right-4 text-backgroundLight' onClick={() => setIsExpanded(!isExpanded)}>
+    <button
+      className='absolute text-2xl font-bold top-1 right-4 text-backgroundLight'
+      onClick={() => setIsExpanded(!isExpanded)}
+    >
       {isExpanded ? '-' : '+'}
     </button>
   );
@@ -32,7 +36,8 @@ const ProfileCard = (props: ProfileCardProps) => {
     </div>
   );
 
-  let containerClassName = 'relative bg-backgroundDark rounded-lg shadow-lg w-full py-11 flex flex-col gap-6 overflow-y-scroll mx-auto';
+  let containerClassName =
+    'relative bg-backgroundDark rounded-lg shadow-lg w-full py-11 flex flex-col gap-6 overflow-y-scroll mx-auto';
 
   containerClassName += props.alwaysExpanded ? '' : isExpanded ? ' max-h-[1000px] min-h-[600px]' : ' h-[600px]';
 
@@ -45,7 +50,11 @@ const ProfileCard = (props: ProfileCardProps) => {
           <div className='flex'>
             <div className={styles.imageContainer}>
               <Image
-                src={props.profile.profilePicture ? props.profile.profilePicture : profileNFTImages[props.profile.displayName.length % 5]}
+                src={
+                  props.profile.profilePicture
+                    ? props.profile.profilePicture
+                    : profileNFTImages[props.profile.displayName.length % 5]
+                }
                 height={130}
                 width={130}
                 unoptimized={true}
@@ -55,9 +64,17 @@ const ProfileCard = (props: ProfileCardProps) => {
         </div>
 
         <div className='flex flex-col justify-center h-full gap-1 mt-2 break-words'>
+          {props.profile.admin ? (
+            <div className='flex flex-row items-center gap-1'>
+              <FaUserCheck size={16} />
+              <div>Admin</div>
+            </div>
+          ) : null}
           <div className='font-bold break-words'>{props.profile.displayName}</div>
           {props.profile.twitterHandle && <div className='break-words text-grey'>{props.profile.twitterHandle}</div>}
-          {props.profile.discordUsername && <div className='break-words text-grey'>{props.profile.discordUsername}</div>}
+          {props.profile.discordUsername && (
+            <div className='break-words text-grey'>{props.profile.discordUsername}</div>
+          )}
         </div>
       </div>
 

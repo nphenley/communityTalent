@@ -64,7 +64,7 @@ const StakedNftsForm = (props: StakedNftsFormProps) => {
   return loadingSelectOptions || loadingStakingCommunities || loadingStakedCommunities ? (
     <LoadingSpinner />
   ) : (
-    <div className='flex flex-col items-center w-full max-w-screen-sm gap-12 px-5'>
+    <div className='flex flex-col items-center w-full max-w-screen-sm gap-12 px-5 '>
       <div className='flex flex-col w-full gap-6'>
         <div className='font-bold text-center text-primary'>Add:</div>
         <form className='flex flex-col w-full gap-4' onSubmit={handleSubmit(onSubmit)}>
