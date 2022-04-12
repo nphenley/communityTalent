@@ -1,9 +1,7 @@
-import { ConfirmedSignatureInfo, Connection, PublicKey } from '@solana/web3.js';
 import Moralis from 'moralis';
 import { NextApiRequest, NextApiResponse } from 'next';
 import Web3 from 'web3';
 import { EthTokenAddress } from '_types/EthTokenAddress';
-import { SolTokenAddress } from '_types/SolTokenAddress';
 
 const openseaOptions = {
   method: 'GET',
@@ -17,40 +15,89 @@ const serverUrl = process.env.NEXT_PUBLIC_MORALIS_SERVER_URL;
 const appId = process.env.NEXT_PUBLIC_MORALIS_APPLICATION_ID;
 Moralis.start({ serverUrl, appId });
 
-const connection = new Connection('https://ssc-dao.genesysgo.net/');
-
-// TODO:
-// rate-limiting might be an issue.
-// Move staking code to new API.
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method != 'POST') res.status(400).end();
-  const { walletAddresses, solTokenAddresses, ethTokenAddresses } = JSON.parse(req.body);
+  const { walletAddresses, solCommunityIds, ethTokenAddresses } = JSON.parse(req.body);
+
+  const solWalletAddresses: string[] = [];
+  const ethWalletAddresses: string[] = [];
+
+  walletAddresses.forEach((walletAddress: string) => {
+    Web3.utils.isAddress(walletAddress)
+      ? ethWalletAddresses.push(walletAddress)
+      : solWalletAddresses.push(walletAddress);
+  });
+
   const images: string[] = [];
   const imageRequests: any[] = [];
-  walletAddresses.forEach(async (walletAddress: string) => {
-    if (Web3.utils.isAddress(walletAddress)) {
+
+  // Eth
+  ethWalletAddresses.forEach(async (walletAddress: string) => {
+    // Eth in Wallet
+    imageRequests.push(async () => {
+      const imagesArray = await getEthImagesOwnedByWalletViaOpensea(walletAddress, ethTokenAddresses);
+      imagesArray.forEach((image) => !images.includes(image) && images.push(image));
+    });
+    // Eth Staked
+    ethTokenAddresses.forEach((tokenAddress: EthTokenAddress) => {
+      if (!tokenAddress.stakingAddress) return;
       imageRequests.push(async () => {
-        const imagesArray = await getEthImagesOwnedByWalletViaOpensea(walletAddress, ethTokenAddresses);
-        imagesArray.forEach((image) => !images.includes(image) && images.push(image));
+        const imagesArray = await getEthStakedImagesViaOpensea(walletAddress, tokenAddress);
+        images.push(...imagesArray);
       });
-      ethTokenAddresses.forEach((tokenAddress: EthTokenAddress) => {
-        if (!tokenAddress.stakingAddress) return;
-        imageRequests.push(async () => {
-          const imagesArray = await getEthStakedImagesViaOpensea(walletAddress, tokenAddress);
-          images.push(...imagesArray);
-        });
-      });
-    } else {
-      imageRequests.push(async () => {
-        const imagesArray = await getSolImagesOwnedByWallet(walletAddress, solTokenAddresses);
-        imagesArray.forEach((image) => !images.includes(image) && images.push(image));
-      });
-      // imageRequests.push(async () => {
-      //   const imagesArray = await getSolStakedImages(walletAddress, solTokenAddresses);
-      //   images.push(...imagesArray);
-      // });
-    }
+    });
   });
+
+  // Sol Staked
+  imageRequests.push(async () => {
+    // console.log(solCommunityIds, solWalletAddresses);
+    const stakedTokenAddresses: string[] = await (
+      await fetch(
+        'https://us-central1-staked-api.cloudfunctions.net/getStakedTokenAddressesFromCommunityIDsAndWalletAddresses',
+        {
+          method: 'POST',
+          body: JSON.stringify({ communityIds: solCommunityIds, walletAddresses: solWalletAddresses }),
+        }
+      )
+    ).json();
+
+    // console.log('stakedTokenAddresses', stakedTokenAddresses);
+
+    await Promise.all(
+      stakedTokenAddresses.map((stakedTokenAddress) => {
+        return getSolImageByTokenAddress(stakedTokenAddress).then((image) => images.push(image));
+      })
+    );
+  });
+
+  // Sol in Wallet
+  // imageRequests.push(async () => {
+  //   console.log('solCommunityIds', solCommunityIds);
+  //   const solTokenAddresses: string[] = await (
+  //     await fetch('https://us-central1-staked-api.cloudfunctions.net/getTokenAddressesFromCommunityIDs', {
+  //       method: 'POST',
+  //       body: JSON.stringify(solCommunityIds),
+  //     })
+  //   ).json();
+
+  //   console.log('solTokenAddresses', solTokenAddresses);
+
+  //   await Promise.all(
+  //     solWalletAddresses.map((walletAddress) => {
+  //       return getSolImagesOwnedByWallet(walletAddress, solTokenAddresses).then((imagesArray) =>
+  //         images.push(...imagesArray)
+  //       );
+  //     })
+  //   );
+  // });
+
+  const xd = await fetch('https://us-central1-staked-api.cloudfunctions.net/getTokenAddressesFromCommunityIDs', {
+    method: 'POST',
+    body: JSON.stringify(solCommunityIds),
+  });
+
+  console.log(xd);
+
   await Promise.all(imageRequests.map((fn) => fn()));
   res.status(200).json(images);
 };
@@ -124,10 +171,7 @@ const getEthTransfersOfTokenByWallet = async (walletAddress: string, tokenAddres
   return transfers.result;
 };
 
-const getSolImagesOwnedByWallet = async (
-  walletAddress: string,
-  solTokenAddresses: SolTokenAddress[]
-): Promise<string[]> => {
+const getSolImagesOwnedByWallet = async (walletAddress: string, solTokenAddresses: string[]): Promise<string[]> => {
   const walletOptions = {
     network: 'mainnet' as 'mainnet',
     address: walletAddress,
@@ -135,54 +179,11 @@ const getSolImagesOwnedByWallet = async (
   const nftBalance = await Moralis.SolanaAPI.account.getNFTs(walletOptions);
   const ownedNFTTokenAddressesInCommunity: string[] = [];
   nftBalance.forEach((nft) => {
-    solTokenAddresses.map((elem) => elem.tokenAddress).includes(nft.mint) &&
-      ownedNFTTokenAddressesInCommunity.push(nft.mint);
+    solTokenAddresses.includes(nft.mint) && ownedNFTTokenAddressesInCommunity.push(nft.mint);
   });
   return Promise.all(
     ownedNFTTokenAddressesInCommunity.map(async (tokenAddress) => getSolImageByTokenAddress(tokenAddress))
   );
-};
-
-// TODO:
-// Move this code to new API.
-// add programID
-// transfer over 1000 redo
-// Currently blocked by solscan lol
-const getSolStakedImages = async (walletAddress: string, solTokenAddresses: SolTokenAddress[]): Promise<string[]> => {
-  const images: string[] = [];
-
-  const confirmedSignatures: ConfirmedSignatureInfo[] = await connection.getConfirmedSignaturesForAddress2(
-    new PublicKey(walletAddress)
-  );
-  const signatureSet: Set<string> = new Set(confirmedSignatures.map((elem) => elem.signature));
-
-  while (signatureSet.size) {
-    await Promise.all(
-      Array.from(signatureSet.values()).map(async (signature) => {
-        const transaction = await connection.getParsedTransaction(signature);
-        if (!transaction) return;
-        transaction.transaction.message.instructions.map((instruction) => console.log(instruction));
-        signatureSet.delete(signature);
-      })
-    );
-  }
-
-  // await Promise.all(
-  //   transfers.map(async (transfer: { tokenAddress: string; signature: string[] }) => {
-  //     if (!solTokenAddresses.map((elem) => elem.tokenAddress).includes(transfer.tokenAddress)) return;
-  //     let tx;
-  //     while (!tx) tx = await connection.getTransaction(transfer.signature[0]);
-  // tx.transaction.message.instructions.map(async (instruction) => {
-  //   if (solTokenAddresses.find((elem) => instruction.data === elem.unstakeID)) {
-  //     stakedNFTs.delete(transfer.tokenAddress);
-  //   } else if (solTokenAddresses.find((elem) => instruction.data === elem.stakeID)) {
-  //     stakedNFTs.add(transfer.tokenAddress);
-  //   }
-  // });
-  // await Promise.all(Array.from(stakedNFTs.values()).map(async (stakedNFT) => images.push(await getSolImageByTokenAddress(stakedNFT))));
-  //   })
-  // );
-  return images;
 };
 
 const getSolImageByTokenAddress = async (tokenAddress: string) => {
