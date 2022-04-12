@@ -71,7 +71,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     const solTokenAddresses: string[] = await (
       await fetch('https://us-central1-staked-api.cloudfunctions.net/getTokenAddressesFromCommunityIDs', {
         method: 'POST',
-        body: JSON.stringify(solCommunityIds),
+        body: JSON.stringify({ communityIds: solCommunityIds }),
       })
     ).json();
     await Promise.all(
