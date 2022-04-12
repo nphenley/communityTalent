@@ -50,7 +50,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   // Sol Staked
   imageRequests.push(async () => {
-    // console.log(solCommunityIds, solWalletAddresses);
     const stakedTokenAddresses: string[] = await (
       await fetch(
         'https://us-central1-staked-api.cloudfunctions.net/getStakedTokenAddressesFromCommunityIDsAndWalletAddresses',
@@ -60,9 +59,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         }
       )
     ).json();
-
-    // console.log('stakedTokenAddresses', stakedTokenAddresses);
-
     await Promise.all(
       stakedTokenAddresses.map((stakedTokenAddress) => {
         return getSolImageByTokenAddress(stakedTokenAddress).then((image) => images.push(image));
@@ -71,32 +67,21 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   });
 
   // Sol in Wallet
-  // imageRequests.push(async () => {
-  //   console.log('solCommunityIds', solCommunityIds);
-  //   const solTokenAddresses: string[] = await (
-  //     await fetch('https://us-central1-staked-api.cloudfunctions.net/getTokenAddressesFromCommunityIDs', {
-  //       method: 'POST',
-  //       body: JSON.stringify(solCommunityIds),
-  //     })
-  //   ).json();
-
-  //   console.log('solTokenAddresses', solTokenAddresses);
-
-  //   await Promise.all(
-  //     solWalletAddresses.map((walletAddress) => {
-  //       return getSolImagesOwnedByWallet(walletAddress, solTokenAddresses).then((imagesArray) =>
-  //         images.push(...imagesArray)
-  //       );
-  //     })
-  //   );
-  // });
-
-  const xd = await fetch('https://us-central1-staked-api.cloudfunctions.net/getTokenAddressesFromCommunityIDs', {
-    method: 'POST',
-    body: JSON.stringify(solCommunityIds),
+  imageRequests.push(async () => {
+    const solTokenAddresses: string[] = await (
+      await fetch('https://us-central1-staked-api.cloudfunctions.net/getTokenAddressesFromCommunityIDs', {
+        method: 'POST',
+        body: JSON.stringify(solCommunityIds),
+      })
+    ).json();
+    await Promise.all(
+      solWalletAddresses.map((walletAddress) => {
+        return getSolImagesOwnedByWallet(walletAddress, solTokenAddresses).then((imagesArray) =>
+          images.push(...imagesArray)
+        );
+      })
+    );
   });
-
-  console.log(xd);
 
   await Promise.all(imageRequests.map((fn) => fn()));
   res.status(200).json(images);
