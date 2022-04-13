@@ -64,7 +64,7 @@ const Projects = () => {
     <div className={styles.container}>
       {navBar}
 
-      <div className='grid gap-1 grid-cols-2'>
+      <div className='grid gap-3 grid-cols-2'>
         {projectSection === ProjectSection.LFPROJECTS ? (
           <>
             {lfProjects.map((project) =>

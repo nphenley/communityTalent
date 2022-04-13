@@ -4,7 +4,7 @@ import { profileNFTImages } from '_constants/dev';
 import { Profile } from '_types/Profile';
 import { GiPlainCircle } from 'react-icons/gi';
 import { MdWork } from 'react-icons/md';
-import { FaUserCheck } from 'react-icons/fa';
+import { AiFillCaretDown, AiFillCaretUp, AiFillTool } from 'react-icons/ai';
 
 type ProfileCardProps = {
   profile: Profile;
@@ -19,10 +19,10 @@ const ProfileCard = (props: ProfileCardProps) => {
 
   const expandButton = (
     <button
-      className='absolute text-2xl font-bold top-1 right-4 text-backgroundLight'
+      className='absolute font-bold bottom-2.5 right-3 text-backgroundLight'
       onClick={() => setIsExpanded(!isExpanded)}
     >
-      {isExpanded ? '-' : '+'}
+      {isExpanded ? <AiFillCaretUp size={24} /> : <AiFillCaretDown size={24} />}
     </button>
   );
 
@@ -39,15 +39,17 @@ const ProfileCard = (props: ProfileCardProps) => {
 
   let containerClassName = 'relative bg-backgroundDark rounded-lg shadow-lg py-11 flex flex-col items-center gap-6';
 
-  containerClassName += props.alwaysExpanded
-    ? ''
-    : isExpanded
-    ? ' max-h-[1000px] min-h-[600px] overflow-y-scroll'
-    : ' overflow-y-scroll';
+  containerClassName += props.alwaysExpanded ? '' : isExpanded ? ' max-h-[1000px] min-h-[600px] overflow-y-scroll' : '';
 
   return (
     <div className={containerClassName}>
       {!props.alwaysExpanded && expandButton}
+
+      {props.profile.admin && (
+        <div className='absolute top-2.5 left-3 flex flex-row items-center gap-1 text-primary'>
+          <AiFillTool size={20} />
+        </div>
+      )}
 
       <div className='grid items-center grid-cols-2 gap-8 mb-4'>
         <div className='flex justify-end'>
@@ -68,12 +70,6 @@ const ProfileCard = (props: ProfileCardProps) => {
         </div>
 
         <div className='flex flex-col justify-center h-full gap-1 mt-1 break-words'>
-          {props.profile.admin ? (
-            <div className='flex flex-row items-center gap-1'>
-              <FaUserCheck size={16} />
-              <div>Admin</div>
-            </div>
-          ) : null}
           <div className='font-bold break-words'>{props.profile.displayName}</div>
           {props.profile.twitterHandle && (
             <div className='break-words text-grey'>
@@ -218,7 +214,7 @@ const styles = {
   imageContainer: 'rounded-full overflow-hidden flex justify-center',
   sectionContainer: 'px-5 pt-2.5 pb-2 gap-5 flex flex-col',
   sectionHeading: 'text-primary font-bold',
-  sectionParagraph: 'whitespace-pre-wrap',
-  sectionBulletpoints: 'gap-1 flex flex-col px-2 break-words',
+  sectionParagraph: 'whitespace-pre-wrap text-grey',
+  sectionBulletpoints: 'gap-1 flex flex-col px-2 break-words text-grey',
   sectionTags: 'bg-primaryDark py-1.5 px-3 rounded-lg',
 };

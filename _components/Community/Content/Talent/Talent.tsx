@@ -40,24 +40,16 @@ const Talent = () => {
       </div>
       <div className='grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-3 4xl:grid-cols-4 5xl:grid-cols-5'>
         {filteredProfiles.map((profile) => (
-          <div className='flex flex-col items-center' key={profile.id}>
-            <ProfileCard profile={profile} />
-          </div>
+          <ProfileCard key={profile.id} profile={profile} />
         ))}
         {filteredProfiles.map((profile) => (
-          <div className='flex flex-col items-center' key={profile.id}>
-            <ProfileCard profile={profile} />
-          </div>
+          <ProfileCard key={profile.id} profile={profile} />
         ))}
         {filteredProfiles.map((profile) => (
-          <div className='flex flex-col items-center' key={profile.id}>
-            <ProfileCard profile={profile} />
-          </div>
+          <ProfileCard key={profile.id} profile={profile} />
         ))}
         {filteredProfiles.map((profile) => (
-          <div className='flex flex-col items-center' key={profile.id}>
-            <ProfileCard profile={profile} />
-          </div>
+          <ProfileCard key={profile.id} profile={profile} />
         ))}
       </div>
     </div>
