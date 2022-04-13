@@ -22,7 +22,7 @@ const SelectFieldSingle = (props: SelectFieldSingleProps) => {
       name={props.name}
       render={({ field: { onChange } }) => (
         <Select
-          className='grow'
+          className='w-full grow'
           classNamePrefix='select-field'
           onChange={(e) => onValueChange(e, onChange)}
           options={props.options}

@@ -121,20 +121,40 @@ export const getStakingCommunities = async (
   updateStakingCommunities: (stakingCommunities: Community[]) => void
 ): Promise<void> => {
   let communities: Community[] = [];
-  await getDocs(collectionGroup(firestore, 'stakingAddresses')).then(async (querySnap) => {
+  await getDocs(collectionGroup(firestore, 'ethTokenAddresses')).then(async (querySnap) => {
     await Promise.all(
       querySnap.docs.map(async (doc) => {
-        return getDoc(doc.ref.parent.parent!).then((doc) => {
-          communities.push({
-            id: doc.id,
-            name: doc.data()!.name,
-            image: doc.data()!.image,
+        if (doc.data().stakingAddress) {
+          return getDoc(doc.ref.parent.parent!).then((doc) => {
+            communities.push({
+              id: doc.id,
+              name: doc.data()!.name,
+              image: doc.data()!.image,
+            });
           });
-        });
+        }
       })
     );
   });
-  updateStakingCommunities(communities);
+
+  await getDocs(collectionGroup(firestore, 'solCommunityIds')).then(async (querySnap) => {
+    await Promise.all(
+      querySnap.docs.map(async (doc) => {
+        if (doc.data().staked) {
+          return getDoc(doc.ref.parent.parent!).then((doc) => {
+            communities.push({
+              id: doc.id,
+              name: doc.data()!.name,
+              image: doc.data()!.image,
+            });
+          });
+        }
+      })
+    );
+  });
+  let uniq: any = {};
+  const uniqueCommunities = communities.filter((obj) => !uniq[obj.id] && (uniq[obj.id] = true));
+  updateStakingCommunities(uniqueCommunities);
 };
 
 export const getTokenAddressesForCommunity = async (communityId: string): Promise<EthTokenAddress[]> => {

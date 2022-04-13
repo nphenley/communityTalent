@@ -40,10 +40,13 @@ const Communities = (props: CommunitiesProps) => {
       setLoadingPinnedCommunityIds(false);
     });
 
-    const unsubToStakedCommunities = subscribeToStakedCommunities(props.walletGroupID, (stakedCommunities: Community[]) => {
-      setStakedCommunities(stakedCommunities);
-      setLoadingStakedCommunities(false);
-    });
+    const unsubToStakedCommunities = subscribeToStakedCommunities(
+      props.walletGroupID,
+      (stakedCommunities: Community[]) => {
+        setStakedCommunities(stakedCommunities);
+        setLoadingStakedCommunities(false);
+      }
+    );
 
     (async () => {
       setLoadingWalletCommunities(true);
@@ -60,7 +63,9 @@ const Communities = (props: CommunitiesProps) => {
 
   useEffect(() => {
     const filteredCommunities = filterCommunities(walletCommunities.concat(stakedCommunities), searchQuery);
-    setFilteredCommunities(filteredCommunities);
+    let uniq: any = {};
+    const uniqueFilteredCommunities = filteredCommunities.filter((obj) => !uniq[obj.id] && (uniq[obj.id] = true));
+    setFilteredCommunities(uniqueFilteredCommunities);
   }, [walletCommunities, stakedCommunities, searchQuery]);
 
   useEffect(() => {
@@ -70,7 +75,9 @@ const Communities = (props: CommunitiesProps) => {
 
   const showAllButton = (
     <button
-      className={styles.buttonContainer.concat(showAll ? ' bg-primary text-white' : ' bg-backgroundDark text-backgroundLight')}
+      className={styles.buttonContainer.concat(
+        showAll ? ' bg-primary text-white' : ' bg-backgroundDark text-backgroundLight'
+      )}
       onClick={() => setShowAll(!showAll)}
     >
       Show All
@@ -80,7 +87,9 @@ const Communities = (props: CommunitiesProps) => {
   const isPinningButton = (
     <button
       onClick={() => setIsPinning(!isPinning)}
-      className={styles.buttonContainer.concat(isPinning ? ' bg-primary text-white' : ' bg-backgroundDark text-backgroundLight')}
+      className={styles.buttonContainer.concat(
+        isPinning ? ' bg-primary text-white' : ' bg-backgroundDark text-backgroundLight'
+      )}
     >
       Pin
     </button>
@@ -150,7 +159,9 @@ const Communities = (props: CommunitiesProps) => {
 
       <div className={styles.sectionsContainer}>
         {pinnedCommunities.length ? pinnedCommunitiesDisplay : null}
-        {(showAll || isPinning || !pinnedCommunities.length) && filteredCommunities.length ? allCommunitiesDisplay : null}
+        {(showAll || isPinning || !pinnedCommunities.length) && filteredCommunities.length
+          ? allCommunitiesDisplay
+          : null}
       </div>
     </div>
   );

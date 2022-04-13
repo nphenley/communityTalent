@@ -59,13 +59,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         }
       )
     ).json();
+
     await Promise.all(
-      stakedTokenAddresses.map((stakedTokenAddress) => {
+      stakedTokenAddresses.map(async (stakedTokenAddress) => {
         return getSolImageByTokenAddress(stakedTokenAddress).then((image) => images.push(image));
       })
     );
   });
-
   // Sol in Wallet
   imageRequests.push(async () => {
     const solTokenAddresses: string[] = await (
@@ -75,7 +75,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       })
     ).json();
     await Promise.all(
-      solWalletAddresses.map((walletAddress) => {
+      solWalletAddresses.map(async (walletAddress) => {
         return getSolImagesOwnedByWallet(walletAddress, solTokenAddresses).then((imagesArray) =>
           images.push(...imagesArray)
         );
