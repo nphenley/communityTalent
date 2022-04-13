@@ -19,7 +19,7 @@ const Profile = () => {
   );
 
   const profileView = (
-    <div className='grid w-full max-w-screen-md grid-cols-1 gap-4 py-4 overflow-y-scroll'>
+    <div className='grid w-full max-w-screen-lg grid-cols-1 gap-4 py-4 overflow-y-scroll'>
       {editButton}
       <ProfileCard profile={profile!} alwaysExpanded={true} />
     </div>

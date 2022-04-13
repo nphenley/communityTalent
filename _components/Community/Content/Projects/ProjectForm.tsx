@@ -13,7 +13,7 @@ import LargeInputField from '_styled/Forms/LargeInputField';
 import InputField from '_styled/Forms/InputField';
 
 type ProjectFormProps = {
-  setAddProject: any;
+  setIsAddingProject: any;
   setProjects: any;
 };
 
@@ -34,7 +34,7 @@ const ProjectForm = (props: ProjectFormProps) => {
       } as Project,
       props.setProjects
     );
-    props.setAddProject(false);
+    props.setIsAddingProject(false);
   };
 
   const [selectFieldOptions, setSelectFieldOptions] = useState<any>();

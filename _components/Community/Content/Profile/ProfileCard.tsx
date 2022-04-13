@@ -13,7 +13,7 @@ type ProfileCardProps = {
 };
 
 const ProfileCard = (props: ProfileCardProps) => {
-  const ruler = <hr className='w-2/3 mx-auto border-primary'></hr>;
+  const ruler = <hr className='border-primary' />;
 
   const [isExpanded, setIsExpanded] = useState(props.alwaysExpanded ? true : false);
 
@@ -28,7 +28,7 @@ const ProfileCard = (props: ProfileCardProps) => {
 
   const lookingForProjectBadge = (
     <div className='flex items-center justify-center -mt-4 -mb-2'>
-      <div className='rounded-md flex text-sm bg-primaryDark px-2 py-1 gap-1.5 items-center'>
+      <div className='rounded-md flex text-sm text-primary px-2 py-1 gap-1.5 items-center'>
         <div>Looking For Project</div>
         <div className='-mt-0.5'>
           <MdWork size={16} />
@@ -37,13 +37,13 @@ const ProfileCard = (props: ProfileCardProps) => {
     </div>
   );
 
-  let containerClassName = 'relative bg-backgroundDark rounded-lg shadow-lg w-full pt-11 pb-4 flex flex-col gap-6';
+  let containerClassName = 'relative bg-backgroundDark rounded-lg shadow-lg py-11 flex flex-col items-center gap-6';
 
   containerClassName += props.alwaysExpanded
-    ? ' '
+    ? ''
     : isExpanded
     ? ' max-h-[1000px] min-h-[600px] overflow-y-scroll'
-    : ' ';
+    : ' overflow-y-scroll';
 
   return (
     <div className={containerClassName}>
@@ -91,7 +91,7 @@ const ProfileCard = (props: ProfileCardProps) => {
 
       {props.profile.lookingForProject === true && lookingForProjectBadge}
 
-      <div className='flex flex-col w-10/12 mx-auto gap-y-4'>
+      <div className='flex flex-col w-[80%] gap-y-4'>
         {ruler}
 
         <div className={styles.sectionContainer}>
@@ -105,7 +105,7 @@ const ProfileCard = (props: ProfileCardProps) => {
 
             <div className={styles.sectionContainer}>
               <div className={styles.sectionHeading}>Tags</div>
-              <div className='flex flex-wrap justify-center gap-2'>
+              <div className='flex flex-wrap gap-1'>
                 {props.profile.tags &&
                   props.profile.tags.map((tag) => (
                     <div key={tag} className={styles.sectionTags}>
@@ -127,7 +127,7 @@ const ProfileCard = (props: ProfileCardProps) => {
                   <div className={styles.sectionHeading}>Skills</div>
                   <div className={styles.sectionBulletpoints}>
                     {props.profile.skills.map((skill) => (
-                      <div key={skill} className='flex items-center justify-center gap-2'>
+                      <div key={skill} className='flex items-center gap-2'>
                         <div>
                           <GiPlainCircle size={8} />
                         </div>
@@ -167,7 +167,7 @@ const ProfileCard = (props: ProfileCardProps) => {
 
                 <div className={styles.sectionContainer}>
                   <div className={styles.sectionHeading}>Languages</div>
-                  <div className='flex flex-wrap justify-center gap-2'>
+                  <div className='flex flex-wrap gap-2'>
                     {props.profile.languages.map((language) => (
                       <div key={language} className={styles.sectionTags}>
                         {language}
@@ -186,7 +186,7 @@ const ProfileCard = (props: ProfileCardProps) => {
                   <div className={styles.sectionHeading}>Links</div>
                   <div className={styles.sectionBulletpoints}>
                     {props.profile.relevantLinks.map((link) => (
-                      <div key={link} className='flex items-center justify-center gap-2 text-grey hover:text-white'>
+                      <div key={link} className='flex items-center gap-2 text-grey hover:text-white'>
                         <div>
                           <GiPlainCircle size={8} />
                         </div>
@@ -216,9 +216,9 @@ export default ProfileCard;
 
 const styles = {
   imageContainer: 'rounded-full overflow-hidden flex justify-center',
-  sectionContainer: 'px-5 pb-2 gap-5 flex flex-col',
+  sectionContainer: 'px-5 pt-2.5 pb-2 gap-5 flex flex-col',
   sectionHeading: 'text-primary font-bold',
-  sectionParagraph: 'whitespace-pre-wrap flex justify-center',
+  sectionParagraph: 'whitespace-pre-wrap',
   sectionBulletpoints: 'gap-1 flex flex-col px-2 break-words',
   sectionTags: 'bg-primaryDark py-1.5 px-3 rounded-lg',
 };
