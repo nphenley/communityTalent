@@ -10,6 +10,7 @@ import {
   unlinkWalletAddress,
 } from '_api/walletGroups';
 import { LinkRequest } from '_types/LinkRequest';
+import { FaBan, FaCheck, FaUnlink } from 'react-icons/fa';
 
 type WalletGroupsProps = {
   walletGroupID: string;
@@ -19,17 +20,11 @@ const WalletGroups = (props: WalletGroupsProps) => {
   const [loadingWalletsInGroup, setLoadingWalletsInGroups] = useState(true);
   const [walletsInGroup, setWalletsInGroup] = useState<string[]>([]);
 
-  const [loadingOutgoingLinkRequests, setLoadingOutgoingLinkRequests] =
-    useState(true);
-  const [outgoingLinkRequests, setOutgoingLinkRequests] = useState<
-    LinkRequest[]
-  >([]);
+  const [loadingOutgoingLinkRequests, setLoadingOutgoingLinkRequests] = useState(true);
+  const [outgoingLinkRequests, setOutgoingLinkRequests] = useState<LinkRequest[]>([]);
 
-  const [loadingIncomingLinkRequests, setLoadingIncomingLinkRequests] =
-    useState(true);
-  const [incomingLinkRequests, setIncomingLinkRequests] = useState<
-    LinkRequest[]
-  >([]);
+  const [loadingIncomingLinkRequests, setLoadingIncomingLinkRequests] = useState(true);
+  const [incomingLinkRequests, setIncomingLinkRequests] = useState<LinkRequest[]>([]);
 
   useEffect(() => {
     const unsubToAddressesInWalletGroup = subscribeToAddressesInWalletGroup(
@@ -62,16 +57,14 @@ const WalletGroups = (props: WalletGroupsProps) => {
   }, [props.walletGroupID]);
 
   const walletsInGroupList = (
-    <div>
-      <div>wallets in group:</div>
+    <div className='px-4 py-3 border-4 rounded-lg border-backgroundDark'>
+      <div className='flex justify-center mb-3 text-lg'>Wallets in group:</div>
       <div>
         {walletsInGroup.map((wallet) => (
-          <div key={wallet} className='flex gap-2'>
+          <div key={wallet} className='flex justify-between gap-2'>
             <div>{wallet}</div>
-            <button
-              onClick={() => unlinkWalletAddress(props.walletGroupID, wallet)}
-            >
-              unlink
+            <button onClick={() => unlinkWalletAddress(props.walletGroupID, wallet)}>
+              <FaUnlink size={14} />
             </button>
           </div>
         ))}
@@ -81,25 +74,18 @@ const WalletGroups = (props: WalletGroupsProps) => {
 
   const outgoingLinkRequestsList = (
     <div>
-      <div>outgoing link requests:</div>
+      <div className='flex justify-center mb-2'>Outgoing link requests:</div>
       <div>
         {outgoingLinkRequests.map((linkRequest) => (
-          <div
-            key={linkRequest.walletGroupID}
-            className={styles.requestContainer}
-          >
+          <div key={linkRequest.walletGroupID} className={styles.requestContainer}>
             {linkRequest.walletAddressesInGroup.map((walletAddress) => (
               <div key={walletAddress}>{walletAddress}</div>
             ))}
             <button
-              onClick={() =>
-                deleteLinkRequest(
-                  props.walletGroupID,
-                  linkRequest.walletGroupID
-                )
-              }
+              className='flex justify-end w-full pt-1'
+              onClick={() => deleteLinkRequest(props.walletGroupID, linkRequest.walletGroupID)}
             >
-              del
+              <FaBan size={14} />
             </button>
           </div>
         ))}
@@ -109,45 +95,28 @@ const WalletGroups = (props: WalletGroupsProps) => {
 
   const incomingLinkRequestsList = (
     <div>
-      <div>incoming link requests:</div>
+      <div className='flex justify-center mb-2'>Incoming link requests:</div>
       <div>
         {incomingLinkRequests.map((linkRequest) => (
-          <div
-            key={linkRequest.walletGroupID}
-            className={styles.requestContainer}
-          >
+          <div key={linkRequest.walletGroupID} className={styles.requestContainer}>
             {linkRequest.walletAddressesInGroup.map((walletAddress) => (
               <div key={walletAddress}>{walletAddress}</div>
             ))}
-            <button
-              onClick={() =>
-                acceptLinkRequest(
-                  linkRequest.walletGroupID,
-                  props.walletGroupID
-                )
-              }
-            >
-              accept
-            </button>
-            <button
-              onClick={() =>
-                deleteLinkRequest(
-                  linkRequest.walletGroupID,
-                  props.walletGroupID
-                )
-              }
-            >
-              del
-            </button>
+            <div className='flex justify-end w-full gap-2 pt-1'>
+              <button onClick={() => acceptLinkRequest(linkRequest.walletGroupID, props.walletGroupID)}>
+                <FaCheck size={14} />
+              </button>
+              <button onClick={() => deleteLinkRequest(linkRequest.walletGroupID, props.walletGroupID)}>
+                <FaBan size={14} />
+              </button>
+            </div>
           </div>
         ))}
       </div>
     </div>
   );
 
-  return loadingWalletsInGroup ||
-    loadingOutgoingLinkRequests ||
-    loadingIncomingLinkRequests ? (
+  return loadingWalletsInGroup || loadingOutgoingLinkRequests || loadingIncomingLinkRequests ? (
     <LoadingSpinner />
   ) : (
     <div className={styles.container}>
@@ -162,9 +131,7 @@ export default WalletGroups;
 
 const styles = {
   container: 'flex flex-col items-center gap-12',
-  buttonContainer:
-    'p-2.5 text-white rounded-lg bg-red hover:bg-primaryLight hover:cursor-pointer',
-  deleteButtonContainer:
-    'p-2.5 text-white rounded-lg bg-red hover:bg-redLight hover:cursor-pointer',
-  requestContainer: 'bg-backgroundDark p-4 rounded-lg',
+  buttonContainer: 'p-2.5 text-white rounded-lg bg-red hover:bg-primaryLight hover:cursor-pointer',
+  deleteButtonContainer: 'p-2.5 text-white rounded-lg hover:cursor-pointer',
+  requestContainer: 'bg-backgroundDark p-4 rounded-md',
 };

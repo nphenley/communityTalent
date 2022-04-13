@@ -20,10 +20,7 @@ const LinkRequestForm = (props: LinkRequestFormProps) => {
   // TODO:
   // Check outgoing request not already existing for this.
   const onSubmit = async (data: { walletAddress: string }) => {
-    if (
-      props.walletGroupID ===
-      (await getOrCreateWalletGroupID(data.walletAddress))
-    ) {
+    if (props.walletGroupID === (await getOrCreateWalletGroupID(data.walletAddress))) {
       setError('walletAddress', {
         type: 'walletAlreadyInGroup',
         message: 'This wallet already belongs to this Wallet Group.',
@@ -34,7 +31,12 @@ const LinkRequestForm = (props: LinkRequestFormProps) => {
         message: 'Please submit a valid Wallet Address.',
       });
     } else {
-      createLinkRequest(props.walletGroupID, data.walletAddress);
+      if (isWalletAddressValid(data.walletAddress) === 'eth') {
+        const lowerCasedEthAddress = data.walletAddress.toLowerCase();
+        createLinkRequest(props.walletGroupID, lowerCasedEthAddress);
+      } else {
+        createLinkRequest(props.walletGroupID, data.walletAddress);
+      }
     }
   };
 
@@ -55,9 +57,7 @@ const LinkRequestForm = (props: LinkRequestFormProps) => {
         }
       />
 
-      {errors.walletAddress && (
-        <div className={styles.errorText}>{errors.walletAddress.message}</div>
-      )}
+      {errors.walletAddress && <div className={styles.errorText}>{errors.walletAddress.message}</div>}
 
       <FormSubmit text='Submit' />
     </form>
