@@ -103,12 +103,26 @@ const ProfileForm = (props: ProfileFormProps) => {
     props.onSubmit && props.onSubmit();
   };
 
-  const title = <h1 className='mb-4 text-3xl font-bold text-center text-primary'>Create Profile</h1>;
+  let title;
+  let description;
 
-  const description = <p className='mb-4 text-center'>This is your first time connecting to this community, please create a profile.</p>;
+  if (!props.profile) {
+    title = <h1 className='mb-4 text-3xl font-bold text-center text-primary'>Create Profile</h1>;
+    description = (
+      <p className='mb-4 text-center'>This is your first time connecting to this community, please create a profile.</p>
+    );
+  } else {
+    title = <h1 className='mb-4 text-3xl font-bold text-center text-primary'>Edit Profile</h1>;
+
+    description = (
+      <p className='mb-4 text-center'>
+        You currently have a profile in this community, please edit it at your leisure.
+      </p>
+    );
+  }
 
   return (
-    <div className='flex flex-col items-center'>
+    <div className='flex'>
       {loadingProfileFormSelectOptions ? (
         <LoadingSpinner />
       ) : (
@@ -118,7 +132,15 @@ const ProfileForm = (props: ProfileFormProps) => {
 
           <FormField
             label='Display Name'
-            formField={<InputField register={register} placeholder='Display Name' name='displayName' required={true} maxLength={34} />}
+            formField={
+              <InputField
+                register={register}
+                placeholder='Display Name'
+                name='displayName'
+                required={true}
+                maxLength={34}
+              />
+            }
           />
           <FormField
             label='Profile Picture'
@@ -134,7 +156,9 @@ const ProfileForm = (props: ProfileFormProps) => {
           />
           <FormField
             label='Bio'
-            formField={<LargeInputField register={register} placeholder='Bio' name='bio' required={true} maxLength={160} />}
+            formField={
+              <LargeInputField register={register} placeholder='Bio' name='bio' required={true} maxLength={160} />
+            }
           />
           <FormField
             label='Looking For Project'
@@ -157,7 +181,14 @@ const ProfileForm = (props: ProfileFormProps) => {
             formField={
               <FormField
                 label='Discord Username'
-                formField={<InputField register={register} placeholder='Discord Username' name='discordUsername' maxLength={37} />}
+                formField={
+                  <InputField
+                    register={register}
+                    placeholder='Discord Username'
+                    name='discordUsername'
+                    maxLength={37}
+                  />
+                }
               />
             }
             onHideField={() => unregister('discordUsername')}
@@ -169,7 +200,9 @@ const ProfileForm = (props: ProfileFormProps) => {
             formField={
               <FormField
                 label='Twitter Handle'
-                formField={<InputField register={register} placeholder='Twitter Handle' name='twitterHandle' maxLength={16} />}
+                formField={
+                  <InputField register={register} placeholder='Twitter Handle' name='twitterHandle' maxLength={16} />
+                }
               />
             }
             onHideField={() => unregister('twitterHandle')}
@@ -208,7 +241,9 @@ const ProfileForm = (props: ProfileFormProps) => {
               <FormField
                 key={field.id}
                 label={index === 0 ? 'Skills' : ''}
-                formField={<InputField register={register} placeholder={'Skill'} name={`skills.${index}`} maxLength={50} />}
+                formField={
+                  <InputField register={register} placeholder={'Skill'} name={`skills.${index}`} maxLength={50} />
+                }
               />
             ))}
           />
@@ -217,7 +252,9 @@ const ProfileForm = (props: ProfileFormProps) => {
             formField={
               <FormField
                 label='Experience'
-                formField={<LargeInputField register={register} placeholder='Experience' name='experience' maxLength={500} />}
+                formField={
+                  <LargeInputField register={register} placeholder='Experience' name='experience' maxLength={500} />
+                }
               />
             }
             onHideField={() => unregister('experience')}
@@ -249,7 +286,9 @@ const ProfileForm = (props: ProfileFormProps) => {
             formField={
               <FormField
                 label='Contacts'
-                formField={<LargeInputField register={register} placeholder='Contacts' name='contacts' maxLength={500} />}
+                formField={
+                  <LargeInputField register={register} placeholder='Contacts' name='contacts' maxLength={500} />
+                }
               />
             }
             onHideField={() => unregister('contacts')}
@@ -266,7 +305,14 @@ const ProfileForm = (props: ProfileFormProps) => {
               <FormField
                 key={field.id}
                 label={index === 0 ? 'Relevant Links' : ''}
-                formField={<InputField register={register} placeholder={'Relevant Link'} name={`relevantLinks.${index}`} maxLength={50} />}
+                formField={
+                  <InputField
+                    register={register}
+                    placeholder={'Relevant Link'}
+                    name={`relevantLinks.${index}`}
+                    maxLength={80}
+                  />
+                }
               />
             ))}
             isFieldShown={showLinks}

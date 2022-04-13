@@ -36,12 +36,24 @@ const Talent = () => {
   ) : (
     <div className='flex flex-col gap-2 lg:gap-4'>
       <div className='flex justify-center lg:justify-end'>
-        <SearchBar
-          onChange={(e: any) => setSearchQuery(e.target.value)}
-          placeholder='Search'
-        />
+        <SearchBar onChange={(e: any) => setSearchQuery(e.target.value)} placeholder='Search' />
       </div>
-      <div className='grid grid-cols-1 gap-4 lg:grid-cols-2 2xl:grid-cols-3 3xl:grid-cols-3 4xl:grid-cols-4 5xl:grid-cols-5'>
+      <div className='grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-3 4xl:grid-cols-4 5xl:grid-cols-5'>
+        {filteredProfiles.map((profile) => (
+          <div className='flex flex-col items-center' key={profile.id}>
+            <ProfileCard profile={profile} />
+          </div>
+        ))}
+        {filteredProfiles.map((profile) => (
+          <div className='flex flex-col items-center' key={profile.id}>
+            <ProfileCard profile={profile} />
+          </div>
+        ))}
+        {filteredProfiles.map((profile) => (
+          <div className='flex flex-col items-center' key={profile.id}>
+            <ProfileCard profile={profile} />
+          </div>
+        ))}
         {filteredProfiles.map((profile) => (
           <div className='flex flex-col items-center' key={profile.id}>
             <ProfileCard profile={profile} />

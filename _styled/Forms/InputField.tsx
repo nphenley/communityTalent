@@ -10,14 +10,12 @@ type InputFieldProps = {
 const InputField = (props: InputFieldProps) => {
   return (
     <input
-      className='grow p-3 rounded-lg sm:w-fit bg-backgroundDark focus:outline-none'
+      className='w-full p-3 rounded-lg bg-backgroundDark focus:outline-none'
       placeholder={props.placeholder}
       defaultValue={props.defaultValue}
       maxLength={props.maxLength}
       {...props.register(props.name, {
-        required: props.required
-          ? `Please submit a ${props.placeholder}.`
-          : false,
+        required: props.required ? `Please submit a ${props.placeholder}.` : false,
         maxLength: props.maxLength,
       })}
     />
