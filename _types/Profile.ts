@@ -15,7 +15,6 @@ export type Profile = {
   experience?: string;
   languages?: string[];
   timezone?: string;
-  contacts?: string;
   relevantLinks?: string[];
   votes?: [{ walletGroupID: string; type: 'up' | 'down' }];
   admin?: boolean;

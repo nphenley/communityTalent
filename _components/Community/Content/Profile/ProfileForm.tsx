@@ -63,7 +63,6 @@ const ProfileForm = (props: ProfileFormProps) => {
   const [showSkills, setShowSkills] = useState(false);
   const [showExperience, setShowExperience] = useState(false);
   const [showLanguages, setShowLanguages] = useState(false);
-  const [showContacts, setShowContacts] = useState(false);
   const [showLinks, setShowLinks] = useState(false);
   const [showTimezone, setShowTimezone] = useState(false);
 
@@ -81,7 +80,6 @@ const ProfileForm = (props: ProfileFormProps) => {
     if (props.profile.skills && props.profile.skills.length) setShowSkills(true);
     if (props.profile.experience) setShowExperience(true);
     if (props.profile.languages && props.profile.languages.length) setShowLanguages(true);
-    if (props.profile.contacts) setShowContacts(true);
     if (props.profile.relevantLinks && props.profile.relevantLinks.length) setShowLinks(true);
     if (props.profile.timezone) setShowTimezone(true);
     reset(props.profile);
@@ -94,7 +92,6 @@ const ProfileForm = (props: ProfileFormProps) => {
     if (!showSkills) data.skills = [];
     if (!showExperience) data.experience = '';
     if (!showLanguages) data.languages = [];
-    if (!showContacts) data.contacts = '';
     if (!showLinks) data.relevantLinks = [];
 
     for (const property in data) if (data[property] === undefined) data[property] = [];
@@ -280,20 +277,6 @@ const ProfileForm = (props: ProfileFormProps) => {
             onHideField={() => unregister('languages')}
             isFieldShown={showLanguages}
             setIsFieldShown={setShowLanguages}
-          />
-          <OptionalFormFieldWrapper
-            label='Contacts'
-            formField={
-              <FormField
-                label='Contacts'
-                formField={
-                  <LargeInputField register={register} placeholder='Contacts' name='contacts' maxLength={500} />
-                }
-              />
-            }
-            onHideField={() => unregister('contacts')}
-            isFieldShown={showContacts}
-            setIsFieldShown={setShowContacts}
           />
           <OptionalArrayInputField
             label='Relevant Links'

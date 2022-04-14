@@ -103,7 +103,7 @@ const Community = () => {
                   />
                 </div>
 
-                <div className='flex flex-col grow'>
+                <div className='flex flex-col grow max-h-screen'>
                   <TopBar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
                   <Content toggleState={toggleState} />
                 </div>
