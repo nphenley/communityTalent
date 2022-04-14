@@ -1,16 +1,15 @@
 import Image from 'next/image';
-
 import { profileNFTImages } from '_constants/dev';
 import { Profile } from '_types/Profile';
 import { GiPlainCircle } from 'react-icons/gi';
 import { MdWork } from 'react-icons/md';
 import { AiFillTool } from 'react-icons/ai';
 
-type ProfileCardProps = {
+type ExpandedProfileCardProps = {
   profile: Profile;
 };
 
-const ProfileCard = (props: ProfileCardProps) => {
+const ExpandedProfileCard = (props: ExpandedProfileCardProps) => {
   const ruler = <hr className='border-primary' />;
 
   const lookingForProjectBadge = (
@@ -25,7 +24,7 @@ const ProfileCard = (props: ProfileCardProps) => {
   );
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} onClick={(e) => e.stopPropagation()}>
       {props.profile.admin && (
         <div className='absolute top-2.5 left-3 flex flex-row items-center gap-1 text-primary'>
           <AiFillTool size={20} />
@@ -93,15 +92,97 @@ const ProfileCard = (props: ProfileCardProps) => {
             </div>
           </>
         ) : null}
+
+        {props.profile.skills && props.profile.skills.length ? (
+          <>
+            {ruler}
+
+            <div className={styles.sectionContainer}>
+              <div className={styles.sectionHeading}>Skills</div>
+              <div className={styles.sectionBulletpoints}>
+                {props.profile.skills.map((skill) => (
+                  <div key={skill} className='flex items-center gap-2'>
+                    <div>
+                      <GiPlainCircle size={8} />
+                    </div>
+                    <div className='break-all'>{skill}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        ) : null}
+
+        {props.profile.experience ? (
+          <>
+            {ruler}
+
+            <div className={styles.sectionContainer}>
+              <div className={styles.sectionHeading}>Experience</div>
+              <div className={styles.sectionParagraph}>{props.profile.experience.replace('<br/>', '\n')}</div>
+            </div>
+          </>
+        ) : null}
+
+        {props.profile.contacts ? (
+          <>
+            {ruler}
+
+            <div className={styles.sectionContainer}>
+              <div className={styles.sectionHeading}>Contacts</div>
+              <div className={styles.sectionParagraph}>{props.profile.contacts.replace('<br/>', '\n')}</div>
+            </div>
+          </>
+        ) : null}
+
+        {props.profile.languages && props.profile.languages.length ? (
+          <>
+            {ruler}
+
+            <div className={styles.sectionContainer}>
+              <div className={styles.sectionHeading}>Languages</div>
+              <div className='flex flex-wrap gap-2'>
+                {props.profile.languages.map((language) => (
+                  <div key={language} className={styles.sectionTags}>
+                    {language}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        ) : null}
+
+        {props.profile.relevantLinks && props.profile.relevantLinks.length ? (
+          <>
+            {ruler}
+
+            <div className={styles.sectionContainer}>
+              <div className={styles.sectionHeading}>Links</div>
+              <div className={styles.sectionBulletpoints}>
+                {props.profile.relevantLinks.map((link) => (
+                  <div key={link} className='flex items-center gap-2 text-grey hover:text-white'>
+                    <div>
+                      <GiPlainCircle size={8} />
+                    </div>
+                    <a href={link} className='break-all'>
+                      {link.replace('https://', '')}
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        ) : null}
       </div>
     </div>
   );
 };
 
-export default ProfileCard;
+export default ExpandedProfileCard;
 
 const styles = {
-  container: 'relative bg-backgroundDark rounded-lg shadow-lg py-11 flex flex-col items-center gap-6 h-full',
+  container:
+    'relative w-full bg-backgroundDark rounded-lg shadow-lg py-11 flex flex-col items-center gap-6 overflow-y-scroll h-[90%]',
   imageContainer: 'rounded-full overflow-hidden flex justify-center',
   sectionContainer: 'px-5 pt-2.5 pb-2 gap-5 flex flex-col',
   sectionHeading: 'text-primary font-bold',

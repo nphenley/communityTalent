@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react';
 import { Profile } from '_types/Profile';
-import ProfileCard from '_components/Community/Content/Profile/ProfileCard';
+import ExpandedProfileCard from '_components/Community/Content/Profile/ExpandedProfileCard';
 import { ProfileContext } from '_contexts/ProfileContext';
 import ProfileForm from '_components/Community/Content/Profile/ProfileForm';
 
@@ -19,17 +19,19 @@ const Profile = () => {
   );
 
   const profileView = (
-    <div className='grid w-full max-w-screen-lg grid-cols-1 gap-4 py-4 overflow-y-scroll'>
+    <div className='flex flex-col justify-center w-full max-w-screen-lg gap-4 h-full max-h-[98%]'>
       {editButton}
-      <ProfileCard profile={profile!} alwaysExpanded={true} />
+      <ExpandedProfileCard profile={profile!} />
     </div>
   );
 
-  return (
-    <div className='flex flex-col items-center justify-center h-full'>
-      {!edit ? profileView : <ProfileForm profile={profile} onSubmit={() => setEdit(false)} />}
+  const editProfileView = (
+    <div className='pb-20'>
+      <ProfileForm profile={profile} onSubmit={() => setEdit(false)} />
     </div>
   );
+
+  return <div className='h-full flex flex-col items-center'>{!edit ? profileView : editProfileView}</div>;
 };
 
 export default Profile;
