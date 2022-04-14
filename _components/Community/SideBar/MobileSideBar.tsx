@@ -1,6 +1,5 @@
 import { FaIdCard, FaBriefcase, FaArrowLeft } from 'react-icons/fa';
 import SideBarIcon from '_components/Community/SideBar/SideBarIcon';
-import { profileNFTImages } from '_constants/dev';
 import Image from 'next/image';
 import { useContext } from 'react';
 import { ProfileContext } from '_contexts/ProfileContext';
@@ -35,12 +34,7 @@ const MobileSideBar = (props: SideBarProps) => {
         <SideBarIcon
           icon={
             <div className='flex justify-center mb-1 overflow-hidden rounded-full'>
-              <Image
-                src={profile && profile.profilePicture ? profile.profilePicture : profileNFTImages[3]}
-                height={150}
-                width={150}
-                unoptimized={true}
-              />
+              <Image src={profile!.profilePicture!} height={150} width={150} unoptimized={true} />
             </div>
           }
           text={profile!.displayName}
@@ -50,7 +44,11 @@ const MobileSideBar = (props: SideBarProps) => {
 
       <div className='flex flex-col items-center w-full grow gap-y-6'>
         <button onClick={() => toggleState(Sections.PROJECTS)} className='w-full'>
-          <SideBarIcon icon={<FaBriefcase size='20' />} text={'Projects'} active={props.toggleState === Sections.PROJECTS} />
+          <SideBarIcon
+            icon={<FaBriefcase size='20' />}
+            text={'Projects'}
+            active={props.toggleState === Sections.PROJECTS}
+          />
         </button>
 
         <button onClick={() => toggleState(Sections.TALENT)} className='w-full'>

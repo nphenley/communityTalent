@@ -14,6 +14,7 @@ import {
   deleteDoc,
 } from 'firebase/firestore';
 import { Project } from '_types/Project';
+
 export const createProject = async (communityId: string, project: Project, setProjects: any) => {
   const docRef = await addDoc(collection(firestore, 'projectUpvotes'), {});
 
@@ -38,11 +39,11 @@ export const updateProject = async (
   getProject(communityId, projectId, setProject);
 };
 
-export const getProjects = async (communityId: string, setProjects: any) => {
+export const getProjects = async (communityId: string, updateProjects: any) => {
   const data = await getDocs(
     query(collection(firestore, 'communities', communityId, 'projects'), orderBy('dateCreated', 'desc'))
   );
-  setProjects(data.docs.map((doc) => ({ ...doc.data(), id: doc.id } as Project)));
+  updateProjects(data.docs.map((doc) => ({ ...doc.data(), id: doc.id } as Project)));
 };
 
 export const getProject = async (communityId: string, projectId: string, setProject: any) => {

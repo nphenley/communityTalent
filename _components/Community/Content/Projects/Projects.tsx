@@ -1,151 +1,97 @@
-import { useEffect, useState, useContext } from 'react';
-import { Project } from '_types/Project';
+import { useRouter } from 'next/router';
 import { getProjects } from '_api/projects';
-import ProjectCard from '_components/Community/Content/Projects/ProjectCard';
-import CreateProjectButton from '_components/Community/Content/Projects/CreateProjectButton';
-import ProjectForm from '_components/Community/Content/Projects/ProjectForm';
-import { CommunityContext } from '_contexts/CommunityContext';
-import { WalletGroupContext } from '_contexts/WalletGroupContext';
+import SearchBar from '_styled/SearchBar';
+import LoadingSpinner from '_styled/LoadingSpinner';
+import { filterProjects } from '_helpers/filterProjects';
 import { ProjectSection } from '_enums/ProjectSection';
-import { ProfileContext } from '_contexts/ProfileContext';
-import ToggleButton from '_styled/ToggleButton';
+import { useEffect, useState } from 'react';
+import { Project } from '_types/Project';
+import CreateProjectButton from '_components/Community/Content/Projects/CreateProjectButton';
+import ProjectCard from '_components/Community/Content/Projects/ProjectCard';
+import ExpandedProjectCard from '_components/Community/Content/Projects/ExpandedProjectCard';
 
-const Projects = () => {
-  const communityId = useContext(CommunityContext);
-  const walletGroupID = useContext(WalletGroupContext);
-  const userProfile = useContext(ProfileContext);
+// type ProjectSectionButtonProps = {
+//   section: ProjectSection;
+//   currentlyActiveSection: ProjectSection;
+//   setProjectSection: any;
+//   text: string;
+// };
+
+// const ProjectSectionButton = (props: ProjectSectionButtonProps) => {
+//   let className =
+//     'font-medium px-5 py-4 rounded-lg' +
+//     (props.currentlyActiveSection === props.section
+//       ? ' text-primary bg-backgroundDark'
+//       : ' text-grey bg-backgroundDark');
+//   return (
+//     <button onClick={() => props.setProjectSection(props.section)} className={className}>
+//       {props.text}
+//     </button>
+//   );
+// };
+
+const Talent = () => {
+  const router = useRouter();
+  const communityId = router.query.communityId as string;
+
+  const [loadingProjects, setLoadingProjects] = useState(true);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const [expandedProject, setExpandedProject] = useState<Project>();
 
   const [isAddingProject, setIsAddingProject] = useState(false);
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [lfProjects, setLfProjects] = useState<Project[]>([]);
-  const [lfHire, setLfHire] = useState<Project[]>([]);
-  const [isYourProjects, setIsYourProjects] = useState(false);
-  const [projectSection, setProjectSection] = useState<ProjectSection>(ProjectSection.LFPROJECTS);
 
   useEffect(() => {
-    getProjects(communityId, setProjects);
-  }, [communityId, isAddingProject]);
+    const filteredProjects = filterProjects(projects, searchQuery);
+    setFilteredProjects(filteredProjects);
+  }, [searchQuery]);
+
+  const updateProjects = (projects: Project[]) => {
+    setProjects(projects);
+    setFilteredProjects(projects);
+    setLoadingProjects(false);
+  };
 
   useEffect(() => {
-    const lfProjects = projects.filter((project) => !project.hiring);
-    setLfProjects(lfProjects);
-    const lfHire = projects.filter((project) => project.hiring);
-    setLfHire(lfHire);
-  }, [projects]);
+    getProjects(communityId, updateProjects);
+  }, [communityId]);
 
-  const navBar = (
-    <div className='flex grid grid-cols-2 gap-1 relative'>
-      <div className='flex flex-row-reverse'>
-        <ProjectSectionButton
-          section={ProjectSection.LFPROJECTS}
-          currentlyActiveSection={projectSection}
-          setProjectSection={setProjectSection}
-          text='Looking For Projects'
-        />
+  return loadingProjects ? (
+    <LoadingSpinner />
+  ) : (
+    <div className='flex flex-col gap-2 lg:gap-4'>
+      <div className='flex justify-center lg:justify-end'>
+        <SearchBar onChange={(e: any) => setSearchQuery(e.target.value)} placeholder='Search' />
       </div>
-      <div className='flex flex-row'>
-        <ProjectSectionButton
-          section={ProjectSection.LFHIRE}
-          currentlyActiveSection={projectSection}
-          setProjectSection={setProjectSection}
-          text='Looking to Hire'
-        />
+
+      <div className='grid grid-cols-1 gap-2 lg:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-3 4xl:grid-cols-4 5xl:grid-cols-5'>
+        {filteredProjects.map((project) => (
+          <div
+            key={project.id}
+            className='border-background border-4 hover:border-primaryDark rounded-lg'
+            onClick={() => setExpandedProject(project)}
+          >
+            <ProjectCard project={project} />
+          </div>
+        ))}
       </div>
-      <button className='absolute top-[50%] translate-y-[-50%] right-0 font-medium'>
-        <div className='flex items-center gap-2'>
-          <ToggleButton onClick={() => setIsYourProjects(!isYourProjects)} size='small' />
-          <label className={`text-xs ${isYourProjects ? ' text-primary' : ' text-grey'}`}>Your Projects</label>
+
+      {expandedProject && (
+        <div
+          className='absolute inset-0 bg-black bg-opacity-50 flex justify-center'
+          onClick={() => setExpandedProject(undefined)}
+        >
+          <div className='max-w-screen-lg w-[95%] flex items-center'>
+            <ExpandedProjectCard project={expandedProject} />
+          </div>
         </div>
-      </button>
-    </div>
-  );
-
-  return (
-    <div className={styles.container}>
-      {navBar}
-
-      <div className='grid gap-3 grid-cols-2'>
-        {projectSection === ProjectSection.LFPROJECTS ? (
-          <>
-            {lfProjects.map((project) =>
-              isYourProjects ? (
-                project.walletGroupID === walletGroupID ? (
-                  <ProjectCard
-                    key={project.id}
-                    project={project}
-                    walletGroupID={walletGroupID}
-                    admin={userProfile!.admin}
-                    setProjects={setProjects}
-                  />
-                ) : null
-              ) : (
-                <ProjectCard
-                  key={project.id}
-                  project={project}
-                  walletGroupID={walletGroupID}
-                  admin={userProfile!.admin}
-                  setProjects={setProjects}
-                />
-              )
-            )}
-          </>
-        ) : projectSection === ProjectSection.LFHIRE ? (
-          <>
-            {lfHire.map((project) =>
-              isYourProjects ? (
-                project.walletGroupID === walletGroupID ? (
-                  <ProjectCard
-                    key={project.id}
-                    project={project}
-                    walletGroupID={walletGroupID}
-                    admin={userProfile!.admin}
-                    setProjects={setProjects}
-                  />
-                ) : null
-              ) : (
-                <ProjectCard
-                  key={project.id}
-                  project={project}
-                  walletGroupID={walletGroupID}
-                  admin={userProfile!.admin}
-                  setProjects={setProjects}
-                />
-              )
-            )}
-          </>
-        ) : null}
-      </div>
-
-      {isAddingProject ? <ProjectForm setIsAddingProject={setIsAddingProject} setProjects={setProjects} /> : null}
+      )}
 
       <CreateProjectButton onClick={() => setIsAddingProject(!isAddingProject)} />
     </div>
   );
 };
 
-export default Projects;
-
-const styles = {
-  container: 'flex flex-col gap-y-4 relative',
-  tabButton: 'font-medium px-5 py-4 rounded-lg',
-};
-
-type ProjectSectionButtonProps = {
-  section: ProjectSection;
-  currentlyActiveSection: ProjectSection;
-  setProjectSection: any;
-  text: string;
-};
-
-const ProjectSectionButton = (props: ProjectSectionButtonProps) => {
-  let className =
-    styles.tabButton +
-    (props.currentlyActiveSection === props.section
-      ? ' text-primary bg-backgroundDark'
-      : ' text-grey bg-backgroundDark');
-  return (
-    <button onClick={() => props.setProjectSection(props.section)} className={className}>
-      {props.text}
-    </button>
-  );
-};
+export default Talent;
