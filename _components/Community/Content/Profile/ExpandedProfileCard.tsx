@@ -10,7 +10,7 @@ type ExpandedProfileCardProps = {
 };
 
 const ExpandedProfileCard = (props: ExpandedProfileCardProps) => {
-  const ruler = <hr className='border-primary' />;
+  const ruler = <hr className='border-primaryDark border-2' />;
 
   const lookingForProjectBadge = (
     <div className='flex items-center justify-center -mt-4 -mb-2'>
@@ -26,7 +26,7 @@ const ExpandedProfileCard = (props: ExpandedProfileCardProps) => {
   return (
     <div className={styles.container} onClick={(e) => e.stopPropagation()}>
       {props.profile.admin && (
-        <div className='absolute top-2.5 left-3 flex flex-row items-center gap-1 text-primary'>
+        <div className='absolute top-4 left-4 flex flex-row items-center gap-1 text-primary'>
           <AiFillTool size={20} />
         </div>
       )}
@@ -67,7 +67,7 @@ const ExpandedProfileCard = (props: ExpandedProfileCardProps) => {
 
       {props.profile.lookingForProject === true && lookingForProjectBadge}
 
-      <div className='flex flex-col w-[80%] gap-y-4'>
+      <div className='flex flex-col w-[85%] gap-y-4'>
         {ruler}
 
         <div className={styles.sectionContainer}>
@@ -124,17 +124,6 @@ const ExpandedProfileCard = (props: ExpandedProfileCardProps) => {
           </>
         ) : null}
 
-        {props.profile.contacts ? (
-          <>
-            {ruler}
-
-            <div className={styles.sectionContainer}>
-              <div className={styles.sectionHeading}>Contacts</div>
-              <div className={styles.sectionParagraph}>{props.profile.contacts.replace('<br/>', '\n')}</div>
-            </div>
-          </>
-        ) : null}
-
         {props.profile.languages && props.profile.languages.length ? (
           <>
             {ruler}
@@ -184,7 +173,7 @@ const styles = {
   container:
     'relative w-full bg-backgroundDark rounded-lg shadow-lg py-11 flex flex-col items-center gap-6 overflow-y-scroll h-[90%]',
   imageContainer: 'rounded-full overflow-hidden flex justify-center',
-  sectionContainer: 'px-5 pt-2.5 pb-2 gap-5 flex flex-col',
+  sectionContainer: 'px-5 py-5 gap-5 flex flex-col',
   sectionHeading: 'text-primary font-bold',
   sectionParagraph: 'whitespace-pre-wrap text-grey',
   sectionBulletpoints: 'gap-1 flex flex-col px-2 break-words text-grey',

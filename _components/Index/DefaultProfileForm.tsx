@@ -56,7 +56,6 @@ const DefaultProfileForm = (props: DefaultProfileFormProps) => {
   const [showSkills, setShowSkills] = useState(false);
   const [showExperience, setShowExperience] = useState(false);
   const [showLanguages, setShowLanguages] = useState(false);
-  const [showContacts, setShowContacts] = useState(false);
   const [showLinks, setShowLinks] = useState(false);
   const [showTimezone, setShowTimezone] = useState(false);
 
@@ -77,7 +76,6 @@ const DefaultProfileForm = (props: DefaultProfileFormProps) => {
     if (defaultProfile.skills && defaultProfile.skills.length) setShowSkills(true);
     if (defaultProfile.experience) setShowExperience(true);
     if (defaultProfile.languages && defaultProfile.languages.length) setShowLanguages(true);
-    if (defaultProfile.contacts) setShowContacts(true);
     if (defaultProfile.relevantLinks && defaultProfile.relevantLinks.length) setShowLinks(true);
     if (defaultProfile.timezone) setShowTimezone(true);
     reset(defaultProfile);
@@ -90,7 +88,6 @@ const DefaultProfileForm = (props: DefaultProfileFormProps) => {
     if (!showSkills) data.skills = [];
     if (!showExperience) data.experience = '';
     if (!showLanguages) data.languages = [];
-    if (!showContacts) data.contacts = '';
     if (!showLinks) data.relevantLinks = [];
 
     for (const property in data) if (data[property] === undefined) data[property] = [];
@@ -101,7 +98,9 @@ const DefaultProfileForm = (props: DefaultProfileFormProps) => {
   const title = <h1 className='mb-4 text-3xl font-bold text-center text-primary'>Create Default Profile</h1>;
 
   const description = (
-    <p className='mb-4 text-center'>This is your default profile. When joining a new community, you will be able to easily import it.</p>
+    <p className='mb-4 text-center'>
+      This is your default profile. When joining a new community, you will be able to easily import it.
+    </p>
   );
 
   return (
@@ -115,11 +114,21 @@ const DefaultProfileForm = (props: DefaultProfileFormProps) => {
 
           <FormField
             label='Display Name'
-            formField={<InputField register={register} placeholder='Display Name' name='displayName' required={true} maxLength={34} />}
+            formField={
+              <InputField
+                register={register}
+                placeholder='Display Name'
+                name='displayName'
+                required={true}
+                maxLength={34}
+              />
+            }
           />
           <FormField
             label='Bio'
-            formField={<LargeInputField register={register} placeholder='Bio' name='bio' required={true} maxLength={160} />}
+            formField={
+              <LargeInputField register={register} placeholder='Bio' name='bio' required={true} maxLength={160} />
+            }
           />
           <FormField
             label='Looking For Project'
@@ -142,7 +151,14 @@ const DefaultProfileForm = (props: DefaultProfileFormProps) => {
             formField={
               <FormField
                 label='Discord Username'
-                formField={<InputField register={register} placeholder='Discord Username' name='discordUsername' maxLength={37} />}
+                formField={
+                  <InputField
+                    register={register}
+                    placeholder='Discord Username'
+                    name='discordUsername'
+                    maxLength={37}
+                  />
+                }
               />
             }
             onHideField={() => unregister('discordUsername')}
@@ -154,7 +170,9 @@ const DefaultProfileForm = (props: DefaultProfileFormProps) => {
             formField={
               <FormField
                 label='Twitter Handle'
-                formField={<InputField register={register} placeholder='Twitter Handle' name='twitterHandle' maxLength={16} />}
+                formField={
+                  <InputField register={register} placeholder='Twitter Handle' name='twitterHandle' maxLength={16} />
+                }
               />
             }
             onHideField={() => unregister('twitterHandle')}
@@ -193,7 +211,9 @@ const DefaultProfileForm = (props: DefaultProfileFormProps) => {
               <FormField
                 key={field.id}
                 label={index === 0 ? 'Skills' : ''}
-                formField={<InputField register={register} placeholder={'Skill'} name={`skills.${index}`} maxLength={50} />}
+                formField={
+                  <InputField register={register} placeholder={'Skill'} name={`skills.${index}`} maxLength={50} />
+                }
               />
             ))}
           />
@@ -202,7 +222,9 @@ const DefaultProfileForm = (props: DefaultProfileFormProps) => {
             formField={
               <FormField
                 label='Experience'
-                formField={<LargeInputField register={register} placeholder='Experience' name='experience' maxLength={500} />}
+                formField={
+                  <LargeInputField register={register} placeholder='Experience' name='experience' maxLength={500} />
+                }
               />
             }
             onHideField={() => unregister('experience')}
@@ -229,18 +251,6 @@ const DefaultProfileForm = (props: DefaultProfileFormProps) => {
             isFieldShown={showLanguages}
             setIsFieldShown={setShowLanguages}
           />
-          <OptionalFormFieldWrapper
-            label='Contacts'
-            formField={
-              <FormField
-                label='Contacts'
-                formField={<LargeInputField register={register} placeholder='Contacts' name='contacts' maxLength={500} />}
-              />
-            }
-            onHideField={() => unregister('contacts')}
-            isFieldShown={showContacts}
-            setIsFieldShown={setShowContacts}
-          />
           <OptionalArrayInputField
             label='Relevant Links'
             fieldName='Link'
@@ -251,7 +261,14 @@ const DefaultProfileForm = (props: DefaultProfileFormProps) => {
               <FormField
                 key={field.id}
                 label={index === 0 ? 'Relevant Links' : ''}
-                formField={<InputField register={register} placeholder={'Relevant Link'} name={`relevantLinks.${index}`} maxLength={50} />}
+                formField={
+                  <InputField
+                    register={register}
+                    placeholder={'Relevant Link'}
+                    name={`relevantLinks.${index}`}
+                    maxLength={50}
+                  />
+                }
               />
             ))}
             isFieldShown={showLinks}

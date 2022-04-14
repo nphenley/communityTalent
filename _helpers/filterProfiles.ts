@@ -17,15 +17,10 @@ export const filterProfiles = (profiles: Profile[], searchQuery: string) => {
       profile.relevantLinks?.join(' ') +
       ' ';
     accumString += profile.twitterHandle ? profile.twitterHandle + ' ' : ' ';
-    accumString += profile.discordUsername
-      ? profile.discordUsername + ' '
-      : ' ';
+    accumString += profile.discordUsername ? profile.discordUsername + ' ' : ' ';
     accumString += profile.experience ? profile.experience + ' ' : ' ';
-    accumString += profile.contacts ? profile.contacts + ' ' : ' ';
-    accumString +=
-      profile.lookingForProject === true ? 'looking for project' : '';
-    for (const word of searchWords)
-      if (!accumString.toLowerCase().includes(word)) return false;
+    accumString += profile.lookingForProject === true ? 'looking for project' : '';
+    for (const word of searchWords) if (!accumString.toLowerCase().includes(word)) return false;
     return true;
   });
 };
