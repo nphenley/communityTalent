@@ -13,4 +13,6 @@ export type Project = {
   discordContact: string;
   twitterContact: string;
   isAdminProject: boolean;
+  upvotes: number;
+  isUpvoted: boolean;
 };

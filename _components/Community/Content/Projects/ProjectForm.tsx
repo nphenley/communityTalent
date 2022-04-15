@@ -19,7 +19,6 @@ import { ProfileContext } from '_contexts/ProfileContext';
 type ProjectFormProps = {
   project?: Project;
   onSubmit?: () => void;
-  setProjects: any;
 };
 
 type ProjectFormSelectOptions = {
@@ -80,21 +79,19 @@ const ProjectForm = (props: ProjectFormProps) => {
     for (const property in data) if (data[property] === undefined) data[property] = [];
 
     if (props.project) {
-      updateProject(
-        communityId,
-        props.project.id,
-        { ...data, walletGroupID: walletGroupID, creatorDisplayName: profile!.displayName },
-        props.setProjects
-      );
+      await updateProject(communityId, props.project.id, {
+        ...data,
+        walletGroupID: walletGroupID,
+        creatorDisplayName: profile!.displayName,
+      });
     } else {
-      createProject(
-        communityId,
-        { ...data, walletGroupID: walletGroupID, creatorDisplayName: profile!.displayName },
-        props.setProjects
-      );
+      await createProject(communityId, {
+        ...data,
+        upvotes: 1,
+        walletGroupID: walletGroupID,
+        creatorDisplayName: profile!.displayName,
+      });
     }
-
-    console.log('form data', { data });
     props.onSubmit && props.onSubmit();
   };
 

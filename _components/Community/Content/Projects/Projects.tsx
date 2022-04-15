@@ -1,15 +1,16 @@
 import { useRouter } from 'next/router';
-import { deleteProject, getProjects } from '_api/projects';
+import { deleteProject, getProjects, toggleProjectUpvote } from '_api/projects';
 import SearchBar from '_styled/SearchBar';
 import LoadingSpinner from '_styled/LoadingSpinner';
 import { filterProjects } from '_helpers/filterProjects';
 import { ProjectSection } from '_enums/ProjectSection';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Project } from '_types/Project';
 import CreateProjectButton from '_components/Community/Content/Projects/CreateProjectButton';
 import ProjectCard from '_components/Community/Content/Projects/ProjectCard';
 import ExpandedProjectCard from '_components/Community/Content/Projects/ExpandedProjectCard';
 import ProjectForm from '_components/Community/Content/Projects/ProjectForm';
+import { WalletGroupContext } from '_contexts/WalletGroupContext';
 
 // type ProjectSectionButtonProps = {
 //   section: ProjectSection;
@@ -34,6 +35,7 @@ import ProjectForm from '_components/Community/Content/Projects/ProjectForm';
 const Talent = () => {
   const router = useRouter();
   const communityId = router.query.communityId as string;
+  const walletGroupID = useContext(WalletGroupContext);
 
   const [loadingProjects, setLoadingProjects] = useState(true);
   const [projects, setProjects] = useState<Project[]>([]);
@@ -48,6 +50,7 @@ const Talent = () => {
   useEffect(() => {
     const filteredProjects = filterProjects(projects, searchQuery);
     setFilteredProjects(filteredProjects);
+    console.log(projects);
   }, [projects, searchQuery]);
 
   const updateProjects = (projects: Project[]) => {
@@ -57,8 +60,14 @@ const Talent = () => {
   };
 
   useEffect(() => {
-    getProjects(communityId, updateProjects);
+    getProjects(walletGroupID, communityId, updateProjects);
   }, [communityId]);
+
+  useEffect(() => {
+    if (!expandedProject) return;
+    const updatedExpandedProject = projects.find((project) => project.id === expandedProject.id);
+    setExpandedProject(updatedExpandedProject);
+  }, [projects]);
 
   return loadingProjects ? (
     <LoadingSpinner />
@@ -77,8 +86,11 @@ const Talent = () => {
           >
             <ProjectCard
               project={project}
+              isProjectByUser={project.walletGroupID === walletGroupID}
               setProjectToEdit={setProjectToEdit}
-              deleteProject={() => deleteProject(communityId, project.id, setProjects)}
+              deleteProject={() => deleteProject(communityId, project.id)}
+              toggleProjectUpvote={() => toggleProjectUpvote(walletGroupID, communityId, project.id, project.isUpvoted)}
+              getProjects={() => getProjects(walletGroupID, communityId, updateProjects)}
             />
           </div>
         ))}
@@ -94,8 +106,13 @@ const Talent = () => {
           <div className='max-w-screen-md w-[95%] flex items-center'>
             <ExpandedProjectCard
               project={expandedProject}
+              isProjectByUser={expandedProject.walletGroupID === walletGroupID}
               setProjectToEdit={setProjectToEdit}
-              deleteProject={() => deleteProject(communityId, expandedProject.id, setProjects)}
+              deleteProject={() => deleteProject(communityId, expandedProject.id)}
+              toggleProjectUpvote={() =>
+                toggleProjectUpvote(walletGroupID, communityId, expandedProject.id, expandedProject.isUpvoted)
+              }
+              getProjects={() => getProjects(walletGroupID, communityId, updateProjects)}
             />
           </div>
         </div>
@@ -107,7 +124,12 @@ const Talent = () => {
           onClick={() => setIsAddingProject(false)}
         >
           <div className='max-w-screen-md w-[95%] flex items-center'>
-            <ProjectForm onSubmit={() => setIsAddingProject(false)} setProjects={setProjects} />
+            <ProjectForm
+              onSubmit={async () => {
+                await getProjects(walletGroupID, communityId, updateProjects);
+                setProjectToEdit(undefined);
+              }}
+            />
           </div>
         </div>
       )}
@@ -120,8 +142,10 @@ const Talent = () => {
           <div className='max-w-screen-md w-[95%] flex items-center'>
             <ProjectForm
               project={projectToEdit}
-              onSubmit={() => setProjectToEdit(undefined)}
-              setProjects={setProjects}
+              onSubmit={async () => {
+                await getProjects(walletGroupID, communityId, updateProjects);
+                setProjectToEdit(undefined);
+              }}
             />
           </div>
         </div>

@@ -1,19 +1,18 @@
 import { Project } from '_types/Project';
-import { AiFillDelete, AiFillEdit, AiFillTool, AiOutlineTwitter } from 'react-icons/ai';
+import { AiFillDelete, AiFillEdit, AiFillHeart, AiFillTool, AiOutlineHeart, AiOutlineTwitter } from 'react-icons/ai';
 import { GiPlainCircle } from 'react-icons/gi';
 import { FaDiscord } from 'react-icons/fa';
-import { useContext } from 'react';
-import { WalletGroupContext } from '_contexts/WalletGroupContext';
 
 type ProjectCardProps = {
   project: Project;
+  isProjectByUser: boolean;
   setProjectToEdit: any;
   deleteProject: any;
+  toggleProjectUpvote: any;
+  getProjects: any;
 };
 
 const ProjectCard = (props: ProjectCardProps) => {
-  const walletGroupID = useContext(WalletGroupContext);
-
   const ruler = <hr className='border-primaryDark border-2 mb-2' />;
 
   return (
@@ -24,7 +23,7 @@ const ProjectCard = (props: ProjectCardProps) => {
         </div>
       )}
 
-      {props.project.walletGroupID === walletGroupID && (
+      {props.isProjectByUser ? (
         <div className='absolute right-2 top-2 flex gap-1'>
           <div
             className='flex bg-primaryDark rounded-full flex-row items-center gap-1 text-grey p-1 hover:bg-primary hover:text-white hover:cursor-pointer'
@@ -37,12 +36,29 @@ const ProjectCard = (props: ProjectCardProps) => {
           </div>
           <div
             className='flex bg-primaryDark rounded-full flex-row items-center gap-1 text-grey p-1 hover:bg-primary hover:text-white hover:cursor-pointer'
-            onClick={(e) => {
+            onClick={async (e) => {
               e.stopPropagation();
               props.deleteProject();
+              props.getProjects();
             }}
           >
             <AiFillDelete size={16} />
+          </div>
+        </div>
+      ) : (
+        <div className='absolute right-2 top-2 flex gap-1'>
+          <div
+            className={`flex ${
+              props.project.isUpvoted ? 'bg-primary text-white' : 'bg-primaryDark text-grey'
+            } rounded-full flex-row items-center gap-1 p-1.5 text-xs hover:bg-primary hover:text-white hover:cursor-pointer`}
+            onClick={async (e) => {
+              e.stopPropagation();
+              await props.toggleProjectUpvote();
+              props.getProjects();
+            }}
+          >
+            {props.project.isUpvoted ? <AiFillHeart size={16} /> : <AiOutlineHeart size={16} />}
+            {props.project.upvotes}
           </div>
         </div>
       )}

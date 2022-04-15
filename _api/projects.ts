@@ -19,7 +19,7 @@ import { Project } from '_types/Project';
 // TODO:
 // Visit how project upvotes etc are done with this function?
 // Bit confused
-export const createProject = async (communityId: string, project: Partial<Project>, setProjects: any) => {
+export const createProject = async (communityId: string, project: Partial<Project>) => {
   const docRef = await addDoc(collection(firestore, 'communities', communityId, 'projects'), {
     ...project,
     dateCreated: Timestamp.now(),
@@ -30,77 +30,64 @@ export const createProject = async (communityId: string, project: Partial<Projec
     walletGroupID: project.walletGroupID,
     projectId: docRef.id,
   });
-
-  await getProjects(communityId, setProjects);
 };
 
-export const updateProject = async (
-  communityId: string,
-  projectId: string,
-  project: Partial<Project>,
-  setProjects: any
-) => {
+export const updateProject = async (communityId: string, projectId: string, project: Partial<Project>) => {
   await updateDoc(doc(firestore, 'communities', communityId, 'projects', projectId), {
     ...project,
     dateCreated: Timestamp.now(),
     dateLastUpdated: Timestamp.now(),
   });
-
-  await getProjects(communityId, setProjects);
 };
 
-export const getProjects = async (communityId: string, updateProjects: any) => {
+export const getProjects = async (walletGroupID: string, communityId: string, updateProjects: any) => {
   const data = await getDocs(
     query(collection(firestore, 'communities', communityId, 'projects'), orderBy('dateCreated', 'desc'))
   );
-  updateProjects(data.docs.map((doc) => ({ ...doc.data(), id: doc.id } as Project)));
+
+  const projects: Project[] = await Promise.all(
+    data.docs.map(async (docRef) => {
+      const isUpvoted = (
+        await getDoc(doc(firestore, 'communities', communityId, 'projectUpvotes', `${walletGroupID}_${docRef.id}`))
+      ).exists();
+
+      console.log('getProjects', docRef.id, docRef.data()!.upvotes);
+
+      return { ...docRef.data(), isUpvoted: isUpvoted, id: docRef.id } as Project;
+    })
+  );
+
+  updateProjects(projects);
 };
 
-export const getProject = async (communityId: string, projectId: string, setProject: any) => {
-  const data = await getDoc(doc(firestore, 'communities', communityId, 'projects', projectId));
-  setProject({ ...data.data(), id: data.id } as Project);
-};
-
-// TODO:
-// Old
 export const toggleProjectUpvote = async (
+  walletGroupID: string,
   communityId: string,
   projectId: string,
-  walletGroupID: string,
-  userVoted: boolean,
-  setProject: any,
-  setUserVote: any
+  isUpvoted: boolean
 ) => {
-  if (!userVoted) {
+  console.log(projectId);
+  if (!isUpvoted) {
     await Promise.all([
-      setDoc(doc(firestore, 'projectUpvotes', projectId, 'upvotes', walletGroupID), {}),
+      setDoc(doc(firestore, 'communities', communityId, 'projectUpvotes', `${walletGroupID}_${projectId}`), {
+        walletGroupID: walletGroupID,
+        projectId: projectId,
+      }),
       updateDoc(doc(firestore, 'communities', communityId, 'projects', projectId), {
-        votes: increment(1),
+        upvotes: increment(1),
       }),
     ]);
-
-    setUserVote(true);
   } else {
     await Promise.all([
-      deleteDoc(doc(firestore, 'projectUpvotes', projectId, 'upvotes', walletGroupID)),
+      deleteDoc(doc(firestore, 'communities', communityId, 'projectUpvotes', `${walletGroupID}_${projectId}`)),
       updateDoc(doc(firestore, 'communities', communityId, 'projects', projectId), {
-        votes: increment(-1),
+        upvotes: increment(-1),
       }),
     ]);
-
-    setUserVote(false);
   }
-  getProject(communityId, projectId, setProject);
 };
 
-// TODO:
-// Old
-export const getUserVote = async (projectId: string, walletGroupID: string, setUserVote: any) => {
-  const upvote = await getDoc(doc(firestore, 'projectUpvotes', projectId, 'upvotes', walletGroupID));
-  setUserVote(upvote.exists());
-};
-
-export const deleteProject = async (communityId: string, projectId: string, setProjects: any) => {
+export const deleteProject = async (communityId: string, projectId: string) => {
   await Promise.all([
     deleteDoc(doc(firestore, 'communities', communityId, 'projects', projectId)),
     getDocs(
@@ -109,5 +96,4 @@ export const deleteProject = async (communityId: string, projectId: string, setP
       return Promise.all(querySnap.docs.map(async (doc) => deleteDoc(doc.ref)));
     }),
   ]);
-  getProjects(communityId, setProjects);
 };
