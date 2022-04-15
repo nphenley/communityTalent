@@ -96,6 +96,16 @@ const ProfileForm = (props: ProfileFormProps) => {
 
     for (const property in data) if (data[property] === undefined) data[property] = [];
 
+    if (!data.twitterHandle.startsWith('@')) {
+      data.twitterHandle = '@' + data.twitterHandle;
+    }
+    data.relevantLinks.forEach((link: string) => {
+      if (!link.startsWith('https://')) {
+        const index = data.relevantLinks.indexOf(link);
+        data.relevantLinks[index] = 'https://' + link;
+      }
+    });
+
     createOrUpdateCommunityProfile(walletGroupID, communityId, data);
     props.onSubmit && props.onSubmit();
   };

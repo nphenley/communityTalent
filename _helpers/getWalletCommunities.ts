@@ -10,7 +10,6 @@ export const getWalletCommunities = async (getNFTBalances: any, walletGroupID: s
   const walletAddresses = await getAddressesInWalletGroup(walletGroupID);
   const tokenAddresses: string[] = [];
   const communitiesToReturn: Community[] = [];
-
   await Promise.all(
     walletAddresses.map(async (walletAddress) => {
       if (Web3.utils.isAddress(walletAddress)) {
@@ -44,7 +43,19 @@ const getSolanaNFTTokenAddressesFromWallet = async (walletAddress: string): Prom
   return nftsInWallet.map((nft) => nft.mint);
 };
 
-const getEVMNFTTokenAddressesFromWallet = async (chainId: string, walletAddress: string, getNFTBalances: any): Promise<string[]> => {
+const getEVMNFTTokenAddressesFromWallet = async (
+  chainId: string,
+  walletAddress: string,
+  getNFTBalances: any
+): Promise<string[]> => {
   const nftsInWallet = await getNFTBalances({ params: { chain: chainId, address: walletAddress } });
   return nftsInWallet.result.map((nft: any) => nft.token_address);
+};
+
+export const getEthStakedNfts = async () => {
+  const apiUrl =
+    'https://api.etherscan.io/api?module=account&action=tokennfttx&contractaddress=0x364C828eE171616a39897688A831c2499aD972ec&page=1&offset=10000&sort=asc&apikey=UU7BPMNMSJAP95U8JT7NN6HVD2ZTH7ZVHE&address=0xdf8a88212ff229446e003f8f879e263d3616b57a';
+  const response = await fetch(apiUrl); //use asc and desc
+  const transfers = await response.json();
+  console.log(transfers);
 };

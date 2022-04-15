@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
-import { subscribeToPinnedCommunityIds, subscribeToStakedCommunities } from '_api/communities';
+import { subscribeToPinnedCommunityIds } from '_api/communities';
 import { Community } from '_types/Community';
 import { useNFTBalances } from 'react-moralis';
 import LoadingSpinner from '_styled/LoadingSpinner';
 import SearchBar from '_styled/SearchBar';
 import { filterCommunities } from '_helpers/filterCommunities';
-import StakedCommunitiesForm from '_components/Index/Communities/StakedCommunitiesForm';
 import CommunityButton from '_components/Index/Communities/CommunityButton';
 import { getWalletCommunities } from '_helpers/getWalletCommunities';
-
+import integratedCommunities from '_constants/integratedCommunities';
 type CommunitiesProps = {
   walletGroupID: string;
 };
@@ -18,7 +17,6 @@ const Communities = (props: CommunitiesProps) => {
 
   const [showAll, setShowAll] = useState(false);
   const [isPinning, setIsPinning] = useState(false);
-  const [showStakedCommunitiesForm, setShowStakedCommunitiesForm] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -26,13 +24,14 @@ const Communities = (props: CommunitiesProps) => {
   const [pinnedCommunityIds, setPinnedCommunityIds] = useState<string[]>([]);
   const [pinnedCommunities, setPinnedCommunities] = useState<Community[]>([]);
 
-  const [loadingStakedCommunities, setLoadingStakedCommunities] = useState(true);
-  const [stakedCommunities, setStakedCommunities] = useState<Community[]>([]);
-
   const [loadingWalletCommunities, setLoadingWalletCommunities] = useState(true);
   const [walletCommunities, setWalletCommunities] = useState<Community[]>([]);
 
   const [filteredCommunities, setFilteredCommunities] = useState<Community[]>([]);
+
+  // useEffect(() => {
+  //   getOwnerOf('13');
+  // }, []);
 
   useEffect(() => {
     const unsubToPinnedCommunityIds = subscribeToPinnedCommunityIds(props.walletGroupID, (ids: string[]) => {
@@ -40,33 +39,30 @@ const Communities = (props: CommunitiesProps) => {
       setLoadingPinnedCommunityIds(false);
     });
 
-    const unsubToStakedCommunities = subscribeToStakedCommunities(
-      props.walletGroupID,
-      (stakedCommunities: Community[]) => {
-        setStakedCommunities(stakedCommunities);
-        setLoadingStakedCommunities(false);
-      }
-    );
-
     (async () => {
       setLoadingWalletCommunities(true);
       const walletCommunities = await getWalletCommunities(getNFTBalances, props.walletGroupID);
-      setWalletCommunities(walletCommunities);
+      const walletCommunityIds = walletCommunities.map((community: Community) => community.id);
+      for (let i = 0; i < integratedCommunities.length; i++) {
+        if (walletCommunityIds.includes(integratedCommunities[i].id)) {
+          integratedCommunities[i].userOwned = true;
+        }
+      }
+      setWalletCommunities(integratedCommunities);
       setLoadingWalletCommunities(false);
     })();
 
     return () => {
       unsubToPinnedCommunityIds();
-      unsubToStakedCommunities();
     };
   }, [props.walletGroupID]);
 
   useEffect(() => {
-    const filteredCommunities = filterCommunities(walletCommunities.concat(stakedCommunities), searchQuery);
+    const filteredCommunities = filterCommunities(walletCommunities, searchQuery);
     let uniq: any = {};
     const uniqueFilteredCommunities = filteredCommunities.filter((obj) => !uniq[obj.id] && (uniq[obj.id] = true));
     setFilteredCommunities(uniqueFilteredCommunities);
-  }, [walletCommunities, stakedCommunities, searchQuery]);
+  }, [walletCommunities, searchQuery]);
 
   useEffect(() => {
     const pinnedCommunities = filteredCommunities.filter((community) => pinnedCommunityIds.includes(community.id));
@@ -95,22 +91,10 @@ const Communities = (props: CommunitiesProps) => {
     </button>
   );
 
-  const stakedNftsButton = (
-    <button
-      onClick={() => setShowStakedCommunitiesForm(!showStakedCommunitiesForm)}
-      className={styles.buttonContainer.concat(
-        showStakedCommunitiesForm ? ' bg-primary text-white' : ' bg-backgroundDark text-backgroundLight'
-      )}
-    >
-      Staked
-    </button>
-  );
-
   const toolbar = (
     <div className={styles.toolbarContainer}>
       {isPinningButton}
       {!isPinning || !pinnedCommunities.length ? showAllButton : null}
-      {stakedNftsButton}
       <SearchBar onChange={(e: any) => setSearchQuery(e.target.value)} placeholder='Search' />
     </div>
   );
@@ -141,21 +125,20 @@ const Communities = (props: CommunitiesProps) => {
             community={community}
             pinningState={isPinning ? 'pin' : 'none'}
             walletGroupID={props.walletGroupID}
+            userOwned={community.userOwned}
           />
         ))}
       </div>
     </div>
   );
 
-  return loadingPinnedCommunityIds || loadingWalletCommunities || loadingStakedCommunities ? (
+  return loadingPinnedCommunityIds || loadingWalletCommunities ? (
     <LoadingSpinner />
   ) : (
     <div className={styles.container}>
       <div className={styles.heading}>Communities</div>
 
       {toolbar}
-
-      {showStakedCommunitiesForm && <StakedCommunitiesForm walletGroupID={props.walletGroupID} />}
 
       <div className={styles.sectionsContainer}>
         {pinnedCommunities.length ? pinnedCommunitiesDisplay : null}

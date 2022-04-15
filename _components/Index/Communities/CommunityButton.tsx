@@ -8,6 +8,7 @@ type CommunityButtonProps = {
   community: Community;
   pinningState: 'pin' | 'unpin' | 'none';
   walletGroupID: string;
+  userOwned?: boolean;
 };
 
 const CommunityButton = (props: CommunityButtonProps) => {
@@ -24,8 +25,10 @@ const CommunityButton = (props: CommunityButtonProps) => {
     </button>
   );
 
+  let container = props.userOwned ? 'relative' : 'relative pointer-events-none grayscale';
+
   return (
-    <div className={styles.container}>
+    <div className={container}>
       <Link href={`community/${props.community.id}`}>
         <button className='flex flex-col items-center mx-auto space-y-4'>
           <div className='flex justify-center overflow-hidden rounded-full'>
@@ -50,6 +53,5 @@ const CommunityButton = (props: CommunityButtonProps) => {
 export default CommunityButton;
 
 const styles = {
-  container: 'relative',
   togglePinButtonContainer: 'absolute top-0 right-0 bg-primaryDark hover:bg-primary p-2 rounded-lg',
 };
