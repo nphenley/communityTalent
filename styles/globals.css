@@ -37,7 +37,7 @@
 
 .select-field__control {
   border: 0px !important;
-  background-color: hsl(240, 41%, 10%) !important;
+  background-color: hsl(240, 31%, 10%) !important;
   color: white !important;
   border-radius: 8px !important;
   padding: 12px !important;
@@ -58,12 +58,12 @@
 
 .select-field__menu-list {
   color: white !important;
-  background-color: hsl(240, 41%, 10%) !important;
+  background-color: hsl(240, 31%, 10%) !important;
 }
 
 .select-field__option {
   color: white !important;
-  background-color: hsl(240, 41%, 10%) !important;
+  background-color: hsl(240, 31%, 10%) !important;
 }
 
 .select-field__multi-value {
@@ -84,6 +84,11 @@
 .select-field__input-container {
   margin-left: 10px !important;
   color: white !important;
+}
+
+.select-field__single-value {
+  color: white !important;
+  margin: 0 !important;
 }
 
 /* ======================== SCROLLBAR ======================== */
