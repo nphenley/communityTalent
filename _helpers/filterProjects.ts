@@ -10,7 +10,11 @@ export const filterProjects = (projects: Project[], searchQuery: string) => {
       ' ' +
       project.role +
       ' ' +
-      project.languages.join(' ') +
+      project.languages?.join(' ') +
+      ' ' +
+      project.discordContact +
+      ' ' +
+      project.twitterContact +
       ' ' +
       project.skills?.join(' ') +
       ' ';

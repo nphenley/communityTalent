@@ -10,5 +10,7 @@ export type Project = {
   description: string;
   skills: string[];
   languages: string[];
+  discordContact: string;
+  twitterContact: string;
   isAdminProject: boolean;
 };

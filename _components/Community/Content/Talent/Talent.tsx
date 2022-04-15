@@ -59,7 +59,7 @@ const Talent = () => {
           className='absolute inset-0 bg-black bg-opacity-50 flex justify-center'
           onClick={() => setExpandedProfile(undefined)}
         >
-          <div className='max-w-screen-lg w-[95%] flex items-center'>
+          <div className='max-w-screen-md w-[95%] flex items-center'>
             <ExpandedProfileCard profile={expandedProfile} />
           </div>
         </div>

@@ -1,6 +1,7 @@
 import { Project } from '_types/Project';
-import { AiFillTool } from 'react-icons/ai';
+import { AiFillTool, AiOutlineTwitter } from 'react-icons/ai';
 import { GiPlainCircle } from 'react-icons/gi';
+import { FaDiscord } from 'react-icons/fa';
 
 type ProjectCardProps = {
   project: Project;
@@ -59,6 +60,33 @@ const ProjectCard = (props: ProjectCardProps) => {
                       {language}
                     </div>
                   ))}
+              </div>
+            </div>
+          </>
+        ) : null}
+
+        {props.project.twitterContact || props.project.discordContact ? (
+          <>
+            {ruler}
+            <div className={styles.sectionContainer}>
+              <div className={styles.sectionHeading}>Contact</div>
+              <div className={styles.sectionBulletpoints}>
+                {props.project.discordContact && (
+                  <div className='flex items-center gap-2 text-grey'>
+                    <div>
+                      <FaDiscord size={15} />
+                    </div>
+                    <div>{props.project.discordContact}</div>
+                  </div>
+                )}
+                {props.project.twitterContact && (
+                  <div className='flex items-center gap-2 text-grey'>
+                    <div>
+                      <AiOutlineTwitter size={15} />
+                    </div>
+                    <div>@{props.project.twitterContact}</div>
+                  </div>
+                )}
               </div>
             </div>
           </>
