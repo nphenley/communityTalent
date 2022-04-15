@@ -161,7 +161,7 @@ export default ExpandedProfileCard;
 
 const styles = {
   container:
-    'relative w-full bg-backgroundDark rounded-lg shadow-lg py-11 flex flex-col items-center gap-6 overflow-y-scroll h-[80%]',
+    'relative w-full bg-backgroundDark rounded-lg shadow-lg py-11 flex flex-col items-center gap-6 overflow-y-scroll h-[80%] w-full',
   imageContainer: 'rounded-full overflow-hidden flex justify-center',
   sectionContainer: 'px-5 py-5 gap-5 flex flex-col',
   sectionHeading: 'text-primary font-bold',

@@ -1,13 +1,19 @@
 import { Project } from '_types/Project';
-import { AiFillTool, AiOutlineTwitter } from 'react-icons/ai';
+import { AiFillDelete, AiFillEdit, AiFillTool, AiOutlineTwitter } from 'react-icons/ai';
 import { GiPlainCircle } from 'react-icons/gi';
 import { FaDiscord } from 'react-icons/fa';
+import { useContext } from 'react';
+import { WalletGroupContext } from '_contexts/WalletGroupContext';
 
 type ProjectCardProps = {
   project: Project;
+  setProjectToEdit: any;
+  deleteProject: any;
 };
 
 const ProjectCard = (props: ProjectCardProps) => {
+  const walletGroupID = useContext(WalletGroupContext);
+
   const ruler = <hr className='border-primaryDark border-2 mb-2' />;
 
   return (
@@ -15,6 +21,29 @@ const ProjectCard = (props: ProjectCardProps) => {
       {props.project.isAdminProject && (
         <div className='absolute top-3 left-3 flex flex-row items-center gap-1 text-primary'>
           <AiFillTool size={20} />
+        </div>
+      )}
+
+      {props.project.walletGroupID === walletGroupID && (
+        <div className='absolute right-2 top-2 flex gap-1'>
+          <div
+            className='flex bg-primaryDark rounded-full flex-row items-center gap-1 text-grey p-1 hover:bg-primary hover:text-white hover:cursor-pointer'
+            onClick={(e) => {
+              e.stopPropagation();
+              props.setProjectToEdit(props.project);
+            }}
+          >
+            <AiFillEdit size={16} />
+          </div>
+          <div
+            className='flex bg-primaryDark rounded-full flex-row items-center gap-1 text-grey p-1 hover:bg-primary hover:text-white hover:cursor-pointer'
+            onClick={(e) => {
+              e.stopPropagation();
+              props.deleteProject();
+            }}
+          >
+            <AiFillDelete size={16} />
+          </div>
         </div>
       )}
 
@@ -32,21 +61,25 @@ const ProjectCard = (props: ProjectCardProps) => {
           <div className={styles.sectionParagraph}>{props.project.description.replace('<br/>', '\n')}</div>
         </div>
 
-        {ruler}
+        {props.project.skills && props.project.skills.length ? (
+          <>
+            {ruler}
 
-        <div className={styles.sectionContainer}>
-          <div className={styles.sectionHeading}>Skills</div>
-          <div className={styles.sectionBulletpoints}>
-            {props.project.skills.map((skill) => (
-              <div key={skill} className='flex items-center gap-2 text-grey'>
-                <div>
-                  <GiPlainCircle size={8} />
-                </div>
-                <div>{skill}</div>
+            <div className={styles.sectionContainer}>
+              <div className={styles.sectionHeading}>Skills</div>
+              <div className={styles.sectionBulletpoints}>
+                {props.project.skills.map((skill) => (
+                  <div key={skill} className='flex items-center gap-2 text-grey'>
+                    <div>
+                      <GiPlainCircle size={8} />
+                    </div>
+                    <div>{skill}</div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
+          </>
+        ) : null}
 
         {props.project.languages && props.project.languages.length ? (
           <>
@@ -104,8 +137,7 @@ export default ProjectCard;
 
 const styles = {
   container:
-    'relative bg-backgroundDark rounded-lg shadow-lg py-11 flex flex-col items-center gap-6 overflow-y-scroll max-h-[80%]',
-  imageContainer: 'rounded-full overflow-hidden flex justify-center',
+    'relative bg-backgroundDark rounded-lg shadow-lg py-11 flex flex-col items-center gap-6 overflow-y-scroll max-h-[80%] w-full',
   sectionContainer: 'px-5 pb-3 gap-3 flex flex-col',
   sectionHeading: 'text-primary font-bold',
   sectionParagraph: 'whitespace-pre-wrap text-grey',

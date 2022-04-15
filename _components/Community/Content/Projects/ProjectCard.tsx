@@ -1,13 +1,19 @@
 import { Project } from '_types/Project';
-import { AiFillTool, AiOutlineTwitter } from 'react-icons/ai';
+import { AiFillDelete, AiFillEdit, AiFillTool, AiOutlineTwitter } from 'react-icons/ai';
 import { GiPlainCircle } from 'react-icons/gi';
 import { FaDiscord } from 'react-icons/fa';
+import { useContext } from 'react';
+import { WalletGroupContext } from '_contexts/WalletGroupContext';
 
 type ProjectCardProps = {
   project: Project;
+  setProjectToEdit: any;
+  deleteProject: any;
 };
 
 const ProjectCard = (props: ProjectCardProps) => {
+  const walletGroupID = useContext(WalletGroupContext);
+
   const ruler = <hr className='border-primaryDark border-2 mb-2' />;
 
   return (
@@ -18,13 +24,35 @@ const ProjectCard = (props: ProjectCardProps) => {
         </div>
       )}
 
+      {props.project.walletGroupID === walletGroupID && (
+        <div className='absolute right-2 top-2 flex gap-1'>
+          <div
+            className='flex bg-primaryDark rounded-full flex-row items-center gap-1 text-grey p-1 hover:bg-primary hover:text-white hover:cursor-pointer'
+            onClick={(e) => {
+              e.stopPropagation();
+              props.setProjectToEdit(props.project);
+            }}
+          >
+            <AiFillEdit size={16} />
+          </div>
+          <div
+            className='flex bg-primaryDark rounded-full flex-row items-center gap-1 text-grey p-1 hover:bg-primary hover:text-white hover:cursor-pointer'
+            onClick={(e) => {
+              e.stopPropagation();
+              props.deleteProject();
+            }}
+          >
+            <AiFillDelete size={16} />
+          </div>
+        </div>
+      )}
+
       <div>
         <div className='flex gap-1 items-center'>
           <div className='text-grey'>Looking for:</div>
           <div className={styles.sectionHeading}>{props.project.role}</div>
         </div>
       </div>
-
       <div className='flex flex-col w-[85%] gap-y-6'>
         {ruler}
 
@@ -32,21 +60,25 @@ const ProjectCard = (props: ProjectCardProps) => {
           <div className={styles.sectionParagraph}>{props.project.description.replace('<br/>', '\n')}</div>
         </div>
 
-        {ruler}
+        {props.project.skills && props.project.skills.length ? (
+          <>
+            {ruler}
 
-        <div className={styles.sectionContainer}>
-          <div className={styles.sectionHeading}>Skills</div>
-          <div className={styles.sectionBulletpoints}>
-            {props.project.skills.map((skill) => (
-              <div key={skill} className='flex items-center gap-2 text-grey'>
-                <div>
-                  <GiPlainCircle size={8} />
-                </div>
-                <div>{skill}</div>
+            <div className={styles.sectionContainer}>
+              <div className={styles.sectionHeading}>Skills</div>
+              <div className={styles.sectionBulletpoints}>
+                {props.project.skills.map((skill) => (
+                  <div key={skill} className='flex items-center gap-2 text-grey'>
+                    <div>
+                      <GiPlainCircle size={8} />
+                    </div>
+                    <div>{skill}</div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
+          </>
+        ) : null}
 
         {props.project.languages && props.project.languages.length ? (
           <>
@@ -92,7 +124,6 @@ const ProjectCard = (props: ProjectCardProps) => {
           </>
         ) : null}
       </div>
-
       <div className='absolute bottom-[3%] right-[5%] text-grey text-sm'>
         <div>by {props.project.creatorDisplayName}</div>
       </div>

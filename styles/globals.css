@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  background-color: hsl(240, 31%, 10%);
+}
+
 /* ======================== LOADING SPINNER ========================  */
 
 .loadingSpinner {

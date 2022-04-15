@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { getProjects } from '_api/projects';
+import { deleteProject, getProjects } from '_api/projects';
 import SearchBar from '_styled/SearchBar';
 import LoadingSpinner from '_styled/LoadingSpinner';
 import { filterProjects } from '_helpers/filterProjects';
@@ -9,6 +9,7 @@ import { Project } from '_types/Project';
 import CreateProjectButton from '_components/Community/Content/Projects/CreateProjectButton';
 import ProjectCard from '_components/Community/Content/Projects/ProjectCard';
 import ExpandedProjectCard from '_components/Community/Content/Projects/ExpandedProjectCard';
+import ProjectForm from '_components/Community/Content/Projects/ProjectForm';
 
 // type ProjectSectionButtonProps = {
 //   section: ProjectSection;
@@ -42,11 +43,12 @@ const Talent = () => {
   const [expandedProject, setExpandedProject] = useState<Project>();
 
   const [isAddingProject, setIsAddingProject] = useState(false);
+  const [projectToEdit, setProjectToEdit] = useState<Project>();
 
   useEffect(() => {
     const filteredProjects = filterProjects(projects, searchQuery);
     setFilteredProjects(filteredProjects);
-  }, [searchQuery]);
+  }, [projects, searchQuery]);
 
   const updateProjects = (projects: Project[]) => {
     setProjects(projects);
@@ -73,23 +75,57 @@ const Talent = () => {
             className='border-background border-4 hover:border-primaryDark rounded-lg'
             onClick={() => setExpandedProject(project)}
           >
-            <ProjectCard project={project} />
+            <ProjectCard
+              project={project}
+              setProjectToEdit={setProjectToEdit}
+              deleteProject={() => deleteProject(communityId, project.id, setProjects)}
+            />
           </div>
         ))}
       </div>
 
+      <CreateProjectButton onClick={() => setIsAddingProject(!isAddingProject)} />
+
       {expandedProject && (
         <div
-          className='absolute inset-0 bg-black bg-opacity-50 flex justify-center'
+          className='z-50 absolute inset-0 bg-black bg-opacity-90 flex justify-center'
           onClick={() => setExpandedProject(undefined)}
         >
           <div className='max-w-screen-md w-[95%] flex items-center'>
-            <ExpandedProjectCard project={expandedProject} />
+            <ExpandedProjectCard
+              project={expandedProject}
+              setProjectToEdit={setProjectToEdit}
+              deleteProject={() => deleteProject(communityId, expandedProject.id, setProjects)}
+            />
           </div>
         </div>
       )}
 
-      <CreateProjectButton onClick={() => setIsAddingProject(!isAddingProject)} />
+      {isAddingProject && (
+        <div
+          className='z-50 absolute inset-0 bg-black bg-opacity-80 flex justify-center'
+          onClick={() => setIsAddingProject(false)}
+        >
+          <div className='max-w-screen-md w-[95%] flex items-center'>
+            <ProjectForm onSubmit={() => setIsAddingProject(false)} setProjects={setProjects} />
+          </div>
+        </div>
+      )}
+
+      {projectToEdit && (
+        <div
+          className='z-50 absolute inset-0 bg-black bg-opacity-80 flex justify-center'
+          onClick={() => setProjectToEdit(undefined)}
+        >
+          <div className='max-w-screen-md w-[95%] flex items-center'>
+            <ProjectForm
+              project={projectToEdit}
+              onSubmit={() => setProjectToEdit(undefined)}
+              setProjects={setProjects}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

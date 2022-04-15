@@ -22,7 +22,7 @@ const Talent = () => {
   useEffect(() => {
     const filteredProfiles = filterProfiles(profiles, searchQuery);
     setFilteredProfiles(filteredProfiles);
-  }, [searchQuery]);
+  }, [profiles, searchQuery]);
 
   const updateProfiles = (profiles: Profile[]) => {
     setProfiles(profiles);
@@ -56,7 +56,7 @@ const Talent = () => {
 
       {expandedProfile && (
         <div
-          className='absolute inset-0 bg-black bg-opacity-50 flex justify-center'
+          className='absolute inset-0 bg-black bg-opacity-90 flex justify-center'
           onClick={() => setExpandedProfile(undefined)}
         >
           <div className='max-w-screen-md w-[95%] flex items-center'>

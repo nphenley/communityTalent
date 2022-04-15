@@ -12,31 +12,41 @@ import {
   setDoc,
   getDoc,
   deleteDoc,
+  where,
 } from 'firebase/firestore';
 import { Project } from '_types/Project';
 
-export const createProject = async (communityId: string, project: Project, setProjects: any) => {
-  const docRef = await addDoc(collection(firestore, 'projectUpvotes'), {});
-
-  await setDoc(doc(firestore, 'communities', communityId, 'projects', docRef.id), {
+// TODO:
+// Visit how project upvotes etc are done with this function?
+// Bit confused
+export const createProject = async (communityId: string, project: Partial<Project>, setProjects: any) => {
+  const docRef = await addDoc(collection(firestore, 'communities', communityId, 'projects'), {
     ...project,
     dateCreated: Timestamp.now(),
     dateLastUpdated: Timestamp.now(),
   });
+
+  await setDoc(doc(firestore, 'communities', communityId, 'projectUpvotes', `${project.walletGroupID}_${docRef.id}`), {
+    walletGroupID: project.walletGroupID,
+    projectId: docRef.id,
+  });
+
   await getProjects(communityId, setProjects);
 };
 
 export const updateProject = async (
   communityId: string,
   projectId: string,
-  data: Partial<Project>,
-  setProject: any
+  project: Partial<Project>,
+  setProjects: any
 ) => {
   await updateDoc(doc(firestore, 'communities', communityId, 'projects', projectId), {
-    ...data,
+    ...project,
+    dateCreated: Timestamp.now(),
     dateLastUpdated: Timestamp.now(),
   });
-  getProject(communityId, projectId, setProject);
+
+  await getProjects(communityId, setProjects);
 };
 
 export const getProjects = async (communityId: string, updateProjects: any) => {
@@ -51,6 +61,8 @@ export const getProject = async (communityId: string, projectId: string, setProj
   setProject({ ...data.data(), id: data.id } as Project);
 };
 
+// TODO:
+// Old
 export const toggleProjectUpvote = async (
   communityId: string,
   projectId: string,
@@ -81,6 +93,8 @@ export const toggleProjectUpvote = async (
   getProject(communityId, projectId, setProject);
 };
 
+// TODO:
+// Old
 export const getUserVote = async (projectId: string, walletGroupID: string, setUserVote: any) => {
   const upvote = await getDoc(doc(firestore, 'projectUpvotes', projectId, 'upvotes', walletGroupID));
   setUserVote(upvote.exists());
@@ -89,7 +103,11 @@ export const getUserVote = async (projectId: string, walletGroupID: string, setU
 export const deleteProject = async (communityId: string, projectId: string, setProjects: any) => {
   await Promise.all([
     deleteDoc(doc(firestore, 'communities', communityId, 'projects', projectId)),
-    deleteDoc(doc(firestore, 'projectUpvotes', projectId)),
+    getDocs(
+      query(collection(firestore, 'communities', communityId, 'projectUpvotes'), where('projectId', '==', projectId))
+    ).then((querySnap) => {
+      return Promise.all(querySnap.docs.map(async (doc) => deleteDoc(doc.ref)));
+    }),
   ]);
   getProjects(communityId, setProjects);
 };
