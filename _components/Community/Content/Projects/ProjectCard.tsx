@@ -1,12 +1,13 @@
 import { Project } from '_types/Project';
 import { AiFillTool } from 'react-icons/ai';
+import { GiPlainCircle } from 'react-icons/gi';
 
 type ProjectCardProps = {
   project: Project;
 };
 
 const ProjectCard = (props: ProjectCardProps) => {
-  const ruler = <hr className='border-primaryDark border-2' />;
+  const ruler = <hr className='border-primaryDark border-2 mb-2' />;
 
   return (
     <div className={styles.container}>
@@ -16,15 +17,34 @@ const ProjectCard = (props: ProjectCardProps) => {
         </div>
       )}
 
-      <div className='flex flex-col w-[80%] gap-y-6'>
+      <div>
+        <div className='flex gap-1 items-center'>
+          <div className='text-grey'>Looking for:</div>
+          <div className={styles.sectionHeading}>{props.project.role}</div>
+        </div>
+      </div>
+
+      <div className='flex flex-col w-[85%] gap-y-6'>
+        {ruler}
+
         <div className={styles.sectionContainer}>
-          <div className={styles.sectionParagraph}>{props.project.role}</div>
+          <div className={styles.sectionParagraph}>{props.project.description.replace('<br/>', '\n')}</div>
         </div>
 
         {ruler}
 
         <div className={styles.sectionContainer}>
-          <div className={styles.sectionParagraph}>{props.project.description.replace('<br/>', '\n')}</div>
+          <div className={styles.sectionHeading}>Skills</div>
+          <div className={styles.sectionBulletpoints}>
+            {props.project.skills.map((skill) => (
+              <div key={skill} className='flex items-center gap-2 text-grey'>
+                <div>
+                  <GiPlainCircle size={8} />
+                </div>
+                <div>{skill}</div>
+              </div>
+            ))}
+          </div>
         </div>
 
         {props.project.languages && props.project.languages.length ? (
@@ -44,6 +64,10 @@ const ProjectCard = (props: ProjectCardProps) => {
           </>
         ) : null}
       </div>
+
+      <div className='absolute bottom-[3%] right-[5%] text-grey text-sm'>
+        <div>by {props.project.creatorDisplayName}</div>
+      </div>
     </div>
   );
 };
@@ -51,11 +75,28 @@ const ProjectCard = (props: ProjectCardProps) => {
 export default ProjectCard;
 
 const styles = {
-  container: 'relative bg-backgroundDark rounded-lg shadow-lg py-11 flex flex-col items-center gap-6 h-full',
+  container: 'relative bg-backgroundDark rounded-lg shadow-lg pt-8 pb-8 flex flex-col items-center gap-6 h-full',
   imageContainer: 'rounded-full overflow-hidden flex justify-center',
-  sectionContainer: 'px-5 pt-3 pb-3 gap-5 flex flex-col',
+  sectionContainer: 'px-5 pb-3 gap-3 flex flex-col',
   sectionHeading: 'text-primary font-bold',
   sectionParagraph: 'whitespace-pre-wrap text-grey',
   sectionBulletpoints: 'gap-1 flex flex-col px-2 break-words text-grey',
   sectionTags: 'bg-primaryDark py-1.5 px-3 rounded-lg',
 };
+
+{
+  /* <div className='flex justify-center gap-6 mt-7'>
+        <div className='flex items-center gap-1.5 text-grey text-sm'>
+          <div>
+            <FaDiscord size={14} />
+          </div>
+          <div>richpepsi#0335</div>
+        </div>
+        <div className='flex items-center gap-1 text-grey text-sm'>
+          <div>
+            <AiOutlineTwitter size={14} />
+          </div>
+          <div>@richpepsi_</div>
+        </div>
+      </div> */
+}
