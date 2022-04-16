@@ -1,4 +1,4 @@
-import { getTokenAddressesForCommunity, getSolCommunityIdsForCommunity } from '_api/communities';
+import { getEthCommunityIdsForCommunity, getSolCommunityIdsForCommunity } from '_api/communities';
 import { getAddressesInWalletGroup } from '_api/walletGroups';
 
 export const getCommunityNFTImagesForWalletGroup = async (
@@ -7,19 +7,20 @@ export const getCommunityNFTImagesForWalletGroup = async (
   setNFTImages: any
 ) => {
   let walletAddresses;
-  let ethTokenAddresses;
+  let ethCommunityIds;
   let solCommunityIds;
   await Promise.all([
     (walletAddresses = await getAddressesInWalletGroup(walletGroupID)),
-    (ethTokenAddresses = await getTokenAddressesForCommunity(communityId)),
+    (ethCommunityIds = await getEthCommunityIdsForCommunity(communityId)),
     (solCommunityIds = await getSolCommunityIdsForCommunity(communityId)),
   ]);
+
   const images = await (
     await fetch('/api/images/', {
       method: 'POST',
       body: JSON.stringify({
         walletAddresses: walletAddresses,
-        ethTokenAddresses: ethTokenAddresses,
+        ethCommunityIds: ethCommunityIds,
         solCommunityIds: solCommunityIds,
       }),
     })

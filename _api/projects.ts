@@ -50,9 +50,6 @@ export const getProjects = async (walletGroupID: string, communityId: string, up
       const isUpvoted = (
         await getDoc(doc(firestore, 'communities', communityId, 'projectUpvotes', `${walletGroupID}_${docRef.id}`))
       ).exists();
-
-      console.log('getProjects', docRef.id, docRef.data()!.upvotes);
-
       return { ...docRef.data(), isUpvoted: isUpvoted, id: docRef.id } as Project;
     })
   );
@@ -66,7 +63,6 @@ export const toggleProjectUpvote = async (
   projectId: string,
   isUpvoted: boolean
 ) => {
-  console.log(projectId);
   if (!isUpvoted) {
     await Promise.all([
       setDoc(doc(firestore, 'communities', communityId, 'projectUpvotes', `${walletGroupID}_${projectId}`), {

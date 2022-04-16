@@ -50,7 +50,6 @@ const Talent = () => {
   useEffect(() => {
     const filteredProjects = filterProjects(projects, searchQuery);
     setFilteredProjects(filteredProjects);
-    console.log(projects);
   }, [projects, searchQuery]);
 
   const updateProjects = (projects: Project[]) => {

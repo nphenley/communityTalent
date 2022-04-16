@@ -49,8 +49,8 @@ const ProjectCard = (props: ProjectCardProps) => {
         <div className='absolute right-2 top-2 flex gap-1'>
           <div
             className={`flex ${
-              props.project.isUpvoted ? 'bg-primary text-white' : 'bg-primaryDark text-grey'
-            } rounded-full flex-row items-center gap-1 p-1.5 text-xs hover:bg-primary hover:text-white hover:cursor-pointer`}
+              props.project.isUpvoted ? 'text-primary' : 'text-grey'
+            } rounded-full flex-row items-center gap-1 p-1.5 text-xs hover:cursor-pointer`}
             onClick={async (e) => {
               e.stopPropagation();
               await props.toggleProjectUpvote();
