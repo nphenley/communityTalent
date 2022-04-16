@@ -4,7 +4,6 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        backgroundDarker: 'hsl(240, 31%, 5%)',
         backgroundDark: 'hsl(240, 31%, 10%)',
         background: 'hsl(240, 31%, 16%)',
         backgroundLight: 'hsl(240, 31%, 55%)',

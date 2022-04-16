@@ -1,7 +1,6 @@
 import { FaIdCard, FaBriefcase } from 'react-icons/fa';
 import SideBarIcon from '_components/Community/SideBar/SideBarIcon';
 import Image from 'next/image';
-import { profileNFTImages } from '_constants/dev';
 import { useContext } from 'react';
 import { ProfileContext } from '_contexts/ProfileContext';
 import { Sections } from '_enums/Sections';
@@ -20,12 +19,7 @@ const SideBar = (props: SideBarProps) => {
         <SideBarIcon
           icon={
             <div className='flex justify-center mb-4 overflow-hidden rounded-full'>
-              <Image
-                src={profile && profile.profilePicture ? profile.profilePicture : profileNFTImages[3]}
-                height={150}
-                width={150}
-                unoptimized={true}
-              />
+              <Image src={profile!.profilePicture!} height={150} width={150} unoptimized={true} />
             </div>
           }
           text={profile!.displayName}
@@ -35,7 +29,11 @@ const SideBar = (props: SideBarProps) => {
 
       <div className='flex flex-col grow gap-y-6'>
         <button onClick={() => props.setToggleState(Sections.PROJECTS)}>
-          <SideBarIcon icon={<FaBriefcase size='20' />} text={'PROJECTS'} active={props.toggleState === Sections.PROJECTS} />
+          <SideBarIcon
+            icon={<FaBriefcase size='20' />}
+            text={'PROJECTS'}
+            active={props.toggleState === Sections.PROJECTS}
+          />
         </button>
 
         <button onClick={() => props.setToggleState(Sections.TALENT)}>

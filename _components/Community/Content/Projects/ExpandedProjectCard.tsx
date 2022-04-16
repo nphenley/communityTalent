@@ -11,12 +11,11 @@ type ProjectCardProps = {
   toggleProjectUpvote: any;
   getProjects: any;
 };
-
 const ProjectCard = (props: ProjectCardProps) => {
   const ruler = <hr className='border-primaryDark border-2 mb-2' />;
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} onClick={(e) => e.stopPropagation()}>
       {props.project.isAdminProject && (
         <div className='absolute top-3 left-3 flex flex-row items-center gap-1 text-primary'>
           <AiFillTool size={20} />
@@ -69,6 +68,7 @@ const ProjectCard = (props: ProjectCardProps) => {
           <div className={styles.sectionHeading}>{props.project.role}</div>
         </div>
       </div>
+
       <div className='flex flex-col w-[85%] gap-y-6'>
         {ruler}
 
@@ -140,6 +140,7 @@ const ProjectCard = (props: ProjectCardProps) => {
           </>
         ) : null}
       </div>
+
       <div className='absolute bottom-[3%] right-[5%] text-grey text-sm'>
         <div>by {props.project.creatorDisplayName}</div>
       </div>
@@ -150,28 +151,11 @@ const ProjectCard = (props: ProjectCardProps) => {
 export default ProjectCard;
 
 const styles = {
-  container: 'relative bg-backgroundDark rounded-lg shadow-lg pt-8 pb-8 flex flex-col items-center gap-6 h-full',
-  imageContainer: 'rounded-full overflow-hidden flex justify-center',
+  container:
+    'relative bg-backgroundDark rounded-lg shadow-lg py-11 flex flex-col items-center gap-6 overflow-y-scroll max-h-[80%] w-full',
   sectionContainer: 'px-5 pb-3 gap-3 flex flex-col',
   sectionHeading: 'text-primary font-bold',
   sectionParagraph: 'whitespace-pre-wrap text-grey',
   sectionBulletpoints: 'gap-1 flex flex-col px-2 break-words text-grey',
   sectionTags: 'bg-primaryDark py-1.5 px-3 rounded-lg',
 };
-
-{
-  /* <div className='flex justify-center gap-6 mt-7'>
-        <div className='flex items-center gap-1.5 text-grey text-sm'>
-          <div>
-            <FaDiscord size={14} />
-          </div>
-          <div>richpepsi#0335</div>
-        </div>
-        <div className='flex items-center gap-1 text-grey text-sm'>
-          <div>
-            <AiOutlineTwitter size={14} />
-          </div>
-          <div>@richpepsi_</div>
-        </div>
-      </div> */
-}

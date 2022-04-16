@@ -33,9 +33,9 @@ export const getProfileFormOptions = async (setSelectOptions: any) => {
 };
 
 export const getProjectFormOptions = async (setSelectOptions: any) => {
-  const tags = await getDoc(doc(firestore, 'selectOptions', 'tags'));
+  const languages = await getDoc(doc(firestore, 'selectOptions', 'languages'));
 
-  const tagOptions: SelectOption[] = tags.data()!.array.map((key: string) => {
+  const languageOptions: SelectOption[] = languages.data()!.array.map((key: string) => {
     return {
       label: key,
       value: key,
@@ -43,6 +43,6 @@ export const getProjectFormOptions = async (setSelectOptions: any) => {
   });
 
   setSelectOptions({
-    tags: tagOptions,
+    languages: languageOptions,
   });
 };

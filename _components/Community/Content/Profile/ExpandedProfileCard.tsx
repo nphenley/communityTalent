@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import { profileNFTImages } from '_constants/dev';
 import { Profile } from '_types/Profile';
 import { GiPlainCircle } from 'react-icons/gi';
 import { MdWork } from 'react-icons/md';
@@ -35,16 +34,7 @@ const ExpandedProfileCard = (props: ExpandedProfileCardProps) => {
         <div className='flex justify-end'>
           <div className='flex'>
             <div className={styles.imageContainer}>
-              <Image
-                src={
-                  props.profile.profilePicture
-                    ? props.profile.profilePicture
-                    : profileNFTImages[props.profile.displayName.length % 5]
-                }
-                height={130}
-                width={130}
-                unoptimized={true}
-              />
+              <Image src={props.profile.profilePicture!} height={130} width={130} unoptimized={true} />
             </div>
           </div>
         </div>
@@ -171,7 +161,7 @@ export default ExpandedProfileCard;
 
 const styles = {
   container:
-    'relative w-full bg-backgroundDark rounded-lg shadow-lg py-11 flex flex-col items-center gap-6 overflow-y-scroll h-[90%]',
+    'relative w-full bg-backgroundDark rounded-lg shadow-lg py-11 flex flex-col items-center gap-6 overflow-y-scroll h-[80%] w-full',
   imageContainer: 'rounded-full overflow-hidden flex justify-center',
   sectionContainer: 'px-5 py-5 gap-5 flex flex-col',
   sectionHeading: 'text-primary font-bold',

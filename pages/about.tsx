@@ -25,8 +25,8 @@ export default function About() {
 
           <h1 className={styles.headingText}>The Founders</h1>
           <div className={styles.profilesContainer}>
-            <ProfileCard profile={richProfile} alwaysExpanded />
-            <ProfileCard profile={somProfile} alwaysExpanded />
+            <ProfileCard profile={richProfile} />
+            <ProfileCard profile={somProfile} />
           </div>
 
           <h1 className={styles.headingText}>Frequently Asked Questions</h1>
@@ -64,7 +64,8 @@ const about =
 const qAndAs: { question: string; answer: string }[] = [
   {
     question: 'Which blockchain networks does cTalent support?',
-    answer: 'We currently support most EVM chains and Solana. We plan to continue to expand and add networks to our platform.',
+    answer:
+      'We currently support most EVM chains and Solana. We plan to continue to expand and add networks to our platform.',
   },
   {
     question: 'I have multiple wallets. How can I link them?',

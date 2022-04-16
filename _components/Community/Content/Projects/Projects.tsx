@@ -1,151 +1,156 @@
-import { useEffect, useState, useContext } from 'react';
-import { Project } from '_types/Project';
-import { getProjects } from '_api/projects';
-import ProjectCard from '_components/Community/Content/Projects/ProjectCard';
-import CreateProjectButton from '_components/Community/Content/Projects/CreateProjectButton';
-import ProjectForm from '_components/Community/Content/Projects/ProjectForm';
-import { CommunityContext } from '_contexts/CommunityContext';
-import { WalletGroupContext } from '_contexts/WalletGroupContext';
+import { useRouter } from 'next/router';
+import { deleteProject, getProjects, toggleProjectUpvote } from '_api/projects';
+import SearchBar from '_styled/SearchBar';
+import LoadingSpinner from '_styled/LoadingSpinner';
+import { filterProjects } from '_helpers/filterProjects';
 import { ProjectSection } from '_enums/ProjectSection';
-import { ProfileContext } from '_contexts/ProfileContext';
-import ToggleButton from '_styled/ToggleButton';
+import { useContext, useEffect, useState } from 'react';
+import { Project } from '_types/Project';
+import CreateProjectButton from '_components/Community/Content/Projects/CreateProjectButton';
+import ProjectCard from '_components/Community/Content/Projects/ProjectCard';
+import ExpandedProjectCard from '_components/Community/Content/Projects/ExpandedProjectCard';
+import ProjectForm from '_components/Community/Content/Projects/ProjectForm';
+import { WalletGroupContext } from '_contexts/WalletGroupContext';
 
-const Projects = () => {
-  const communityId = useContext(CommunityContext);
+// type ProjectSectionButtonProps = {
+//   section: ProjectSection;
+//   currentlyActiveSection: ProjectSection;
+//   setProjectSection: any;
+//   text: string;
+// };
+
+// const ProjectSectionButton = (props: ProjectSectionButtonProps) => {
+//   let className =
+//     'font-medium px-5 py-4 rounded-lg' +
+//     (props.currentlyActiveSection === props.section
+//       ? ' text-primary bg-backgroundDark'
+//       : ' text-grey bg-backgroundDark');
+//   return (
+//     <button onClick={() => props.setProjectSection(props.section)} className={className}>
+//       {props.text}
+//     </button>
+//   );
+// };
+
+const Talent = () => {
+  const router = useRouter();
+  const communityId = router.query.communityId as string;
   const walletGroupID = useContext(WalletGroupContext);
-  const userProfile = useContext(ProfileContext);
+
+  const [loadingProjects, setLoadingProjects] = useState(true);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const [expandedProject, setExpandedProject] = useState<Project>();
 
   const [isAddingProject, setIsAddingProject] = useState(false);
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [lfProjects, setLfProjects] = useState<Project[]>([]);
-  const [lfHire, setLfHire] = useState<Project[]>([]);
-  const [isYourProjects, setIsYourProjects] = useState(false);
-  const [projectSection, setProjectSection] = useState<ProjectSection>(ProjectSection.LFPROJECTS);
+  const [projectToEdit, setProjectToEdit] = useState<Project>();
 
   useEffect(() => {
-    getProjects(communityId, setProjects);
-  }, [communityId, isAddingProject]);
+    const filteredProjects = filterProjects(projects, searchQuery);
+    setFilteredProjects(filteredProjects);
+  }, [projects, searchQuery]);
+
+  const updateProjects = (projects: Project[]) => {
+    setProjects(projects);
+    setFilteredProjects(projects);
+    setLoadingProjects(false);
+  };
 
   useEffect(() => {
-    const lfProjects = projects.filter((project) => !project.hiring);
-    setLfProjects(lfProjects);
-    const lfHire = projects.filter((project) => project.hiring);
-    setLfHire(lfHire);
+    getProjects(walletGroupID, communityId, updateProjects);
+  }, [communityId]);
+
+  useEffect(() => {
+    if (!expandedProject) return;
+    const updatedExpandedProject = projects.find((project) => project.id === expandedProject.id);
+    setExpandedProject(updatedExpandedProject);
   }, [projects]);
 
-  const navBar = (
-    <div className='flex grid grid-cols-2 gap-1 relative'>
-      <div className='flex flex-row-reverse'>
-        <ProjectSectionButton
-          section={ProjectSection.LFPROJECTS}
-          currentlyActiveSection={projectSection}
-          setProjectSection={setProjectSection}
-          text='Looking For Projects'
-        />
-      </div>
-      <div className='flex flex-row'>
-        <ProjectSectionButton
-          section={ProjectSection.LFHIRE}
-          currentlyActiveSection={projectSection}
-          setProjectSection={setProjectSection}
-          text='Looking to Hire'
-        />
-      </div>
-      <button className='absolute top-[50%] translate-y-[-50%] right-0 font-medium'>
-        <div className='flex items-center gap-2'>
-          <ToggleButton onClick={() => setIsYourProjects(!isYourProjects)} size='small' />
-          <label className={`text-xs ${isYourProjects ? ' text-primary' : ' text-grey'}`}>Your Projects</label>
-        </div>
-      </button>
-    </div>
-  );
-
-  return (
-    <div className={styles.container}>
-      {navBar}
-
-      <div className='grid gap-3 grid-cols-2'>
-        {projectSection === ProjectSection.LFPROJECTS ? (
-          <>
-            {lfProjects.map((project) =>
-              isYourProjects ? (
-                project.walletGroupID === walletGroupID ? (
-                  <ProjectCard
-                    key={project.id}
-                    project={project}
-                    walletGroupID={walletGroupID}
-                    admin={userProfile!.admin}
-                    setProjects={setProjects}
-                  />
-                ) : null
-              ) : (
-                <ProjectCard
-                  key={project.id}
-                  project={project}
-                  walletGroupID={walletGroupID}
-                  admin={userProfile!.admin}
-                  setProjects={setProjects}
-                />
-              )
-            )}
-          </>
-        ) : projectSection === ProjectSection.LFHIRE ? (
-          <>
-            {lfHire.map((project) =>
-              isYourProjects ? (
-                project.walletGroupID === walletGroupID ? (
-                  <ProjectCard
-                    key={project.id}
-                    project={project}
-                    walletGroupID={walletGroupID}
-                    admin={userProfile!.admin}
-                    setProjects={setProjects}
-                  />
-                ) : null
-              ) : (
-                <ProjectCard
-                  key={project.id}
-                  project={project}
-                  walletGroupID={walletGroupID}
-                  admin={userProfile!.admin}
-                  setProjects={setProjects}
-                />
-              )
-            )}
-          </>
-        ) : null}
+  return loadingProjects ? (
+    <LoadingSpinner />
+  ) : (
+    <div className='flex flex-col gap-2 lg:gap-4'>
+      <div className='flex justify-center lg:justify-end'>
+        <SearchBar onChange={(e: any) => setSearchQuery(e.target.value)} placeholder='Search' />
       </div>
 
-      {isAddingProject ? <ProjectForm setIsAddingProject={setIsAddingProject} setProjects={setProjects} /> : null}
+      <div className='grid grid-cols-1 gap-2 lg:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-3 4xl:grid-cols-4 5xl:grid-cols-5'>
+        {filteredProjects.map((project) => (
+          <div
+            key={project.id}
+            className='border-background border-4 hover:border-primaryDark rounded-lg'
+            onClick={() => setExpandedProject(project)}
+          >
+            <ProjectCard
+              project={project}
+              isProjectByUser={project.walletGroupID === walletGroupID}
+              setProjectToEdit={setProjectToEdit}
+              deleteProject={() => deleteProject(communityId, project.id)}
+              toggleProjectUpvote={() => toggleProjectUpvote(walletGroupID, communityId, project.id, project.isUpvoted)}
+              getProjects={() => getProjects(walletGroupID, communityId, updateProjects)}
+            />
+          </div>
+        ))}
+      </div>
 
       <CreateProjectButton onClick={() => setIsAddingProject(!isAddingProject)} />
+
+      {expandedProject && (
+        <div
+          className='z-50 absolute inset-0 bg-black bg-opacity-90 flex justify-center'
+          onClick={() => setExpandedProject(undefined)}
+        >
+          <div className='max-w-screen-md w-[95%] flex items-center'>
+            <ExpandedProjectCard
+              project={expandedProject}
+              isProjectByUser={expandedProject.walletGroupID === walletGroupID}
+              setProjectToEdit={setProjectToEdit}
+              deleteProject={() => deleteProject(communityId, expandedProject.id)}
+              toggleProjectUpvote={() =>
+                toggleProjectUpvote(walletGroupID, communityId, expandedProject.id, expandedProject.isUpvoted)
+              }
+              getProjects={() => getProjects(walletGroupID, communityId, updateProjects)}
+            />
+          </div>
+        </div>
+      )}
+
+      {isAddingProject && (
+        <div
+          className='z-50 absolute inset-0 bg-black bg-opacity-80 flex justify-center'
+          onClick={() => setIsAddingProject(false)}
+        >
+          <div className='max-w-screen-md w-[95%] flex items-center'>
+            <ProjectForm
+              onSubmit={async () => {
+                await getProjects(walletGroupID, communityId, updateProjects);
+                setProjectToEdit(undefined);
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      {projectToEdit && (
+        <div
+          className='z-50 absolute inset-0 bg-black bg-opacity-80 flex justify-center'
+          onClick={() => setProjectToEdit(undefined)}
+        >
+          <div className='max-w-screen-md w-[95%] flex items-center'>
+            <ProjectForm
+              project={projectToEdit}
+              onSubmit={async () => {
+                await getProjects(walletGroupID, communityId, updateProjects);
+                setProjectToEdit(undefined);
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default Projects;
-
-const styles = {
-  container: 'flex flex-col gap-y-4 relative',
-  tabButton: 'font-medium px-5 py-4 rounded-lg',
-};
-
-type ProjectSectionButtonProps = {
-  section: ProjectSection;
-  currentlyActiveSection: ProjectSection;
-  setProjectSection: any;
-  text: string;
-};
-
-const ProjectSectionButton = (props: ProjectSectionButtonProps) => {
-  let className =
-    styles.tabButton +
-    (props.currentlyActiveSection === props.section
-      ? ' text-primary bg-backgroundDark'
-      : ' text-grey bg-backgroundDark');
-  return (
-    <button onClick={() => props.setProjectSection(props.section)} className={className}>
-      {props.text}
-    </button>
-  );
-};
+export default Talent;
