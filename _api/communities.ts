@@ -1,16 +1,16 @@
 import { firestore } from '_firebase/config';
 import { collection, getDocs } from 'firebase/firestore';
 
-export const getEthCommunityIdsForCommunity = async (communityId: string): Promise<string[]> => {
+export const getEthCollectionIdsForCommunity = async (communityId: string): Promise<string[]> => {
   let ethCommunityIds: string[] = [];
-  const docs = await getDocs(collection(firestore, 'communities', communityId, 'ethCommunityIds'));
+  const docs = await getDocs(collection(firestore, 'communities', communityId, 'ethCollectionIds'));
   docs.forEach((doc) => ethCommunityIds.push(doc.id));
   return ethCommunityIds;
 };
 
-export const getSolCommunityIdsForCommunity = async (communityId: string): Promise<string[]> => {
+export const getSolCollectionIdsForCommunity = async (communityId: string): Promise<string[]> => {
   let solCommunityIds: string[] = [];
-  const docs = await getDocs(collection(firestore, 'communities', communityId, 'solCommunityIds'));
+  const docs = await getDocs(collection(firestore, 'communities', communityId, 'solCollectionIds'));
   docs.forEach((doc) => solCommunityIds.push(doc.id));
   return solCommunityIds;
 };

@@ -57,7 +57,7 @@ const WalletGroups = (props: WalletGroupsProps) => {
   }, [props.walletGroupID]);
 
   const walletsInGroupList = (
-    <div className='px-4 py-3 border-4 rounded-lg border-backgroundDark'>
+    <div className='p-12 rounded-lg bg-backgroundDark'>
       <div className='flex justify-center mb-3 text-lg'>Wallets in group:</div>
       <div>
         {walletsInGroup.map((wallet) => (

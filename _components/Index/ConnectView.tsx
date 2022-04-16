@@ -17,17 +17,11 @@ const ConnectView = () => {
 
   const connectOptions = (
     <div className='absolute inset-0 flex items-center justify-center'>
-      <div className='flex flex-col gap-2 p-6 text-white bg-backgroundDark rounded-lg bg'>
-        <button
-          className='p-4 rounded-lg bg-primary hover:bg-primaryLight'
-          onClick={() => connect('eth')}
-        >
+      <div className='flex flex-col gap-5 p-8 text-white bg-backgroundDark rounded-lg bg'>
+        <button className='p-4 rounded-lg bg-primary hover:bg-primaryLight' onClick={() => connect('eth')}>
           Connect on ETH, via Metamask
         </button>
-        <button
-          className='p-4 rounded-lg bg-primary hover:bg-primaryLight'
-          onClick={() => connect('sol')}
-        >
+        <button className='p-4 rounded-lg bg-primary hover:bg-primaryLight' onClick={() => connect('sol')}>
           Connect on Solana, via Phantom
         </button>
       </div>

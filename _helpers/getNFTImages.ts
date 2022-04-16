@@ -1,5 +1,5 @@
 import { doc, getDoc } from 'firebase/firestore';
-import { getEthCommunityIdsForCommunity, getSolCommunityIdsForCommunity } from '_api/communities';
+import { getEthCollectionIdsForCommunity, getSolCollectionIdsForCommunity } from '_api/communities';
 import { getAddressesInWalletGroup } from '_api/walletGroups';
 import { collectionsFirestore } from '_firebase/config';
 
@@ -13,8 +13,8 @@ export const getCommunityNFTImagesForWalletGroup = async (
   let solCollectionIds;
   await Promise.all([
     (walletAddresses = await getAddressesInWalletGroup(walletGroupID)),
-    (ethCollectionIds = await getEthCommunityIdsForCommunity(communityId)),
-    (solCollectionIds = await getSolCommunityIdsForCommunity(communityId)),
+    (ethCollectionIds = await getEthCollectionIdsForCommunity(communityId)),
+    (solCollectionIds = await getSolCollectionIdsForCommunity(communityId)),
   ]);
 
   const nfts:

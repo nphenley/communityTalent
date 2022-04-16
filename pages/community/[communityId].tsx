@@ -119,5 +119,5 @@ export default Community;
 
 const styles = {
   container: 'flex h-screen text-white break-words bg-background',
-  noProfileContainer: 'flex flex-col gap-10 w-full overflow-y-scroll pb-20',
+  noProfileContainer: 'flex flex-col gap-10 w-full items-center overflow-y-scroll pb-20',
 };
