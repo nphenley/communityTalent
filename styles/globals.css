@@ -109,13 +109,15 @@ body {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: hsla(240, 41%, 30%, 0.5);
+  /* background: hsla(240, 41%, 30%, 0.5); */
+  background-color: hsl(325, 80%, 16%) !important;
+
   border-radius: 10px;
   height: 50px !important;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsla(240, 41%, 30%, 1);
+  /* background: hsla(240, 41%, 30%, 1); */
   border-radius: 10px;
   height: 50px !important;
 }
