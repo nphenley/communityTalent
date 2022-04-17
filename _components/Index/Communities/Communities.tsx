@@ -33,17 +33,23 @@ const Communities = (props: CommunitiesProps) => {
 
   const publicCard = (
     <Link href={`community/web3`}>
-      <button className='w-[19%] h-72 flex flex-col gap-2 items-center justify-center bg-gradient-to-tr from-backgroundDark to-primaryDark pt-8 px-8 pb-8 rounded-lg'>
-        <div className={`text-primary text-2xl font-bold break-all stroke-black`}>All</div>
-        <div className='flex justify-center overflow-hidden rounded-full'>
-          <Image
-            src={'assets/communityTalent.png'}
-            height={150}
-            width={150}
-            placeholder={'blur'}
-            blurDataURL={'assets/communityTalent.png'}
-            unoptimized={true}
-          />
+      <button className='w-[19%] h-72 select-none relative bg-gradient-to-tr from-backgroundDark to-primaryDark px-8 py-8 rounded-lg flex flex-col items-center border-background border-4 hover:border-primaryDark'>
+        <div
+          className={`h-24 w-full flex flex-col-reverse justify-center text-primary font-bold break-words uppercase leading-relaxed text-lg`}
+        >
+          All
+        </div>
+        <div className='flex flex-col px-5 relative grow w-full'>
+          <div className='flex justify-center overflow-hidden rounded-full relative aspect-square'>
+            <Image
+              src={'assets/communityTalent.png'}
+              height={150}
+              width={150}
+              placeholder={'blur'}
+              blurDataURL={'assets/communityTalent.png'}
+              unoptimized={true}
+            />
+          </div>
         </div>
       </button>
     </Link>
