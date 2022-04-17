@@ -47,5 +47,5 @@ const SideBar = (props: SideBarProps) => {
 export default SideBar;
 
 const styles = {
-  container: 'py-16 bg-backgroundDark shadow-lg text-primary flex flex-col gap-8 items-center h-screen',
+  container: 'select-none py-16 bg-backgroundDark shadow-lg text-primary flex flex-col gap-8 items-center h-screen',
 };

@@ -53,7 +53,7 @@ const NavBar = (props: NavBarProps) => {
 
   const disconnected = <div className='flex justify-center'>{title}</div>;
 
-  return <div className='w-full p-8 text-primary'>{props.isAuthenticated ? connected : disconnected}</div>;
+  return <div className='select-none w-full p-8 text-primary'>{props.isAuthenticated ? connected : disconnected}</div>;
 };
 
 export default NavBar;

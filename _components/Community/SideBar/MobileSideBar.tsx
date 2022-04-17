@@ -16,7 +16,7 @@ const MobileSideBar = (props: SideBarProps) => {
   const profile = useContext(ProfileContext);
 
   let containerClass =
-    'absolute w-full z-50 bg-backgroundDark shadow-lg text-primary flex flex-col items-center min-h-screen ease-in-out duration-300';
+    'select-none absolute w-full z-50 bg-backgroundDark shadow-lg text-primary flex flex-col items-center min-h-screen ease-in-out duration-300';
   containerClass += props.isOpen ? ' translate-x-0' : ' -translate-x-full';
 
   const toggleState = (toggleState: Sections) => {

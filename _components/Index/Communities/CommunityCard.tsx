@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+
 import { Community } from '_types/Community';
 
 type CommunityCardProps = {
@@ -8,33 +9,30 @@ type CommunityCardProps = {
 };
 
 const CommunityCard = (props: CommunityCardProps) => {
+  const className = `select-none relative bg-backgroundDark p-4 py-8 rounded-lg h-72 flex flex-col items-center ${
+    props.community.isOwnedByUser ? 'grayscale-0' : 'grayscale'
+  }`;
+
   return (
     <Link href={`community/${props.community.id}`}>
-      <div className={styles.container}>
-        <button
-          className={`flex flex-col items-center gap-y-8 ${
-            props.community.isOwnedByUser ? 'grayscale-0' : 'grayscale'
-          }`}
-        >
-          <div className={`text-primary font-bold break-all `}>{props.community.name}</div>
-          <div className='flex justify-center overflow-hidden rounded-full'>
+      <button className={className}>
+        <div className={`h-12 px-2 w-full flex flex-col-reverse justify-center text-primary font-bold break-words`}>
+          {props.community.name}
+        </div>
+        <div className='flex flex-col justify-center px-6 relative grow w-full'>
+          <div className='flex justify-center overflow-hidden rounded-full relative aspect-square border-4 border-primary'>
             <Image
               src={props.community.image}
-              height={150}
-              width={150}
+              layout='fill'
               placeholder={'blur'}
               blurDataURL={props.community.image}
               unoptimized={true}
             />
           </div>
-        </button>
-      </div>
+        </div>
+      </button>
     </Link>
   );
 };
 
 export default CommunityCard;
-
-const styles = {
-  container: 'bg-backgroundDark pt-6 px-8 pb-8 rounded-lg',
-};
