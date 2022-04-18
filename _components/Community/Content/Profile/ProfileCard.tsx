@@ -8,7 +8,7 @@ type ProfileCardProps = {
 };
 
 const ProfileCard = (props: ProfileCardProps) => {
-  const ruler = <hr className='border-primaryDark border-2' />;
+  const ruler = <hr className='border-2 border-primaryDark' />;
 
   const lookingForProjectBadge = (
     <div className='flex items-center justify-center'>
@@ -24,7 +24,7 @@ const ProfileCard = (props: ProfileCardProps) => {
   return (
     <div className={styles.container}>
       {props.profile.admin && (
-        <div className='absolute top-3 left-3 flex flex-row items-center gap-1 text-primary'>
+        <div className='absolute flex flex-row items-center gap-1 top-3 left-3 text-primary'>
           <AiFillTool size={20} />
         </div>
       )}
@@ -40,13 +40,7 @@ const ProfileCard = (props: ProfileCardProps) => {
 
         <div className='flex flex-col justify-center h-full gap-1 mt-1 break-words'>
           <div className='font-bold break-words'>{props.profile.displayName}</div>
-          {props.profile.twitterHandle && (
-            <div className='break-words text-grey'>
-              {props.profile.twitterHandle.startsWith('@')
-                ? props.profile.twitterHandle
-                : '@' + props.profile.twitterHandle}
-            </div>
-          )}
+          {props.profile.twitterHandle && <div className='break-words text-grey'>{props.profile.twitterHandle}</div>}
           {props.profile.discordUsername && (
             <div className='break-words text-grey'>{props.profile.discordUsername}</div>
           )}

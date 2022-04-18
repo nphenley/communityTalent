@@ -6,6 +6,8 @@ import CommunityCard from '_components/Index/Communities/CommunityCard';
 import Image from 'next/image';
 import Link from 'next/link';
 import { privateCommunities } from '_constants/privateCommunities';
+import { getCommunitiesForWalletGroup } from '_api/communities';
+import LoadingSpinner from '_styled/LoadingSpinner';
 
 type CommunitiesProps = {
   walletGroupID: string;
@@ -13,11 +15,13 @@ type CommunitiesProps = {
 
 const Communities = (props: CommunitiesProps) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [loadingUserCommunities, setLoadingUserCommunities] = useState(true);
 
   const [filteredCommunities, setFilteredCommunities] = useState<Community[]>([]);
 
   useEffect(() => {
-    // Use Wallet to figure out which communities man's has unlocked
+    setLoadingUserCommunities(true);
+    getCommunitiesForWalletGroup(props.walletGroupID, setFilteredCommunities, setLoadingUserCommunities);
   }, [props.walletGroupID]);
 
   useEffect(() => {
@@ -39,8 +43,8 @@ const Communities = (props: CommunitiesProps) => {
         >
           All
         </div>
-        <div className='flex flex-col px-5 relative grow w-full'>
-          <div className='flex justify-center overflow-hidden rounded-full relative aspect-square'>
+        <div className='relative flex flex-col w-full px-5 grow'>
+          <div className='relative flex justify-center overflow-hidden rounded-full aspect-square'>
             <Image
               src={'assets/communityTalent.png'}
               height={150}
@@ -56,20 +60,26 @@ const Communities = (props: CommunitiesProps) => {
   );
 
   return (
-    <div className={styles.container}>
-      <div className={styles.sectionsContainer}>
-        {toolbar}
+    <>
+      {!loadingUserCommunities ? (
+        <div className={styles.container}>
+          <div className={styles.sectionsContainer}>
+            {toolbar}
 
-        <div className={styles.sectionContainer}>
-          {publicCard}
-          <div className={styles.communitiesContainer}>
-            {filteredCommunities.map((community) => (
-              <CommunityCard key={community.id} community={community} walletGroupID={props.walletGroupID} />
-            ))}
+            <div className={styles.sectionContainer}>
+              {publicCard}
+              <div className={styles.communitiesContainer}>
+                {filteredCommunities.map((community) => (
+                  <CommunityCard key={community.id} community={community} walletGroupID={props.walletGroupID} />
+                ))}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      ) : (
+        <LoadingSpinner />
+      )}
+    </>
   );
 };
 
