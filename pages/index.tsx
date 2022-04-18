@@ -7,7 +7,6 @@ import NavBar from '_components/Index/Navbar';
 import WalletGroups from '_components/Index/WalletGroups/WalletGroups';
 import { subscribeToOrCreateWalletGroupID } from '_api/walletGroups';
 import LoadingSpinner from '_styled/LoadingSpinner';
-import DefaultProfileForm from '_components/Index/DefaultProfileForm';
 
 const nextHead = (
   <Head>
@@ -18,7 +17,6 @@ const nextHead = (
 
 export enum HomeSection {
   COMMUNITIES,
-  DEFAULTPROFILE,
   WALLETGROUPS,
 }
 
@@ -48,9 +46,7 @@ const Home = () => {
     <Communities walletGroupID={walletGroupID!} />
   ) : homeSection === HomeSection.WALLETGROUPS ? (
     <WalletGroups walletGroupID={walletGroupID!} />
-  ) : (
-    <DefaultProfileForm walletGroupID={walletGroupID!} />
-  );
+  ) : null;
 
   return (
     <div className={styles.container}>

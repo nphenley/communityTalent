@@ -58,12 +58,12 @@ const WalletGroups = (props: WalletGroupsProps) => {
 
   const walletsInGroupList = (
     <div className='p-12 rounded-lg bg-backgroundDark'>
-      <div className='flex justify-center mb-3 text-lg'>Wallets in group:</div>
+      <div className='flex justify-center mb-3 text-lg text-primary'>Wallets in group:</div>
       <div>
         {walletsInGroup.map((wallet) => (
           <div key={wallet} className='flex justify-between gap-2'>
-            <div>{wallet}</div>
-            <button onClick={() => unlinkWalletAddress(props.walletGroupID, wallet)}>
+            <div className=''>{wallet}</div>
+            <button className='text-primary' onClick={() => unlinkWalletAddress(props.walletGroupID, wallet)}>
               <FaUnlink size={14} />
             </button>
           </div>

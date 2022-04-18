@@ -21,6 +21,7 @@ import { NFTImagesContext } from '_contexts/NFTImagesContext';
 
 type ProfileFormProps = {
   profile?: Profile;
+  publicProfile?: Profile;
   onSubmit?: () => void;
 };
 
@@ -39,6 +40,8 @@ const ProfileForm = (props: ProfileFormProps) => {
 
   const [loadingProfileFormSelectOptions, setLoadingProfileFormSelectOptions] = useState(true);
   const [profileFormSelectOptions, setProfileFormSelectOptions] = useState<ProfileFormSelectOptions>();
+
+  const [profile, setProfile] = useState<Profile | undefined>(props.profile);
 
   const {
     fields: skillsFields,
@@ -74,16 +77,16 @@ const ProfileForm = (props: ProfileFormProps) => {
   }, []);
 
   useEffect(() => {
-    if (!props.profile) return;
-    if (props.profile.discordUsername) setShowDiscord(true);
-    if (props.profile.twitterHandle) setShowTwitter(true);
-    if (props.profile.skills && props.profile.skills.length) setShowSkills(true);
-    if (props.profile.experience) setShowExperience(true);
-    if (props.profile.languages && props.profile.languages.length) setShowLanguages(true);
-    if (props.profile.relevantLinks && props.profile.relevantLinks.length) setShowLinks(true);
-    if (props.profile.timezone) setShowTimezone(true);
-    reset(props.profile);
-  }, [props.profile]);
+    if (!profile) return;
+    if (profile.discordUsername) setShowDiscord(true);
+    if (profile.twitterHandle) setShowTwitter(true);
+    if (profile.skills && profile.skills.length) setShowSkills(true);
+    if (profile.experience) setShowExperience(true);
+    if (profile.languages && profile.languages.length) setShowLanguages(true);
+    if (profile.relevantLinks && profile.relevantLinks.length) setShowLinks(true);
+    if (profile.timezone) setShowTimezone(true);
+    reset(profile);
+  }, [profile]);
 
   const onSubmit = async (data: any) => {
     if (!showDiscord) data.discordUsername = '';
@@ -95,7 +98,7 @@ const ProfileForm = (props: ProfileFormProps) => {
     if (!showLinks) data.relevantLinks = [];
 
     for (const property in data) if (data[property] === undefined) data[property] = [];
-    if (!data.twitterHandle.startsWith('@')) {
+    if (data.twitterHandle && !data.twitterHandle.startsWith('@')) {
       data.twitterHandle = '@' + data.twitterHandle;
     }
     data.relevantLinks.forEach((link: string) => {
@@ -110,19 +113,39 @@ const ProfileForm = (props: ProfileFormProps) => {
 
   let title;
   let description;
+  let importProfileButton;
 
-  if (!props.profile) {
+  if (!profile) {
     title = <h1 className='mb-4 text-3xl font-bold text-center text-primary'>Create Profile</h1>;
     description = (
       <p className='mb-4 text-center'>This is your first time connecting to this community, please create a profile.</p>
     );
   } else {
     title = <h1 className='mb-4 text-3xl font-bold text-center text-primary'>Edit Profile</h1>;
-
     description = (
       <p className='mb-4 text-center'>
         You currently have a profile in this community, please edit it at your leisure.
       </p>
+    );
+  }
+
+  if (props.publicProfile) {
+    title = <h1 className='mb-4 text-3xl font-bold text-center text-primary'>Create Profile</h1>;
+    description = (
+      <p className='mb-4 text-center'>
+        This is your first time connecting to this community, please create a profile. Would you like to import your
+        public profile?
+      </p>
+    );
+
+    importProfileButton = (
+      <button
+        onClick={() => setProfile(props.publicProfile)}
+        className='p-4 text-white rounded-lg bg-primary hover:bg-primaryLight hover:cursor-pointer'
+        type='button'
+      >
+        Import
+      </button>
     );
   }
 
@@ -134,6 +157,7 @@ const ProfileForm = (props: ProfileFormProps) => {
         <form className='flex flex-col w-full max-w-screen-sm gap-8 px-10 sm:px-0' onSubmit={handleSubmit(onSubmit)}>
           {title}
           {description}
+          {importProfileButton}
 
           <FormField
             label='Display Name'
@@ -152,7 +176,7 @@ const ProfileForm = (props: ProfileFormProps) => {
             formField={
               <ImageSelectField
                 control={control}
-                defaultValue={props.profile ? props.profile.profilePicture : undefined}
+                defaultValue={profile ? profile.profilePicture : undefined}
                 name='profilePicture'
                 register={register}
                 imageOptions={imageOptions}
@@ -177,7 +201,7 @@ const ProfileForm = (props: ProfileFormProps) => {
                 label='Tags'
                 options={profileFormSelectOptions!.tags}
                 name='tags'
-                defaultValues={props.profile ? props.profile.tags : undefined}
+                defaultValues={profile ? profile.tags : undefined}
               />
             }
           />
@@ -225,7 +249,7 @@ const ProfileForm = (props: ProfileFormProps) => {
                     label='Timezone'
                     options={profileFormSelectOptions!.timezones}
                     name='timezone'
-                    defaultValue={props.profile ? props.profile.timezone : undefined}
+                    defaultValue={profile ? profile.timezone : undefined}
                   />
                 }
               />
@@ -277,7 +301,7 @@ const ProfileForm = (props: ProfileFormProps) => {
                     label='Languages'
                     options={profileFormSelectOptions!.languages}
                     name='languages'
-                    defaultValues={props.profile && props.profile.languages ? props.profile.languages : []}
+                    defaultValues={profile && profile.languages ? profile.languages : []}
                   />
                 }
               />

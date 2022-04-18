@@ -17,11 +17,11 @@ import { ProfileContext } from '_contexts/ProfileContext';
 import { Sections } from '_enums/Sections';
 import ProfileForm from '_components/Community/Content/Profile/ProfileForm';
 import { getCommunityNFTImagesForWalletGroup } from '_helpers/getNFTImages';
+import { getProfileFromPublicCommunity } from '_api/communities';
 
 const Community = () => {
   const router = useRouter();
   const communityId = router.query.communityId as string;
-
   const { isAuthUndefined, isAuthenticated, user } = useMoralis();
 
   const [loadingNFTImages, setLoadingNFTImages] = useState(true);
@@ -29,6 +29,7 @@ const Community = () => {
 
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [profile, setProfile] = useState<Profile>();
+  const [publicProfile, setPublicProfile] = useState<Profile>();
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [toggleState, setToggleState] = useState<Sections>(Sections.TALENT);
@@ -64,6 +65,8 @@ const Community = () => {
           })();
     });
 
+    getProfileFromPublicCommunity(walletGroupID, setPublicProfile);
+
     const unsubToProfile = subscribeToCommunityProfile(communityId, walletGroupID, (profile: Profile) => {
       setProfile(profile);
       setLoadingProfile(false);
@@ -87,7 +90,7 @@ const Community = () => {
             ) : !profile ? (
               <div className={styles.noProfileContainer}>
                 <TopBar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={undefined} hideHamburgerMenu={true} />
-                <ProfileForm />
+                <ProfileForm publicProfile={publicProfile} />
               </div>
             ) : (
               <ProfileContext.Provider value={profile}>
@@ -103,7 +106,7 @@ const Community = () => {
                   />
                 </div>
 
-                <div className='flex flex-col grow max-h-screen'>
+                <div className='flex flex-col max-h-screen grow'>
                   <TopBar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
                   <Content toggleState={toggleState} />
                 </div>

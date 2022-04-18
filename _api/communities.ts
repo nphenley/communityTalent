@@ -1,5 +1,5 @@
 import { firestore, collectionsFirestore } from '_firebase/config';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
 import { getAddressesInWalletGroup } from './walletGroups';
 import { privateCommunities } from '_constants/privateCommunities';
 import { Community } from '_types/Community';
@@ -25,28 +25,30 @@ export const getCommunitiesForWalletGroup = async (
   let userCommunityIds: string[] = [];
 
   const userAddresses = await getAddressesInWalletGroup(walletGroupID);
-  const solCollections = await getDocs(collection(collectionsFirestore, 'collections'));
-  const ethCollections = await getDocs(collection(collectionsFirestore, 'ethCollections'));
+  await Promise.all([
+    getUserCommunities(userAddresses, userCommunityIds, 'sol'),
+    getUserCommunities(userAddresses, userCommunityIds, 'eth'),
+  ]);
 
-  solCollections.docs.forEach((collection) => {
-    if (!collection.data().tokens) return;
-    for (const token of collection.data().tokens)
-      if (userAddresses.includes(token.owner)) {
-        userCommunityIds.push(collection.id);
-        break;
-      }
-  });
-
-  ethCollections.docs.forEach((collection) => {
-    if (!collection.data().tokens) return;
-    for (const token of collection.data().tokens)
-      if (userAddresses.includes(token.owner)) {
-        userCommunityIds.push(collection.id);
-        break;
-      }
-  });
   privateCommunities.sort((a, b) => a.id.localeCompare(b.id));
   for (let i = 0; i < privateCommunities.length; i++)
     if (userCommunityIds.includes(privateCommunities[i].id)) privateCommunities[i].isOwnedByUser = true;
   updateFilteredCommunities(privateCommunities.sort((a, b) => Number(b.isOwnedByUser) - Number(a.isOwnedByUser)));
+};
+
+const getUserCommunities = async (userAddresses: string[], userCommunityIds: string[], chain: 'eth' | 'sol') => {
+  let path = chain === 'eth' ? 'ethCollections' : 'collections';
+  const collections = await getDocs(collection(collectionsFirestore, path));
+  collections.docs.forEach((collection) => {
+    if (!collection.data().tokens) return;
+    for (const token of collection.data().tokens)
+      if (userAddresses.includes(token.owner)) {
+        return userCommunityIds.push(collection.id);
+      }
+  });
+};
+
+export const getProfileFromPublicCommunity = async (walletGroupID: string, setPublicProfile: any) => {
+  const profile = await getDoc(doc(firestore, 'communities', 'web3', 'profiles', walletGroupID));
+  setPublicProfile({ ...profile.data(), profilePicture: 'N/A' });
 };

@@ -11,13 +11,6 @@ type NavBarProps = {
 const NavBar = (props: NavBarProps) => {
   const { logout } = useMoralis();
 
-  const profileButton = (
-    <button onClick={() => props.setHomeSection(HomeSection.DEFAULTPROFILE)} className={styles.profileSubContainer}>
-      <FaUserAlt size={14} />
-      Profile
-    </button>
-  );
-
   const communitiesButton = (
     <button onClick={() => props.setHomeSection(HomeSection.COMMUNITIES)} className={styles.profileSubContainer}>
       <FaUsers size={20} />
@@ -44,7 +37,6 @@ const NavBar = (props: NavBarProps) => {
     <div className='grid grid-cols-3'>
       <div className='flex gap-4'>
         {props.homeSection !== HomeSection.WALLETGROUPS ? linkWalletsButton : communitiesButton}
-        {props.homeSection !== HomeSection.DEFAULTPROFILE ? profileButton : communitiesButton}
       </div>
       {title}
       {disconnectButton}
@@ -53,7 +45,7 @@ const NavBar = (props: NavBarProps) => {
 
   const disconnected = <div className='flex justify-center'>{title}</div>;
 
-  return <div className='select-none w-full p-8 text-primary'>{props.isAuthenticated ? connected : disconnected}</div>;
+  return <div className='w-full p-8 select-none text-primary'>{props.isAuthenticated ? connected : disconnected}</div>;
 };
 
 export default NavBar;
