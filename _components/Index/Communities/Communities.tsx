@@ -21,7 +21,10 @@ const Communities = (props: CommunitiesProps) => {
 
   useEffect(() => {
     setLoadingUserCommunities(true);
-    getCommunitiesForWalletGroup(props.walletGroupID, setFilteredCommunities, setLoadingUserCommunities);
+    getCommunitiesForWalletGroup(props.walletGroupID, (communities: Community[]) => {
+      setFilteredCommunities(communities);
+      setLoadingUserCommunities(false);
+    });
   }, [props.walletGroupID]);
 
   useEffect(() => {
@@ -59,27 +62,23 @@ const Communities = (props: CommunitiesProps) => {
     </Link>
   );
 
-  return (
-    <>
-      {!loadingUserCommunities ? (
-        <div className={styles.container}>
-          <div className={styles.sectionsContainer}>
-            {toolbar}
+  return !loadingUserCommunities ? (
+    <div className={styles.container}>
+      <div className={styles.sectionsContainer}>
+        {toolbar}
 
-            <div className={styles.sectionContainer}>
-              {publicCard}
-              <div className={styles.communitiesContainer}>
-                {filteredCommunities.map((community) => (
-                  <CommunityCard key={community.id} community={community} walletGroupID={props.walletGroupID} />
-                ))}
-              </div>
-            </div>
+        <div className={styles.sectionContainer}>
+          {publicCard}
+          <div className={styles.communitiesContainer}>
+            {filteredCommunities.map((community) => (
+              <CommunityCard key={community.id} community={community} walletGroupID={props.walletGroupID} />
+            ))}
           </div>
         </div>
-      ) : (
-        <LoadingSpinner />
-      )}
-    </>
+      </div>
+    </div>
+  ) : (
+    <LoadingSpinner />
   );
 };
 
