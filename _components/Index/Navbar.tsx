@@ -1,5 +1,5 @@
 import { HomeSection } from 'pages';
-import { FaLink, FaUserAlt, FaUsers } from 'react-icons/fa';
+import { FaLink, FaUsers } from 'react-icons/fa';
 import { useMoralis } from 'react-moralis';
 
 type NavBarProps = {
@@ -25,10 +25,10 @@ const NavBar = (props: NavBarProps) => {
     </button>
   );
 
-  const title = <div className='flex justify-center text-xl font-bold'>communityTalent</div>;
+  const title = <div className='invisible sm:visible flex justify-center text-xl font-bold'>communityTalent</div>;
 
   const disconnectButton = (
-    <button className='flex justify-end text-md' onClick={() => logout()}>
+    <button className='flex justify-end items-center text-md' onClick={() => logout()}>
       Disconnect
     </button>
   );

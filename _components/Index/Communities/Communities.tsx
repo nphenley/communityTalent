@@ -39,23 +39,28 @@ const Communities = (props: CommunitiesProps) => {
   );
 
   const publicCard = (
-    <Link href={`community/web3`}>
-      <button className='w-[19%] h-72 select-none relative bg-gradient-to-tr from-backgroundDark to-primaryDark px-8 py-8 rounded-lg flex flex-col items-center border-background border-4 hover:border-primaryDark'>
-        <div
-          className={`h-24 w-full flex flex-col-reverse justify-center text-primary font-bold break-words uppercase leading-relaxed text-lg`}
-        >
-          All
-        </div>
-        <div className='relative flex flex-col w-full px-5 grow'>
-          <div className='relative flex justify-center overflow-hidden rounded-full aspect-square'>
-            <Image
-              src={'assets/communityTalent.png'}
-              height={150}
-              width={150}
-              placeholder={'blur'}
-              blurDataURL={'assets/communityTalent.png'}
-              unoptimized={true}
-            />
+    <Link href={`community/all`}>
+      <button
+        className={
+          'w-64 sm:w-[49%] md:w-[33%] lg:w-[24%] xl:w-[19%] py-12 relative flex flex-col items-center justify-center border-4 rounded-lg bg-backgroundDark border-backgroundDark hover:border-primaryDark'
+        }
+      >
+        <div className={'w-[75%]'}>
+          <div
+            className={`-mt-2 mb-2 h-24 flex flex-col-reverse justify-center text-primary font-bold break-words uppercase leading-relaxed text-lg`}
+          >
+            All
+          </div>
+          <div className='relative flex flex-col w-[65%] md:w-[75%] mx-auto grow'>
+            <div className='relative flex justify-center overflow-hidden border-4 rounded-full aspect-square border-primary'>
+              <Image
+                src={'assets/communityTalent.png'}
+                layout='fill'
+                placeholder={'blur'}
+                blurDataURL={'assets/communityTalent.png'}
+                unoptimized={true}
+              />
+            </div>
           </div>
         </div>
       </button>
@@ -64,11 +69,13 @@ const Communities = (props: CommunitiesProps) => {
 
   return !loadingUserCommunities ? (
     <div className={styles.container}>
+      {toolbar}
       <div className={styles.sectionsContainer}>
-        {toolbar}
-
         <div className={styles.sectionContainer}>
+          <div className='text-primary text-lg font-bold uppercase'>Public:</div>
           {publicCard}
+
+          <div className='mt-12 text-primary text-lg font-bold uppercase'>Private Communities:</div>
           <div className={styles.communitiesContainer}>
             {filteredCommunities.map((community) => (
               <CommunityCard key={community.id} community={community} walletGroupID={props.walletGroupID} />
@@ -85,11 +92,11 @@ const Communities = (props: CommunitiesProps) => {
 export default Communities;
 
 const styles = {
-  container: 'mx-auto flex w-[85%] max-w-screen-xl flex-col gap-4 rounded-lg items-center',
+  container: 'mx-auto max-h-full flex w-[98%] max-w-screen-xl flex-col gap-4 rounded-lg items-center',
   toolbarContainer: 'flex flex-row-reverse gap-x-2 w-full',
-  sectionsContainer: 'flex flex-col w-full',
-  sectionContainer: 'flex flex-col gap-8 p-12 rounded-lg items-center',
+  sectionsContainer: 'overflow-y-scroll flex flex-col w-full',
+  sectionContainer: 'flex flex-col gap-5 px-5 rounded-lg items-center',
   sectionHeading: 'text-xl font-bold text-primary',
-  communitiesContainer: 'grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-5 gap-x-4 gap-y-6',
+  communitiesContainer: 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-4 gap-y-6',
   buttonContainer: 'rounded-lg px-5 font-bold ',
 };

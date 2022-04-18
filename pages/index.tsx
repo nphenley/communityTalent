@@ -63,5 +63,5 @@ export default Home;
 
 const styles = {
   container: 'flex flex-col h-screen bg-background text-white',
-  contentContainer: 'overflow-y-scroll grow lg:max-w-[96%] mx-auto w-full pb-12',
+  contentContainer: 'overflow-hidden grow lg:max-w-[96%] mx-auto w-full',
 };

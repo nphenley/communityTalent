@@ -26,8 +26,8 @@ export const getCommunitiesForWalletGroup = async (
 
   const userAddresses = await getAddressesInWalletGroup(walletGroupID);
   await Promise.all([
-    getUserCommunities(userAddresses, userCommunityIds, 'sol'),
-    getUserCommunities(userAddresses, userCommunityIds, 'eth'),
+    getUserCommunities(userAddresses, 'sol').then((collectionIds) => userCommunityIds.push(...collectionIds)),
+    getUserCommunities(userAddresses, 'eth').then((collectionIds) => userCommunityIds.push(...collectionIds)),
   ]);
 
   privateCommunities.sort((a, b) => a.id.localeCompare(b.id));
@@ -36,16 +36,18 @@ export const getCommunitiesForWalletGroup = async (
   updateFilteredCommunities(privateCommunities.sort((a, b) => Number(b.isOwnedByUser) - Number(a.isOwnedByUser)));
 };
 
-const getUserCommunities = async (userAddresses: string[], userCommunityIds: string[], chain: 'eth' | 'sol') => {
+const getUserCommunities = async (userAddresses: string[], chain: 'eth' | 'sol') => {
   let path = chain === 'eth' ? 'ethCollections' : 'collections';
   const collections = await getDocs(collection(collectionsFirestore, path));
+  const collectionIds: string[] = [];
   collections.docs.forEach((collection) => {
     if (!collection.data().tokens) return;
     for (const token of collection.data().tokens)
       if (userAddresses.includes(token.owner)) {
-        return userCommunityIds.push(collection.id);
+        return collectionIds.push(collection.id);
       }
   });
+  return collectionIds;
 };
 
 export const getProfileFromPublicCommunity = async (walletGroupID: string, setPublicProfile: any) => {
