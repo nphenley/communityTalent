@@ -24,7 +24,10 @@ const NavBar = (props: NavBarProps) => {
   };
 
   const connectOptions = (
-    <div className='absolute inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center'>
+    <div
+      className='absolute inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center'
+      onClick={() => setShowOptions(false)}
+    >
       <div className='flex flex-col gap-5 p-8 text-white rounded-lg bg-backgroundDark bg'>
         <button className='p-4 rounded-lg bg-primary hover:bg-primaryDark' onClick={() => connect('eth')}>
           Connect on ETH, via Metamask
@@ -69,17 +72,22 @@ const NavBar = (props: NavBarProps) => {
   );
 
   const disconnected = (
-    <div className='grid grid-cols-3'>
+    <div className='grid grid-cols-3 items-center'>
       <div className='col-start-2'>{title}</div>
-      <button className='flex justify-end items-center text-md' onClick={() => setShowOptions(true)}>
-        Connect
-      </button>
+      <div className='flex justify-end'>
+        <button
+          className='flex justify-end items-center text-md bg-primary rounded-lg text-white px-4 py-2'
+          onClick={() => setShowOptions(true)}
+        >
+          Connect
+        </button>
+      </div>
 
       {showOptions ? connectOptions : null}
     </div>
   );
 
-  return <div className='w-full p-8 select-none text-primary'>{props.isAuthenticated ? connected : disconnected}</div>;
+  return <div className='w-full p-5 select-none text-primary'>{props.isAuthenticated ? connected : disconnected}</div>;
 };
 
 export default NavBar;
