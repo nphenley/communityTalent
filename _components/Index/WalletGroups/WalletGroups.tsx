@@ -64,13 +64,13 @@ const WalletGroups = (props: WalletGroupsProps) => {
         {walletsInGroup
           .sort((a, b) => (a[0] > b[0] ? 1 : -1))
           .map((wallet) => (
-            <div key={wallet} className='rounded-lg flex items-center gap-2'>
+            <div key={wallet} className='flex items-center gap-2 rounded-lg'>
               <div className='mt-0.5 text-primary'>
                 <GiPlainCircle size={6} />
               </div>
               <div className='text-grey'>{wallet}</div>
               <button
-                className='ml-6 flex grow flex-row-reverse text-primary'
+                className='flex flex-row-reverse ml-6 grow text-primary'
                 onClick={() => unlinkWalletAddress(props.walletGroupID, wallet)}
               >
                 <FaUnlink size={14} />
@@ -82,13 +82,13 @@ const WalletGroups = (props: WalletGroupsProps) => {
   );
 
   const outgoingLinkRequestsList = (
-    <div className='bg-backgroundDark p-8 rounded-lg'>
-      <div className='flex justify-center mb-5 text-primary font-bold'>Outgoing link requests:</div>
+    <div className='p-8 rounded-lg bg-backgroundDark'>
+      <div className='flex justify-center mb-5 font-bold text-primary'>Outgoing link requests:</div>
       <div>
         {outgoingLinkRequests.map((linkRequest) => (
           <div key={linkRequest.walletGroupID} className={styles.requestContainer}>
             {linkRequest.walletAddressesInGroup.map((walletAddress) => (
-              <div key={walletAddress} className='flex gap-2 items-center text-grey'>
+              <div key={walletAddress} className='flex items-center gap-2 text-grey'>
                 <div className='mt-0.5 text-primary'>
                   <GiPlainCircle size={6} />
                 </div>
@@ -108,13 +108,13 @@ const WalletGroups = (props: WalletGroupsProps) => {
   );
 
   const incomingLinkRequestsList = (
-    <div className='bg-backgroundDark p-6 rounded-lg'>
-      <div className='flex justify-center mb-5 text-primary font-bold'>Incoming link requests:</div>
+    <div className='p-6 rounded-lg bg-backgroundDark'>
+      <div className='flex justify-center mb-5 font-bold text-primary'>Incoming link requests:</div>
       <div>
         {incomingLinkRequests.map((linkRequest) => (
           <div key={linkRequest.walletGroupID} className={styles.requestContainer}>
             {linkRequest.walletAddressesInGroup.map((walletAddress) => (
-              <div key={walletAddress} className='flex gap-2 items-center text-grey'>
+              <div key={walletAddress} className='flex items-center gap-2 text-grey'>
                 <div className='mt-0.5 text-primary'>
                   <GiPlainCircle size={6} />
                 </div>
@@ -139,7 +139,16 @@ const WalletGroups = (props: WalletGroupsProps) => {
     <LoadingSpinner />
   ) : (
     <div className={styles.container}>
-      <div className='flex flex-col sm:flex-row gap-4'>
+      <div className='flex flex-col justify-center gap-4 sm:flex-row'>
+        <div className='w-full max-w-screen-sm'>
+          <h3 className='mb-0.5 font-bold text-primary'>Instructions: </h3>
+          <ol className='ml-3 list-disc text-grey'>
+            <li>Send link requests to other wallets with the form below</li>
+            <li>Once you have an outgoing request, connect to the requested wallet</li>
+            <li>Accept the request to link them together</li>
+          </ol>
+        </div>
+
         {outgoingLinkRequests.length !== 0 && outgoingLinkRequestsList}
         {incomingLinkRequests.length !== 0 && incomingLinkRequestsList}
       </div>

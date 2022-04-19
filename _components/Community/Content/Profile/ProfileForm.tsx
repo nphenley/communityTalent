@@ -129,7 +129,7 @@ const ProfileForm = (props: ProfileFormProps) => {
     );
   }
 
-  if (props.publicProfile) {
+  if (props.publicProfile?.id) {
     title = <h1 className='mb-4 text-3xl font-bold text-center text-primary'>Create Profile</h1>;
     description = (
       <p className='mb-4 text-center'>
@@ -141,7 +141,7 @@ const ProfileForm = (props: ProfileFormProps) => {
     importProfileButton = (
       <button
         onClick={() => setProfile(props.publicProfile)}
-        className='p-2 text-white rounded-lg bg-primary border-2 hover:border-primaryDark hover:cursor-pointer'
+        className='p-2 text-white border-2 rounded-lg bg-primary hover:border-primaryDark hover:cursor-pointer'
         type='button'
       >
         Import

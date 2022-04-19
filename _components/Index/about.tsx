@@ -1,19 +1,9 @@
-import Head from 'next/head';
 import ProfileCard from '_components/Community/Content/Profile/ProfileCard';
 import { richProfile, somProfile } from '_constants/founderProfiles';
-
-const nextHead = (
-  <Head>
-    <title>About</title>
-    <meta name='viewport' content='initial-scale=1.0, width=device-width' />
-  </Head>
-);
 
 export default function About() {
   return (
     <>
-      {nextHead}
-
       <div className={styles.container}>
         <div className={styles.contentContainer}>
           <div className={styles.titleContainer}>
@@ -44,7 +34,7 @@ export default function About() {
   );
 }
 const styles = {
-  container: 'flex justify-center min-h-screen text-white break-words bg-background p-5 pb-40',
+  container: 'flex justify-center text-white break-words bg-background p-5 pb-40',
   contentContainer: 'w-full max-w-screen-lg flex flex-col gap-20',
   titleContainer: 'flex justify-center items-center',
   titleText: 'text-xl font-bold text-primary',

@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { Profile } from '_types/Profile';
 import { MdWork } from 'react-icons/md';
 import { AiFillTool } from 'react-icons/ai';
+import Link from 'next/link';
 
 type ProfileCardProps = {
   profile: Profile;
@@ -9,7 +10,7 @@ type ProfileCardProps = {
 
 const ProfileCard = (props: ProfileCardProps) => {
   const ruler = <hr className='border-2 border-primaryDark' />;
-
+  const twitterLink = 'https://twitter.com/' + props.profile.twitterHandle?.replace('@', '');
   const lookingForProjectBadge = (
     <div className='flex items-center justify-center'>
       <div className='rounded-md flex text-sm text-primary px-2 py-1 gap-1.5 items-center'>
@@ -40,7 +41,13 @@ const ProfileCard = (props: ProfileCardProps) => {
 
         <div className='flex flex-col justify-center h-full gap-1 mt-1 break-words'>
           <div className='font-bold break-words'>{props.profile.displayName}</div>
-          {props.profile.twitterHandle && <div className='break-words text-grey'>{props.profile.twitterHandle}</div>}
+          {props.profile.twitterHandle && (
+            <a href={twitterLink} target='_blank'>
+              <button onClick={(e) => e.stopPropagation()} className='break-words text-grey hover:text-primary'>
+                {props.profile.twitterHandle}
+              </button>
+            </a>
+          )}
           {props.profile.discordUsername && (
             <div className='break-words text-grey'>{props.profile.discordUsername}</div>
           )}

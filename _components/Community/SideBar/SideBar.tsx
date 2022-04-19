@@ -1,9 +1,10 @@
-import { FaIdCard, FaBriefcase } from 'react-icons/fa';
+import { FaIdCard, FaBriefcase, FaArrowLeft } from 'react-icons/fa';
 import SideBarIcon from '_components/Community/SideBar/SideBarIcon';
 import Image from 'next/image';
 import { useContext } from 'react';
 import { ProfileContext } from '_contexts/ProfileContext';
 import { Sections } from '_enums/Sections';
+import Link from 'next/link';
 
 type SideBarProps = {
   toggleState: Sections;
@@ -15,6 +16,11 @@ const SideBar = (props: SideBarProps) => {
 
   return (
     <div className={styles.container}>
+      <Link href='/'>
+        <button className='flex flex-col items-center w-full py-4 hover:bg-primaryDark'>
+          <FaArrowLeft size={20} />
+        </button>
+      </Link>
       <button className='w-full' onClick={() => props.setToggleState(Sections.PROFILE)}>
         <SideBarIcon
           icon={
@@ -47,5 +53,5 @@ const SideBar = (props: SideBarProps) => {
 export default SideBar;
 
 const styles = {
-  container: 'select-none py-16 bg-backgroundDark shadow-lg text-primary flex flex-col gap-8 items-center h-screen',
+  container: 'select-none py-8 bg-backgroundDark shadow-lg text-primary flex flex-col gap-6 items-center h-screen',
 };

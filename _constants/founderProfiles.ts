@@ -10,6 +10,7 @@ export const somProfile: Profile = {
   twitterHandle: 'somkoda',
   id: 'soM',
   lookingForProject: false,
+  profilePicture: 'fd',
 };
 
 export const richProfile: Profile = {
@@ -22,4 +23,5 @@ export const richProfile: Profile = {
   skills: ['Full-Stack Web Dev'],
   id: 'richpepsi',
   lookingForProject: false,
+  profilePicture: 'fd',
 };
