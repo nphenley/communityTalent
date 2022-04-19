@@ -23,5 +23,5 @@ export const richProfile: Profile = {
   skills: ['Full-Stack Web Dev'],
   id: 'richpepsi',
   lookingForProject: false,
-  profilePicture: 'fd',
+  profilePicture: 'assets/richpepsi.gif',
 };
