@@ -6,27 +6,29 @@ export default function About() {
     <>
       <div className={styles.container}>
         <div className={styles.contentContainer}>
-          <div className={styles.titleContainer}>
-            <h1 className={styles.titleText}>{title}</h1>
+          <div>
+            <h2 className={styles.headingText}>About</h2>
+            <div className={styles.aboutContainer}>{about}</div>
           </div>
 
-          <h1 className={styles.headingText}>About</h1>
-          <div className={styles.aboutContainer}>{about}</div>
-
-          <h1 className={styles.headingText}>The Founders</h1>
-          <div className={styles.profilesContainer}>
-            <ProfileCard profile={richProfile} />
-            <ProfileCard profile={somProfile} />
+          <div>
+            <h2 className={styles.headingText}>The Founders</h2>
+            <div className={styles.profilesContainer}>
+              <ProfileCard profile={richProfile} />
+              <ProfileCard profile={somProfile} />
+            </div>
           </div>
 
-          <h1 className={styles.headingText}>Frequently Asked Questions</h1>
-          <div className={styles.faqContainer}>
-            {qAndAs.map((qAndA) => (
-              <div id={qAndAs.indexOf(qAndA).toString()} className='flex flex-col gap-2'>
-                <div className={styles.question}>{qAndA.question}</div>
-                <div className={styles.answer}>{qAndA.answer}</div>
-              </div>
-            ))}
+          <div>
+            <h2 className={styles.headingText}>Frequently Asked Questions</h2>
+            <div className={styles.faqContainer}>
+              {qAndAs.map((qAndA) => (
+                <div id={qAndAs.indexOf(qAndA).toString()} className='flex flex-col gap-2'>
+                  <div className={styles.question}>{qAndA.question}</div>
+                  <div className={styles.answer}>{qAndA.answer}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -34,22 +36,18 @@ export default function About() {
   );
 }
 const styles = {
-  container: 'flex justify-center text-white break-words bg-background p-5 pb-40',
-  contentContainer: 'w-full max-w-screen-lg flex flex-col gap-20',
-  titleContainer: 'flex justify-center items-center',
-  titleText: 'text-xl font-bold text-primary',
-  faqContainer: 'justify-start flex grid grid-flow-row gap-12',
+  container: 'flex justify-center text-white break-words bg-background pt-12 pb-24',
+  contentContainer: 'w-full max-w-screen-lg flex flex-col gap-24',
   headingText: 'text-lg font-bold text-primary justify-center flex',
-  profilesContainer: 'w-full grid grid-cols-1 gap-3 md:grid-cols-2',
-  aboutContainer: 'text-center max-w-screen-md leading-10 mx-auto text-grey font-bold',
+  aboutContainer: 'text-center max-w-screen-md mt-2 mx-auto text-grey font-bold',
+  profilesContainer: 'w-full grid grid-cols-1 gap-3 md:grid-cols-2 mt-6',
+  faqContainer: 'justify-start flex grid grid-flow-row gap-12 mt-12',
   question: 'text-md font-bold text-primary',
   answer: 'text-sm font-semibold text-grey',
 };
 
-const title = 'communityTalent';
-
 const about =
-  'communityTalent is a public service platform that aims to improve the networking, recruiting and community-building abilities of web3 communities. Built by two devs passionate about web3, it allows people offering web3 skills to create their own extended profiles and the people seeking those skills to describe exactly what they are looking for. communityTalent provides the social layer missing from web3 and should benefit all its communities by making it easier for builders and people with common interests to find each other. ';
+  'communityTalent aims to improve the networking, recruiting and community-building abilities of web3 communities. Users offering web3 skills can create profiles to share with their communities. etc. ';
 
 const qAndAs: { question: string; answer: string }[] = [
   {
