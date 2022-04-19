@@ -48,5 +48,7 @@ export const getCommunityNFTImagesForWalletGroup = async (
     })
   );
 
+  console.log(nfts);
+
   setNFTImages(nfts.map((token) => token.image));
 };

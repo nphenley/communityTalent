@@ -5,7 +5,6 @@ type ProfilePicProps = {
   imageOptions: string[];
   control: any;
   defaultValue?: string;
-  register: any;
   placeholder?: string;
   name: string;
 };
@@ -23,6 +22,7 @@ export const ImageSelectField = (props: ProfilePicProps) => {
       <Controller
         control={props.control}
         name={props.name}
+        defaultValue={props.imageOptions[0]}
         render={({ field: { onChange } }) => (
           <div className='grid grid-flow-row grid-cols-4 gap-2'>
             {props.imageOptions.map((image: string) => (

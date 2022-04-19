@@ -178,7 +178,6 @@ const ProfileForm = (props: ProfileFormProps) => {
                 control={control}
                 defaultValue={profile ? profile.profilePicture : undefined}
                 name='profilePicture'
-                register={register}
                 imageOptions={imageOptions}
               />
             }

@@ -17,8 +17,6 @@ const LinkRequestForm = (props: LinkRequestFormProps) => {
     formState: { errors },
   } = useForm<{ walletAddress: string }>();
 
-  // TODO:
-  // Check outgoing request not already existing for this.
   const onSubmit = async (data: { walletAddress: string }) => {
     if (props.walletGroupID === (await getOrCreateWalletGroupID(data.walletAddress))) {
       setError('walletAddress', {
@@ -44,22 +42,26 @@ const LinkRequestForm = (props: LinkRequestFormProps) => {
     <form className={styles.container} onSubmit={handleSubmit(onSubmit)}>
       <div className={styles.heading}>Send Link Request</div>
 
-      <FormField
-        label='Wallet Address'
-        formField={
-          <InputField
-            register={register}
-            placeholder='Wallet Address'
-            name='walletAddress'
-            maxLength={100}
-            required={true}
+      <div className='flex gap-2 w-full items-center justify-between'>
+        <div className='grow'>
+          <FormField
+            label='Wallet Address'
+            formField={
+              <InputField
+                register={register}
+                placeholder='Wallet Address'
+                name='walletAddress'
+                maxLength={100}
+                required={true}
+              />
+            }
           />
-        }
-      />
+        </div>
+
+        <FormSubmit text='Submit' />
+      </div>
 
       {errors.walletAddress && <div className={styles.errorText}>{errors.walletAddress.message}</div>}
-
-      <FormSubmit text='Submit' />
     </form>
   );
 };

@@ -3,10 +3,7 @@ type FormSubmitProps = {
 };
 const FormSubmit = (props: FormSubmitProps) => {
   return (
-    <button
-      className='p-4 text-white rounded-lg bg-primary hover:bg-primaryLight hover:cursor-pointer'
-      type='submit'
-    >
+    <button className='p-3 text-white rounded-lg bg-primary hover:bg-primaryLight hover:cursor-pointer' type='submit'>
       {props.text ? props.text : 'Submit'}
     </button>
   );

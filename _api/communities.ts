@@ -5,17 +5,13 @@ import { privateCommunities } from '_constants/privateCommunities';
 import { Community } from '_types/Community';
 
 export const getEthCollectionIdsForCommunity = async (communityId: string): Promise<string[]> => {
-  let ethCommunityIds: string[] = [];
-  const docs = await getDocs(collection(firestore, 'communities', communityId, 'ethCollectionIds'));
-  docs.forEach((doc) => ethCommunityIds.push(doc.id));
-  return ethCommunityIds;
+  const ethCollectionIds = (await getDoc(doc(firestore, 'communities', communityId))).data()!.ethCollectionIds;
+  return ethCollectionIds ? ethCollectionIds : [];
 };
 
 export const getSolCollectionIdsForCommunity = async (communityId: string): Promise<string[]> => {
-  let solCommunityIds: string[] = [];
-  const docs = await getDocs(collection(firestore, 'communities', communityId, 'solCollectionIds'));
-  docs.forEach((doc) => solCommunityIds.push(doc.id));
-  return solCommunityIds;
+  const solCollectionIds = (await getDoc(doc(firestore, 'communities', communityId))).data()!.solCollectionIds;
+  return solCollectionIds ? solCollectionIds : [];
 };
 
 export const getCommunitiesForWalletGroup = async (
