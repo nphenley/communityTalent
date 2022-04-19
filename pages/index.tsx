@@ -1,7 +1,6 @@
 import { useMoralis } from 'react-moralis';
 import Head from 'next/head';
 import Communities from '_components/Index/Communities/Communities';
-import ConnectView from '_components/Index/ConnectView';
 import { useEffect, useState } from 'react';
 import NavBar from '_components/Index/Navbar';
 import WalletGroups from '_components/Index/WalletGroups/WalletGroups';
@@ -9,6 +8,7 @@ import { subscribeToOrCreateWalletGroupID } from '_api/walletGroups';
 import LoadingSpinner from '_styled/LoadingSpinner';
 import { Community } from '_types/Community';
 import { getCommunitiesForWalletGroup } from '_api/communities';
+import About from '_components/Index/About';
 
 const nextHead = (
   <Head>
@@ -69,7 +69,7 @@ const Home = () => {
 
       <NavBar isAuthenticated={isAuthenticated} homeSection={homeSection} setHomeSection={setHomeSection} />
 
-      <div className={styles.contentContainer}>{isAuthenticated ? connectedView : <ConnectView />}</div>
+      {isAuthenticated ? <div className={styles.contentContainer}>{connectedView}</div> : <About />}
     </div>
   );
 };
@@ -78,5 +78,5 @@ export default Home;
 
 const styles = {
   container: 'flex flex-col h-screen bg-background text-white',
-  contentContainer: 'overflow-hidden grow lg:max-w-[96%] mx-auto w-full',
+  contentContainer: 'grow lg:max-w-[96%] mx-auto w-full overflow-y-scroll mb-2',
 };

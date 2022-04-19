@@ -83,9 +83,10 @@ export default Communities;
 const styles = {
   container: 'mx-auto max-h-full flex w-[98%] max-w-screen-xl flex-col gap-4 rounded-lg items-center',
   toolbarContainer: 'flex flex-row-reverse gap-x-2 w-full',
-  sectionsContainer: 'overflow-y-scroll flex flex-col w-full',
+  sectionsContainer: 'flex flex-col w-full',
   sectionContainer: 'flex flex-col gap-5 px-10 rounded-lg items-center',
   sectionHeading: 'text-xl font-bold text-primary',
-  communitiesContainer: 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-4 gap-y-6',
+  communitiesContainer:
+    'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-4 gap-y-6 pb-24',
   buttonContainer: 'rounded-lg px-5 font-bold ',
 };
