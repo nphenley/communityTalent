@@ -7,10 +7,10 @@ export const somProfile: Profile = {
   dateCreated: Timestamp.now(),
   dateLastUpdated: Timestamp.now(),
   discordUsername: 'soM#3041',
-  twitterHandle: 'somkoda',
+  twitterHandle: '@somkoda',
   id: 'soM',
   lookingForProject: false,
-  profilePicture: 'fd',
+  profilePicture: 'https://neotokyo.sfo3.cdn.digitaloceanspaces.com/citizen_images_png/77.png',
 };
 
 export const richProfile: Profile = {
@@ -19,7 +19,7 @@ export const richProfile: Profile = {
   dateCreated: Timestamp.now(),
   dateLastUpdated: Timestamp.now(),
   discordUsername: 'richpepsi#0335',
-  twitterHandle: 'richpepsi_',
+  twitterHandle: '@richpepsi_',
   skills: ['Full-Stack Web Dev'],
   id: 'richpepsi',
   lookingForProject: false,

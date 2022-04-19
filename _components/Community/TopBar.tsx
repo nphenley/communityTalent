@@ -14,10 +14,7 @@ const TopBar = (props: TopBarProps) => {
 
   const hamburgerButton = (
     <div className={styles.hamburgerButtonContainer}>
-      <button
-        onClick={() => props.setIsSidebarOpen(true)}
-        className={styles.hamburgerButton}
-      >
+      <button onClick={() => props.setIsSidebarOpen(true)} className={styles.hamburgerButton}>
         <FaBars size='20' />
       </button>
     </div>
@@ -43,10 +40,9 @@ const TopBar = (props: TopBarProps) => {
 export default TopBar;
 
 const styles = {
-  container: 'relative py-5 text-primary flex justify-center items-center',
+  container: 'relative py-5 text-primary w-full flex justify-center items-center',
   disconnectButtonContainer: 'absolute right-3 h-full flex items-center',
   disconnectButton: 'p-2 rounded-full',
-  hamburgerButtonContainer:
-    'md:hidden absolute left-5 h-full flex items-center',
+  hamburgerButtonContainer: 'md:hidden absolute left-5 h-full flex items-center',
   hamburgerButton: 'p-2',
 };

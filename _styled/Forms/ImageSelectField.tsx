@@ -13,7 +13,7 @@ export const ImageSelectField = (props: ProfilePicProps) => {
   const [active, setActive] = useState('');
 
   useEffect(() => {
-    if (!props.defaultValue) return;
+    if (!props.defaultValue) return setActive(props.imageOptions[0]);
     setActive(props.defaultValue);
   }, []);
 
