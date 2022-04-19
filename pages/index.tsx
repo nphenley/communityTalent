@@ -7,6 +7,8 @@ import NavBar from '_components/Index/Navbar';
 import WalletGroups from '_components/Index/WalletGroups/WalletGroups';
 import { subscribeToOrCreateWalletGroupID } from '_api/walletGroups';
 import LoadingSpinner from '_styled/LoadingSpinner';
+import { Community } from '_types/Community';
+import { getCommunitiesForWalletGroup } from '_api/communities';
 
 const nextHead = (
   <Head>
@@ -28,6 +30,9 @@ const Home = () => {
   const [loadingWalletGroupID, setLoadingWalletGroupID] = useState(true);
   const [walletGroupID, setWalletGroupID] = useState<string>();
 
+  const [loadingCommunities, setLoadingCommunities] = useState(true);
+  const [communities, setCommunities] = useState<Community[]>([]);
+
   useEffect(() => {
     if (!isAuthenticated || !user) return;
 
@@ -40,13 +45,23 @@ const Home = () => {
     );
   }, [isAuthenticated, user]);
 
-  const connectedView = loadingWalletGroupID ? (
-    <LoadingSpinner />
-  ) : homeSection === HomeSection.COMMUNITIES ? (
-    <Communities walletGroupID={walletGroupID!} />
-  ) : homeSection === HomeSection.WALLETGROUPS ? (
-    <WalletGroups walletGroupID={walletGroupID!} />
-  ) : null;
+  useEffect(() => {
+    if (!walletGroupID) return;
+    setLoadingCommunities(true);
+    getCommunitiesForWalletGroup(walletGroupID, (communities: Community[]) => {
+      setCommunities(communities);
+      setLoadingCommunities(false);
+    });
+  }, [walletGroupID]);
+
+  const connectedView =
+    loadingWalletGroupID || loadingCommunities ? (
+      <LoadingSpinner />
+    ) : homeSection === HomeSection.COMMUNITIES ? (
+      <Communities walletGroupID={walletGroupID!} communities={communities} />
+    ) : homeSection === HomeSection.WALLETGROUPS ? (
+      <WalletGroups walletGroupID={walletGroupID!} />
+    ) : null;
 
   return (
     <div className={styles.container}>

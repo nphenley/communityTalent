@@ -6,26 +6,17 @@ import CommunityCard from '_components/Index/Communities/CommunityCard';
 import Image from 'next/image';
 import Link from 'next/link';
 import { privateCommunities } from '_constants/privateCommunities';
-import { getCommunitiesForWalletGroup } from '_api/communities';
 import LoadingSpinner from '_styled/LoadingSpinner';
 
 type CommunitiesProps = {
   walletGroupID: string;
+  communities: Community[];
 };
 
 const Communities = (props: CommunitiesProps) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [loadingUserCommunities, setLoadingUserCommunities] = useState(true);
 
-  const [filteredCommunities, setFilteredCommunities] = useState<Community[]>([]);
-
-  useEffect(() => {
-    setLoadingUserCommunities(true);
-    getCommunitiesForWalletGroup(props.walletGroupID, (communities: Community[]) => {
-      setFilteredCommunities(communities);
-      setLoadingUserCommunities(false);
-    });
-  }, [props.walletGroupID]);
+  const [filteredCommunities, setFilteredCommunities] = useState<Community[]>(props.communities);
 
   useEffect(() => {
     const filteredCommunities = filterCommunities(privateCommunities, searchQuery);
@@ -67,7 +58,7 @@ const Communities = (props: CommunitiesProps) => {
     </Link>
   );
 
-  return !loadingUserCommunities ? (
+  return (
     <div className={styles.container}>
       {toolbar}
       <div className={styles.sectionsContainer}>
@@ -84,8 +75,6 @@ const Communities = (props: CommunitiesProps) => {
         </div>
       </div>
     </div>
-  ) : (
-    <LoadingSpinner />
   );
 };
 
@@ -95,7 +84,7 @@ const styles = {
   container: 'mx-auto max-h-full flex w-[98%] max-w-screen-xl flex-col gap-4 rounded-lg items-center',
   toolbarContainer: 'flex flex-row-reverse gap-x-2 w-full',
   sectionsContainer: 'overflow-y-scroll flex flex-col w-full',
-  sectionContainer: 'flex flex-col gap-5 px-5 rounded-lg items-center',
+  sectionContainer: 'flex flex-col gap-5 px-10 rounded-lg items-center',
   sectionHeading: 'text-xl font-bold text-primary',
   communitiesContainer: 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-4 gap-y-6',
   buttonContainer: 'rounded-lg px-5 font-bold ',
