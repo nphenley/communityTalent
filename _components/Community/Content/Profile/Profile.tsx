@@ -12,7 +12,7 @@ const Profile = () => {
   const editButton = (
     <button
       onClick={() => setEdit(true)}
-      className='w-20 px-1 py-3 mx-auto rounded-lg bg-primaryDark hover:bg-primary hover:cursor-pointer'
+      className='w-20 py-2 mx-auto rounded-lg bg-primaryDark border-4 border-primaryDark hover:border-primary hover:cursor-pointer'
     >
       Edit
     </button>

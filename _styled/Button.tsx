@@ -14,6 +14,5 @@ const Button = (props: ButtonProps) => {
 export default Button;
 
 const styles = {
-  container:
-    'bg-primary p-5 text-white rounded-lg font-bold uppercase text-xl hover:bg-primaryLight',
+  container: 'bg-primary p-5 text-white rounded-lg font-bold uppercase text-xl hover:bg-primaryDark',
 };

@@ -77,22 +77,28 @@ const Talent = () => {
       </div>
 
       <div className='grid grid-cols-1 gap-2 lg:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-3 4xl:grid-cols-4 5xl:grid-cols-5'>
-        {filteredProjects.map((project) => (
-          <div
-            key={project.id}
-            className='border-background border-4 hover:border-primaryDark rounded-lg'
-            onClick={() => setExpandedProject(project)}
-          >
-            <ProjectCard
-              project={project}
-              isProjectByUser={project.walletGroupID === walletGroupID}
-              setProjectToEdit={setProjectToEdit}
-              deleteProject={() => deleteProject(communityId, project.id)}
-              toggleProjectUpvote={() => toggleProjectUpvote(walletGroupID, communityId, project.id, project.isUpvoted)}
-              getProjects={() => getProjects(walletGroupID, communityId, updateProjects)}
-            />
-          </div>
-        ))}
+        {filteredProjects.length ? (
+          filteredProjects.map((project) => (
+            <div
+              key={project.id}
+              className='border-background border-4 hover:border-primaryDark rounded-lg'
+              onClick={() => setExpandedProject(project)}
+            >
+              <ProjectCard
+                project={project}
+                isProjectByUser={project.walletGroupID === walletGroupID}
+                setProjectToEdit={setProjectToEdit}
+                deleteProject={() => deleteProject(communityId, project.id)}
+                toggleProjectUpvote={() =>
+                  toggleProjectUpvote(walletGroupID, communityId, project.id, project.isUpvoted)
+                }
+                getProjects={() => getProjects(walletGroupID, communityId, updateProjects)}
+              />
+            </div>
+          ))
+        ) : (
+          <div className='text-grey'>No projects in this community.</div>
+        )}
       </div>
 
       <CreateProjectButton onClick={() => setIsAddingProject(!isAddingProject)} />

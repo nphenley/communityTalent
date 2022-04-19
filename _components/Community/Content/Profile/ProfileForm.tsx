@@ -141,7 +141,7 @@ const ProfileForm = (props: ProfileFormProps) => {
     importProfileButton = (
       <button
         onClick={() => setProfile(props.publicProfile)}
-        className='p-4 text-white rounded-lg bg-primary hover:bg-primaryLight hover:cursor-pointer'
+        className='p-2 text-white rounded-lg bg-primary border-2 hover:border-primaryDark hover:cursor-pointer'
         type='button'
       >
         Import
