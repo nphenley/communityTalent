@@ -7,7 +7,6 @@ export default function About() {
       <div className={styles.container}>
         <div className={styles.contentContainer}>
           <div>
-            <h2 className={styles.headingText}>About</h2>
             <div className={styles.aboutContainer}>{about}</div>
           </div>
 
@@ -37,11 +36,11 @@ export default function About() {
 }
 const styles = {
   container: 'flex justify-center text-white break-words bg-background pt-12 px-4 pb-24',
-  contentContainer: 'w-full max-w-screen-lg flex flex-col gap-24',
-  headingText: 'text-lg font-bold text-primary justify-center flex',
-  aboutContainer: 'text-center max-w-screen-md mt-2 mx-auto text-grey font-bold',
-  profilesContainer: 'w-full grid grid-cols-1 gap-3 md:grid-cols-2 mt-6',
-  faqContainer: 'justify-start flex grid grid-flow-row gap-12 mt-12',
+  contentContainer: 'w-full max-w-screen-lg flex flex-col gap-52',
+  headingText: 'text-2xl font-bold text-primary justify-center flex',
+  aboutContainer: 'text-center max-w-screen-md mt-8 mx-auto text-grey text-lg leading-8',
+  profilesContainer: 'w-full grid grid-cols-1 gap-3 md:grid-cols-2 mt-8',
+  faqContainer: 'justify-start flex grid grid-flow-row gap-8 mt-12',
   question: 'text-md font-bold text-primary',
   answer: 'text-sm font-semibold text-grey',
 };

@@ -5,12 +5,16 @@ import { privateCommunities } from '_constants/privateCommunities';
 import { Community } from '_types/Community';
 
 export const getEthCollectionIdsForCommunity = async (communityId: string): Promise<string[]> => {
-  const ethCollectionIds = (await getDoc(doc(firestore, 'communities', communityId))).data()!.ethCollectionIds;
+  const docRef = await getDoc(doc(firestore, 'communities', communityId));
+  if (!docRef.exists()) return [];
+  const ethCollectionIds = docRef.data()!.ethCollectionIds;
   return ethCollectionIds ? ethCollectionIds : [];
 };
 
 export const getSolCollectionIdsForCommunity = async (communityId: string): Promise<string[]> => {
-  const solCollectionIds = (await getDoc(doc(firestore, 'communities', communityId))).data()!.solCollectionIds;
+  const docRef = await getDoc(doc(firestore, 'communities', communityId));
+  if (!docRef.exists()) return [];
+  const solCollectionIds = docRef.data()!.solCollectionIds;
   return solCollectionIds ? solCollectionIds : [];
 };
 
