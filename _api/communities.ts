@@ -35,6 +35,7 @@ export const getCommunitiesForWalletGroup = async (
     for (let j = 0; j < privateCommunities[i].collectionIds.length; j++) {
       if (userCommunityIds.includes(privateCommunities[i].collectionIds[j])) {
         privateCommunities[i].isOwnedByUser = true;
+        break;
       } else {
         privateCommunities[i].isOwnedByUser = false;
       }
