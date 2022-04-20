@@ -3,7 +3,7 @@ import { Profile } from '_types/Profile';
 
 export const somProfile: Profile = {
   displayName: 'soM',
-  bio: 'Young guy trying to make a name for himself in web3',
+  bio: "Dropped out of my Master's to pursue my dreams in web3. Software engineer, degen, buildooor, Neo Tokyo Citizen.",
   dateCreated: Timestamp.now(),
   dateLastUpdated: Timestamp.now(),
   discordUsername: 'soM#3041',

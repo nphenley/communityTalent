@@ -36,7 +36,7 @@ export default function About() {
   );
 }
 const styles = {
-  container: 'flex justify-center text-white break-words bg-background pt-12 pb-24',
+  container: 'flex justify-center text-white break-words bg-background pt-12 px-4 pb-24',
   contentContainer: 'w-full max-w-screen-lg flex flex-col gap-24',
   headingText: 'text-lg font-bold text-primary justify-center flex',
   aboutContainer: 'text-center max-w-screen-md mt-2 mx-auto text-grey font-bold',
