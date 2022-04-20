@@ -47,7 +47,7 @@ const styles = {
 };
 
 const about =
-  'communityTalent aims to improve the networking, recruiting and community-building abilities of web3 communities. Users offering web3 skills can create profiles to share with their communities. etc. ';
+  'communityTalent aims to improve the networking, recruiting and community-building abilities of web3 communities. Users offering web3 skills can create profiles and project listings within the public community as well their private, token-gated communities.';
 
 const qAndAs: { question: string; answer: string }[] = [
   {
