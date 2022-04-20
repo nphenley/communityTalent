@@ -6,7 +6,6 @@ import CommunityCard from '_components/Index/Communities/CommunityCard';
 import Image from 'next/image';
 import Link from 'next/link';
 import { privateCommunities } from '_constants/privateCommunities';
-import LoadingSpinner from '_styled/LoadingSpinner';
 
 type CommunitiesProps = {
   walletGroupID: string;
@@ -63,10 +62,10 @@ const Communities = (props: CommunitiesProps) => {
       {toolbar}
       <div className={styles.sectionsContainer}>
         <div className={styles.sectionContainer}>
-          <div className='text-primary text-lg font-bold uppercase'>Public:</div>
+          <div className='text-lg font-bold uppercase text-primary'>Public:</div>
           {publicCard}
 
-          <div className='mt-12 text-primary text-lg font-bold uppercase'>Private Communities:</div>
+          <div className='mt-12 text-lg font-bold uppercase text-primary'>Private Communities:</div>
           <div className={styles.communitiesContainer}>
             {filteredCommunities.map((community) => (
               <CommunityCard key={community.id} community={community} walletGroupID={props.walletGroupID} />

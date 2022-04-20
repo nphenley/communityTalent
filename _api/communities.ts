@@ -27,8 +27,15 @@ export const getCommunitiesForWalletGroup = async (
   ]);
 
   privateCommunities.sort((a, b) => a.id.localeCompare(b.id));
-  for (let i = 0; i < privateCommunities.length; i++)
-    if (userCommunityIds.includes(privateCommunities[i].id)) privateCommunities[i].isOwnedByUser = true;
+  for (let i = 0; i < privateCommunities.length; i++) {
+    for (let j = 0; j < privateCommunities[i].collectionIds.length; j++) {
+      if (userCommunityIds.includes(privateCommunities[i].collectionIds[j])) {
+        privateCommunities[i].isOwnedByUser = true;
+      } else {
+        privateCommunities[i].isOwnedByUser = false;
+      }
+    }
+  }
   updateFilteredCommunities(privateCommunities.sort((a, b) => Number(b.isOwnedByUser) - Number(a.isOwnedByUser)));
 };
 
