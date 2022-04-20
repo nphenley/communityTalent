@@ -8,7 +8,7 @@ import { subscribeToOrCreateWalletGroupID } from '_api/walletGroups';
 import LoadingSpinner from '_styled/LoadingSpinner';
 import { Community } from '_types/Community';
 import { getCommunitiesForWalletGroup } from '_api/communities';
-import About from '_components/Index/About';
+import About from '_components/Index/LandingPage';
 
 const nextHead = (
   <Head>
