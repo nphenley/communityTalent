@@ -3,14 +3,15 @@ import { Profile } from '_types/Profile';
 
 export const somProfile: Profile = {
   displayName: 'soM',
-  bio: 'test',
+  bio: 'Young guy trying to make a name for himself in web3',
   dateCreated: Timestamp.now(),
   dateLastUpdated: Timestamp.now(),
   discordUsername: 'soM#3041',
   twitterHandle: '@somkoda',
   id: 'soM',
   lookingForProject: false,
-  profilePicture: 'https://neotokyo.sfo3.cdn.digitaloceanspaces.com/citizen_images_png/77.png',
+  profilePicture: 'assets/somkoda.png',
+  tags: ['Full-Stack Dev', 'Blockchain Dev', 'Collab Management'],
 };
 
 export const richProfile: Profile = {

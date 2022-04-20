@@ -58,12 +58,7 @@ const qAndAs: { question: string; answer: string }[] = [
   {
     question: 'I have multiple wallets. How can I link them?',
     answer:
-      'On the link wallets page, you can enter wallet addresses and send link requests to your other wallets. This is not limited to a single chain, you can link wallets cross-chain! Once you have sent the requests you will have to connect on those other wallets and accept the requests. You will then be able to see all of your communities from a single wallet.',
-  },
-  {
-    question: 'How many communities have you added to cTalent?',
-    answer:
-      'Every single community comprising of NFTs on EVM chains can be created seemlessly by users. However, if the NFTs can be staked we will need to add the staking address to our backend so that you can see your staked NFTs. Unfortunately, NFTs on Solana need to be added manually.',
+      'On the link wallets page, you can enter wallet addresses and send link requests to your other wallets. This is not limited to a single chain, you can link wallets cross-chain! Once you have sent the requests you will have to connect to those other wallets and accept the requests. You will then be able to see all of your communities from a single wallet.',
   },
   {
     question: 'Why do I need to sign with my wallet when I first connect?',
