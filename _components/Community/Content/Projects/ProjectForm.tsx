@@ -78,6 +78,10 @@ const ProjectForm = (props: ProjectFormProps) => {
 
     for (const property in data) if (data[property] === undefined) data[property] = [];
 
+    if (data.twitterHandle && !data.twitterHandle.startsWith('@')) {
+      data.twitterHandle = '@' + data.twitterHandle;
+    }
+
     if (props.project) {
       await updateProject(communityId, props.project.id, {
         ...data,

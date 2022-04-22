@@ -13,20 +13,22 @@ type ProjectCardProps = {
 };
 
 const ProjectCard = (props: ProjectCardProps) => {
-  const ruler = <hr className='border-primaryDark border-2 mb-2' />;
+  const ruler = <hr className='mb-2 border-2 border-primaryDark' />;
+
+  const twitterLink = 'https://twitter.com/' + props.project.twitterContact?.replace('@', '');
 
   return (
     <div className={styles.container}>
       {props.project.isAdminProject && (
-        <div className='absolute top-3 left-3 flex flex-row items-center gap-1 text-primary'>
+        <div className='absolute flex flex-row items-center gap-1 top-3 left-3 text-primary'>
           <AiFillTool size={20} />
         </div>
       )}
 
       {props.isProjectByUser ? (
-        <div className='absolute right-2 top-2 flex gap-1'>
+        <div className='absolute flex gap-1 right-2 top-2'>
           <div
-            className='flex bg-primaryDark rounded-full flex-row items-center gap-1 text-grey p-1 hover:bg-primary hover:text-white hover:cursor-pointer'
+            className='flex flex-row items-center gap-1 p-1 rounded-full bg-primaryDark text-grey hover:bg-primary hover:text-white hover:cursor-pointer'
             onClick={(e) => {
               e.stopPropagation();
               props.setProjectToEdit(props.project);
@@ -35,7 +37,7 @@ const ProjectCard = (props: ProjectCardProps) => {
             <AiFillEdit size={16} />
           </div>
           <div
-            className='flex bg-primaryDark rounded-full flex-row items-center gap-1 text-grey p-1 hover:bg-primary hover:text-white hover:cursor-pointer'
+            className='flex flex-row items-center gap-1 p-1 rounded-full bg-primaryDark text-grey hover:bg-primary hover:text-white hover:cursor-pointer'
             onClick={async (e) => {
               e.stopPropagation();
               props.deleteProject();
@@ -46,7 +48,7 @@ const ProjectCard = (props: ProjectCardProps) => {
           </div>
         </div>
       ) : (
-        <div className='absolute right-2 top-2 flex gap-1'>
+        <div className='absolute flex gap-1 right-2 top-2'>
           <div
             className={`flex ${
               props.project.isUpvoted ? 'text-primary' : 'text-grey'
@@ -64,7 +66,7 @@ const ProjectCard = (props: ProjectCardProps) => {
       )}
 
       <div>
-        <div className='flex gap-1 items-center'>
+        <div className='flex items-center gap-1'>
           <div className='text-grey'>Looking for:</div>
           <div className={styles.sectionHeading}>{props.project.role}</div>
         </div>
@@ -128,11 +130,17 @@ const ProjectCard = (props: ProjectCardProps) => {
                   </div>
                 )}
                 {props.project.twitterContact && (
-                  <div className='flex items-center gap-2 text-grey'>
+                  <div className='flex items-center gap-2 text-grey hover:text-primary'>
                     <div>
                       <AiOutlineTwitter size={15} />
                     </div>
-                    <div>@{props.project.twitterContact}</div>
+                    <div>
+                      {props.project.twitterContact && (
+                        <a href={twitterLink} target='_blank'>
+                          <button onClick={(e) => e.stopPropagation()}>{props.project.twitterContact}</button>
+                        </a>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
@@ -167,7 +175,7 @@ const styles = {
           </div>
           <div>richpepsi#0335</div>
         </div>
-        <div className='flex items-center gap-1 text-grey text-sm'>
+        <div className='flex items-center gap-1 text-sm text-grey'>
           <div>
             <AiOutlineTwitter size={14} />
           </div>
