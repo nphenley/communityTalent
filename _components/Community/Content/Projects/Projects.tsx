@@ -72,7 +72,7 @@ const Talent = () => {
     <LoadingSpinner />
   ) : (
     <div className='flex flex-col gap-2 lg:gap-4'>
-      <div className='flex justify-center lg:justify-end'>
+      <div className='flex justify-center mr-1 lg:justify-end'>
         <SearchBar onChange={(e: any) => setSearchQuery(e.target.value)} placeholder='Search' />
       </div>
 
@@ -81,7 +81,7 @@ const Talent = () => {
           filteredProjects.map((project) => (
             <div
               key={project.id}
-              className='border-background border-4 hover:border-primaryDark rounded-lg'
+              className='border-4 rounded-lg border-background hover:border-primaryDark'
               onClick={() => setExpandedProject(project)}
             >
               <ProjectCard
@@ -105,7 +105,7 @@ const Talent = () => {
 
       {expandedProject && (
         <div
-          className='z-50 absolute inset-0 bg-black bg-opacity-90 flex justify-center'
+          className='absolute inset-0 z-50 flex justify-center bg-black bg-opacity-90'
           onClick={() => setExpandedProject(undefined)}
         >
           <div className='max-w-screen-md w-[95%] flex items-center'>
@@ -125,7 +125,7 @@ const Talent = () => {
 
       {isAddingProject && (
         <div
-          className='z-50 absolute inset-0 bg-black bg-opacity-80 flex justify-center'
+          className='absolute inset-0 z-50 flex justify-center bg-black bg-opacity-80'
           onClick={() => setIsAddingProject(false)}
         >
           <div className='max-w-screen-md w-[95%] flex items-center'>
@@ -141,7 +141,7 @@ const Talent = () => {
 
       {projectToEdit && (
         <div
-          className='z-50 absolute inset-0 bg-black bg-opacity-80 flex justify-center'
+          className='absolute inset-0 z-50 flex justify-center bg-black bg-opacity-80'
           onClick={() => setProjectToEdit(undefined)}
         >
           <div className='max-w-screen-md w-[95%] flex items-center'>
