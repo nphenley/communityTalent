@@ -38,7 +38,7 @@ const Talent = () => {
     <LoadingSpinner />
   ) : (
     <div className='flex flex-col gap-2 lg:gap-4'>
-      <div className='flex justify-center lg:justify-end'>
+      <div className='flex justify-center mr-1 lg:justify-end'>
         <SearchBar onChange={(e: any) => setSearchQuery(e.target.value)} placeholder='Search' />
       </div>
 
@@ -46,7 +46,7 @@ const Talent = () => {
         {filteredProfiles.map((profile) => (
           <div
             key={profile.id}
-            className='border-background border-4 hover:border-primaryDark rounded-lg'
+            className='border-4 rounded-lg border-background hover:border-primaryDark'
             onClick={() => setExpandedProfile(profile)}
           >
             <ProfileCard profile={profile} />
@@ -56,7 +56,7 @@ const Talent = () => {
 
       {expandedProfile && (
         <div
-          className='absolute inset-0 bg-black bg-opacity-90 flex justify-center'
+          className='absolute inset-0 flex justify-center bg-black bg-opacity-90'
           onClick={() => setExpandedProfile(undefined)}
         >
           <div className='max-w-screen-md w-[95%] flex items-center'>
