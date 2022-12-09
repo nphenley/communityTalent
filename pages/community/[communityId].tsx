@@ -18,17 +18,26 @@ import { Sections } from '_enums/Sections';
 import ProfileForm from '_components/Community/Content/Profile/ProfileForm';
 import { getCommunityNFTImagesForWalletGroup } from '_helpers/getNFTImages';
 import { getProfileFromPublicCommunity } from '_api/communities';
+import { Timestamp } from 'firebase/firestore';
 
 const Community = () => {
   const router = useRouter();
   const communityId = router.query.communityId as string;
   const { isAuthUndefined, isAuthenticated, user } = useMoralis();
 
-  const [loadingNFTImages, setLoadingNFTImages] = useState(true);
+  const [loadingNFTImages, setLoadingNFTImages] = useState(false);
   const [nftImages, setNFTImages] = useState<string[]>([]);
 
-  const [loadingProfile, setLoadingProfile] = useState(true);
-  const [profile, setProfile] = useState<Profile>();
+  const [loadingProfile, setLoadingProfile] = useState(false);
+  const [profile, setProfile] = useState<Profile>({
+    id: 'neotokyocitizens',
+    profilePicture: 'https://tse1.mm.bing.net/th?id=OIP.eez-Y8tIL3p-8L2Hp3TkFQHaHa',
+    dateCreated: Timestamp.now(),
+    dateLastUpdated: Timestamp.now(),
+    displayName: 'Guest',
+    bio: 'Guest user, editing disabled',
+    lookingForProject: true,
+  });
   const [publicProfile, setPublicProfile] = useState<Profile>();
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -36,44 +45,44 @@ const Community = () => {
 
   const [walletGroupID, setWalletGroupID] = useState('');
 
-  useEffect(() => {
-    if (isAuthUndefined) return;
-    if (!isAuthenticated) {
-      router.push('/');
-      return;
-    }
+  // useEffect(() => {
+  //   if (isAuthUndefined) return;
+  //   if (!isAuthenticated) {
+  //     router.push('/');
+  //     return;
+  //   }
 
-    const unsub = subscribeToOrCreateWalletGroupID(
-      user!.attributes.ethAddress ? user!.attributes.ethAddress : user!.attributes.solAddress,
-      (walletGroupID: string) => {
-        setWalletGroupID(walletGroupID);
-      }
-    );
+  //   const unsub = subscribeToOrCreateWalletGroupID(
+  //     user!.attributes.ethAddress ? user!.attributes.ethAddress : user!.attributes.solAddress,
+  //     (walletGroupID: string) => {
+  //       setWalletGroupID(walletGroupID);
+  //     }
+  //   );
 
-    return unsub;
-  }, [isAuthUndefined, isAuthenticated]);
+  //   return unsub;
+  // }, [isAuthUndefined, isAuthenticated]);
 
-  useEffect(() => {
-    if (!walletGroupID) return;
+  // useEffect(() => {
+  //   if (!walletGroupID) return;
 
-    getCommunityNFTImagesForWalletGroup(walletGroupID, communityId, (images: string[]) => {
-      !images.length
-        ? router.push('/')
-        : (() => {
-            setNFTImages(images);
-            setLoadingNFTImages(false);
-          })();
-    });
+  //   // getCommunityNFTImagesForWalletGroup(walletGroupID, communityId, (images: string[]) => {
+  //   //   !images.length
+  //   //     ? router.push('/')
+  //   //     : (() => {
+  //   //         setNFTImages(images);
+  //   //         setLoadingNFTImages(false);
+  //   //       })();
+  //   // });
 
-    getProfileFromPublicCommunity(walletGroupID, setPublicProfile);
+  //   getProfileFromPublicCommunity(walletGroupID, setPublicProfile);
 
-    const unsubToProfile = subscribeToCommunityProfile(communityId, walletGroupID, (profile: Profile) => {
-      setProfile(profile);
-      setLoadingProfile(false);
-    });
+  //   const unsubToProfile = subscribeToCommunityProfile(communityId, walletGroupID, (profile: Profile) => {
+  //     setProfile(profile);
+  //     setLoadingProfile(false);
+  //   });
 
-    return unsubToProfile;
-  }, [walletGroupID]);
+  //   return unsubToProfile;
+  // }, [walletGroupID]);
 
   return (
     <WalletGroupContext.Provider value={walletGroupID}>
@@ -87,12 +96,13 @@ const Community = () => {
           <div className={styles.container}>
             {isAuthUndefined || loadingNFTImages || loadingProfile ? (
               <LoadingSpinner />
-            ) : !profile ? (
-              <div className={styles.noProfileContainer}>
-                <TopBar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={undefined} hideHamburgerMenu={true} />
-                <ProfileForm publicProfile={publicProfile} />
-              </div>
             ) : (
+              // !profile ? (
+              //   <div className={styles.noProfileContainer}>
+              //     <TopBar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={undefined} hideHamburgerMenu={true} />
+              //     <ProfileForm publicProfile={publicProfile} />
+              //   </div>
+              // )
               <ProfileContext.Provider value={profile}>
                 <div className='hidden md:block'>
                   <SideBar toggleState={toggleState} setToggleState={setToggleState} />

@@ -11,9 +11,8 @@ export default function About() {
           </div>
 
           <div>
-            <h2 className={styles.headingText}>The Founders</h2>
+            <h2 className={styles.headingText}>Founder</h2>
             <div className={styles.profilesContainer}>
-              <ProfileCard profile={richProfile} />
               <ProfileCard profile={somProfile} />
             </div>
           </div>
@@ -39,7 +38,7 @@ const styles = {
   contentContainer: 'w-full max-w-screen-lg flex flex-col gap-52',
   headingText: 'text-2xl font-bold text-primary justify-center flex',
   aboutContainer: 'text-center max-w-screen-md mt-8 mx-auto text-grey text-lg leading-8',
-  profilesContainer: 'w-full grid grid-cols-1 gap-3 md:grid-cols-2 mt-8',
+  profilesContainer: 'w-1/2 mx-auto mt-8',
   faqContainer: 'justify-start flex grid grid-flow-row gap-8 mt-12',
   question: 'text-md font-bold text-primary',
   answer: 'text-sm font-semibold text-grey',
