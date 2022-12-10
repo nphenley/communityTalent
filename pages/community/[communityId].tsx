@@ -31,10 +31,10 @@ const Community = () => {
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [profile, setProfile] = useState<Profile>({
     id: 'neotokyocitizens',
-    profilePicture: 'https://tse1.mm.bing.net/th?id=OIP.eez-Y8tIL3p-8L2Hp3TkFQHaHa',
+    profilePicture: '/assets/77.png',
     dateCreated: Timestamp.now(),
     dateLastUpdated: Timestamp.now(),
-    displayName: 'Guest',
+    displayName: 'soM',
     bio: 'Guest user, editing disabled',
     lookingForProject: true,
   });
